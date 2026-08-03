@@ -1,0 +1,60 @@
+/* ==========================================
+   START - BASIC WEBSITE RESET
+   Browser ki default spacing hata raha hai
+   ========================================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ==========================================
+   END - BASIC WEBSITE RESET
+   ========================================== */
+
+
+/* ==========================================
+   START - MAIN WEBSITE STYLE
+   Abhi sirf first live test ke liye basic gaming look
+   ========================================== */
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  background: #080a0f;
+  color: #ffffff;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+main {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 24px;
+}
+
+h1 {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+h2 {
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+
+p {
+  font-size: 16px;
+}
+
+/* ==========================================
+   END - MAIN WEBSITE STYLE
+   ========================================== */
