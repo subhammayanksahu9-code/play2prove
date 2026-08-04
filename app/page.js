@@ -1,379 +1,398 @@
-// ============================================
-// PLAY2PROVE - HOME PAGE
-// FILE: app/page.js
-// REMOVE: Purana page.js ka poora code
-// PASTE: Ye poora code line 1 se
-// ============================================
+"use client";
 
-const tournaments = [
-  {
-    id: "FF-BER-SOLO-001",
-    map: "Bermuda",
-    mode: "Solo",
-    date: "Today",
-    time: "8:00 PM",
-    entryFee: 30,
-    perKill: 5,
-    prize: 500,
-    joined: 37,
-    capacity: 48,
-  },
-  {
-    id: "FF-BER-SOLO-002",
-    map: "Bermuda",
-    mode: "Solo",
-    date: "Today",
-    time: "10:00 PM",
-    entryFee: 30,
-    perKill: 5,
-    prize: 500,
-    joined: 21,
-    capacity: 48,
-  },
-];
+import { useState } from "react";
 
 export default function HomePage() {
+  const [activeTab, setActiveTab] = useState("home");
+
+  const games = [
+    {
+      id: 1,
+      name: "FREE FIRE",
+      subtitle: "Battle Royale",
+      status: "LIVE",
+      active: true,
+      className: "freefire",
+    },
+    {
+      id: 2,
+      name: "BGMI",
+      subtitle: "Coming Soon",
+      status: "SOON",
+      active: false,
+      className: "bgmi",
+    },
+    {
+      id: 3,
+      name: "MORE GAMES",
+      subtitle: "More games will be added",
+      status: "SOON",
+      active: false,
+      className: "moregame",
+    },
+  ];
+
+  const tournaments = [
+    {
+      id: 1,
+      game: "FREE FIRE",
+      title: "Bermuda • Solo",
+      type: "SOLO",
+      date: "Today",
+      time: "6:00 PM",
+      entry: "₹30",
+      perKill: "₹5",
+      prize: "₹500",
+      joined: 37,
+      capacity: 48,
+    },
+    {
+      id: 2,
+      game: "FREE FIRE",
+      title: "Bermuda • Solo",
+      type: "SOLO",
+      date: "Today",
+      time: "11:30 PM",
+      entry: "₹30",
+      perKill: "₹5",
+      prize: "₹500",
+      joined: 21,
+      capacity: 48,
+    },
+  ];
+
+  function handleGame(game) {
+    if (!game.active) {
+      alert(`${game.name} tournaments will be available soon.`);
+      return;
+    }
+
+    document
+      .getElementById("tournaments")
+      ?.scrollIntoView({ behavior: "smooth" });
+  }
+
+  function joinTournament(tournament) {
+    alert(
+      `${tournament.title}\n${tournament.time}\n\nLogin / Join system next step me connect hoga.`
+    );
+  }
+
+  function handleNav(tab) {
+    setActiveTab(tab);
+
+    if (tab === "home") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    if (tab === "tournaments") {
+      document
+        .getElementById("tournaments")
+        ?.scrollIntoView({ behavior: "smooth" });
+    }
+
+    if (tab === "matches") {
+      document
+        .getElementById("my-matches")
+        ?.scrollIntoView({ behavior: "smooth" });
+    }
+
+    if (tab === "wallet") {
+      alert("Wallet system upcoming step me connect hoga.");
+    }
+
+    if (tab === "profile") {
+      alert("Login / Profile system upcoming step me connect hoga.");
+    }
+  }
+
   return (
-    <main className="home-page">
+    <div className="site-shell">
+      <header className="topbar">
+        <div className="brand">
+          <div className="brand-mark">P2P</div>
 
-      {/* ========================================
-          START - TOP HEADER
-      ======================================== */}
-
-      <header className="top-header">
-        <div>
-          <div className="brand">Play2Prove</div>
-          <div className="tagline">
-            PLAY • COMPETE • EARN • PROVE
+          <div>
+            <h1>Play2Prove</h1>
+            <p>PLAY • COMPETE • EARN • PROVE</p>
           </div>
         </div>
 
-        <button className="profile-button">
+        <button
+          className="profile-button"
+          onClick={() => handleNav("profile")}
+          aria-label="Profile"
+        >
           👤
         </button>
       </header>
 
-      {/* ========================================
-          END - TOP HEADER
-      ======================================== */}
+      <main className="main-content">
+        <section className="hero">
+          <div className="hero-glow hero-glow-one" />
+          <div className="hero-glow hero-glow-two" />
 
+          <div className="hero-content">
+            <span className="live-badge">● GAMING TOURNAMENT PLATFORM</span>
 
-      {/* ========================================
-          START - FREE FIRE HERO
-      ======================================== */}
+            <h2>
+              PLAY.
+              <br />
+              COMPETE.
+              <br />
+              <span>PROVE.</span>
+            </h2>
 
-      <section className="game-hero">
+            <p>
+              Join competitive gaming tournaments, show your skills and earn
+              rewards.
+            </p>
 
-        <div className="game-badge">
-          LIVE TOURNAMENTS
-        </div>
-
-        <h1>FREE FIRE</h1>
-
-        <p>
-          Play. Compete. Earn. Prove Your Skill.
-        </p>
-
-        <button className="hero-button">
-          VIEW TOURNAMENTS
-        </button>
-
-      </section>
-
-      {/* ========================================
-          END - FREE FIRE HERO
-      ======================================== */}
-
-
-      {/* ========================================
-          START - TOURNAMENT SECTION
-      ======================================== */}
-
-      <section className="tournament-section">
-
-        <div className="section-heading">
-
-          <div>
-            <span className="small-heading">
-              PLAY NOW
-            </span>
-
-            <h2>Upcoming Tournaments</h2>
+            <button
+              className="primary-button"
+              onClick={() =>
+                document
+                  .getElementById("games")
+                  ?.scrollIntoView({ behavior: "smooth" })
+              }
+            >
+              EXPLORE GAMES →
+            </button>
           </div>
 
-          <button className="view-all">
-            View All
-          </button>
+          <div className="hero-art">P2P</div>
+        </section>
 
-        </div>
+        <section className="section" id="games">
+          <div className="section-heading">
+            <div>
+              <span className="eyebrow">CHOOSE YOUR GAME</span>
+              <h3>Games</h3>
+            </div>
 
+            <span className="section-small">More coming soon</span>
+          </div>
 
-        <div className="tournament-list">
-
-          {tournaments.map((tournament) => {
-
-            const percentage =
-              (tournament.joined /
-                tournament.capacity) *
-              100;
-
-            return (
-
-              <article
-                className="tournament-card"
-                key={tournament.id}
+          <div className="games-grid">
+            {games.map((game) => (
+              <button
+                key={game.id}
+                className={`game-card ${game.className}`}
+                onClick={() => handleGame(game)}
               >
-
-                {/* MATCH TOP */}
-
-                <div className="match-top">
-
-                  <div>
-
-                    <span className="game-name">
-                      FREE FIRE
-                    </span>
-
-                    <h3>
-                      {tournament.map} •{" "}
-                      {tournament.mode}
-                    </h3>
-
-                    <span className="match-id">
-                      {tournament.id}
-                    </span>
-
-                  </div>
-
-                  <div className="match-status">
-                    OPEN
-                  </div>
-
-                </div>
-
-
-                {/* DATE + TIME */}
-
-                <div className="match-time">
-
-                  <div>
-                    <span>Date</span>
-                    <strong>
-                      {tournament.date}
-                    </strong>
-                  </div>
-
-                  <div>
-                    <span>Start Time</span>
-                    <strong>
-                      {tournament.time}
-                    </strong>
-                  </div>
-
-                </div>
-
-
-                {/* MONEY DETAILS */}
-
-                <div className="money-grid">
-
-                  <div>
-                    <span>ENTRY</span>
-
-                    <strong>
-                      ₹{tournament.entryFee}
-                    </strong>
-                  </div>
-
-
-                  <div>
-                    <span>PER KILL</span>
-
-                    <strong>
-                      ₹{tournament.perKill}
-                    </strong>
-                  </div>
-
-
-                  <div>
-                    <span>PRIZE</span>
-
-                    <strong>
-                      ₹{tournament.prize}
-                    </strong>
-                  </div>
-
-                </div>
-
-
-                {/* PLAYER CAPACITY */}
-
-                <div className="players-row">
-
-                  <span>
-                    Players Joined
+                <div className="game-card-top">
+                  <span
+                    className={
+                      game.active ? "status status-live" : "status status-soon"
+                    }
+                  >
+                    {game.status}
                   </span>
 
-                  <strong>
-                    {tournament.joined}
-                    /
-                    {tournament.capacity}
-                  </strong>
-
+                  <span className="game-arrow">↗</span>
                 </div>
 
-
-                <div className="progress">
-
-                  <div
-                    className="progress-value"
-                    style={{
-                      width: `${percentage}%`,
-                    }}
-                  />
-
+                <div className="game-visual">
+                  <span>{game.name.substring(0, 2)}</span>
                 </div>
 
+                <div className="game-info">
+                  <h4>{game.name}</h4>
+                  <p>{game.subtitle}</p>
+                </div>
+              </button>
+            ))}
+          </div>
+        </section>
 
-                {/* JOIN */}
+        <section className="section" id="tournaments">
+          <div className="section-heading">
+            <div>
+              <span className="eyebrow">PLAY NOW</span>
+              <h3>Upcoming Tournaments</h3>
+            </div>
 
-                <button className="join-button">
-
-                  JOIN ₹{tournament.entryFee}
-
-                </button>
-
-              </article>
-
-            );
-
-          })}
-
-        </div>
-
-      </section>
-
-      {/* ========================================
-          END - TOURNAMENT SECTION
-      ======================================== */}
-
-
-      {/* ========================================
-          START - MY MATCHES
-      ======================================== */}
-
-      <section className="quick-card">
-
-        <div className="quick-icon">
-          🎮
-        </div>
-
-        <div>
-          <h3>My Matches</h3>
-
-          <p>
-            Joined matches, room details
-            and live results
-          </p>
-        </div>
-
-        <span className="arrow">
-          ›
-        </span>
-
-      </section>
-
-      {/* ========================================
-          END - MY MATCHES
-      ======================================== */}
-
-
-      {/* ========================================
-          START - HOW IT WORKS
-      ======================================== */}
-
-      <section className="how-section">
-
-        <span className="small-heading">
-          SIMPLE & FAST
-        </span>
-
-        <h2>How Play2Prove Works</h2>
-
-
-        <div className="steps">
-
-          <div>
-            <strong>01</strong>
-            <span>JOIN</span>
+            <button className="text-button">View All</button>
           </div>
 
+          <div className="tournament-grid">
+            {tournaments.map((tournament) => {
+              const percentage =
+                (tournament.joined / tournament.capacity) * 100;
+
+              return (
+                <article className="tournament-card" key={tournament.id}>
+                  <div className="tournament-top">
+                    <div>
+                      <span className="game-label">{tournament.game}</span>
+                      <h4>{tournament.title}</h4>
+                      <p>{tournament.type} MATCH</p>
+                    </div>
+
+                    <span className="open-badge">OPEN</span>
+                  </div>
+
+                  <div className="match-time">
+                    <div>
+                      <span>DATE</span>
+                      <strong>{tournament.date}</strong>
+                    </div>
+
+                    <div>
+                      <span>START TIME</span>
+                      <strong>{tournament.time}</strong>
+                    </div>
+                  </div>
+
+                  <div className="prize-grid">
+                    <div>
+                      <span>ENTRY</span>
+                      <strong>{tournament.entry}</strong>
+                    </div>
+
+                    <div>
+                      <span>PER KILL</span>
+                      <strong>{tournament.perKill}</strong>
+                    </div>
+
+                    <div>
+                      <span>PRIZE</span>
+                      <strong className="orange-text">
+                        {tournament.prize}
+                      </strong>
+                    </div>
+                  </div>
+
+                  <div className="players-row">
+                    <span>Players Joined</span>
+                    <strong>
+                      {tournament.joined}/{tournament.capacity}
+                    </strong>
+                  </div>
+
+                  <div className="progress">
+                    <div
+                      className="progress-value"
+                      style={{ width: `${percentage}%` }}
+                    />
+                  </div>
+
+                  <button
+                    className="join-button"
+                    onClick={() => joinTournament(tournament)}
+                  >
+                    JOIN {tournament.entry}
+                  </button>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="section" id="my-matches">
+          <button
+            className="my-matches"
+            onClick={() =>
+              alert("Joined matches customer login ke baad yahan dikhenge.")
+            }
+          >
+            <div className="match-icon">🎮</div>
+
+            <div>
+              <h4>My Matches</h4>
+              <p>Joined matches, room details and live results</p>
+            </div>
+
+            <span>→</span>
+          </button>
+        </section>
+
+        <section className="section">
+          <span className="eyebrow">SIMPLE & FAST</span>
+          <h3>How Play2Prove Works</h3>
+
+          <div className="steps-grid">
+            <div className="step-card">
+              <strong>01</strong>
+              <span>JOIN</span>
+              <p>Select your tournament</p>
+            </div>
+
+            <div className="step-card">
+              <strong>02</strong>
+              <span>PLAY</span>
+              <p>Enter room & compete</p>
+            </div>
+
+            <div className="step-card">
+              <strong>03</strong>
+              <span>WIN</span>
+              <p>Results are calculated</p>
+            </div>
+
+            <div className="step-card">
+              <strong>04</strong>
+              <span>EARN</span>
+              <p>Reward goes to wallet</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="future-box">
           <div>
-            <strong>02</strong>
-            <span>PLAY</span>
+            <span className="eyebrow">BUILT TO EXPAND</span>
+            <h3>More Games. More Tournaments.</h3>
+            <p>
+              Play2Prove is being built so new games and tournament formats can
+              be added without redesigning the complete platform.
+            </p>
           </div>
 
-          <div>
-            <strong>03</strong>
-            <span>WIN</span>
-          </div>
-
-          <div>
-            <strong>04</strong>
-            <span>EARN</span>
-          </div>
-
-        </div>
-
-      </section>
-
-      {/* ========================================
-          END - HOW IT WORKS
-      ======================================== */}
-
-
-      {/* SPACE FOR FIXED NAV */}
-
-      <div className="bottom-space" />
-
-
-      {/* ========================================
-          START - BOTTOM NAVIGATION
-      ======================================== */}
+          <div className="future-number">∞</div>
+        </section>
+      </main>
 
       <nav className="bottom-nav">
-
-        <button className="nav-active">
+        <button
+          className={activeTab === "home" ? "nav-active" : ""}
+          onClick={() => handleNav("home")}
+        >
           <span>⌂</span>
           HOME
         </button>
 
-        <button>
-          <span>🏆</span>
+        <button
+          className={activeTab === "tournaments" ? "nav-active" : ""}
+          onClick={() => handleNav("tournaments")}
+        >
+          <span>♛</span>
           TOURNAMENTS
         </button>
 
-        <button>
-          <span>₹</span>
-          EARN
+        <button
+          className={activeTab === "matches" ? "nav-active" : ""}
+          onClick={() => handleNav("matches")}
+        >
+          <span>⚔</span>
+          MATCHES
         </button>
 
-        <button>
+        <button
+          className={activeTab === "wallet" ? "nav-active" : ""}
+          onClick={() => handleNav("wallet")}
+        >
           <span>▣</span>
           WALLET
         </button>
 
-        <button>
+        <button
+          className={activeTab === "profile" ? "nav-active" : ""}
+          onClick={() => handleNav("profile")}
+        >
           <span>○</span>
           PROFILE
         </button>
-
       </nav>
-
-      {/* ========================================
-          END - BOTTOM NAVIGATION
-      ======================================== */}
-
-    </main>
+    </div>
   );
 }
