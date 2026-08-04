@@ -1,23 +1,3 @@
-/* =========================================================
-   PLAY2PROVE - GLOBAL DESIGN
-   FILE: app/globals.css
-
-   REMOVE:
-   Purane globals.css ka poora code.
-
-   PASTE:
-   Ye poora code line 1 se.
-
-   NOTE:
-   Future me kisi section ko change karna ho to
-   START / END comments ke beech ka code replace karenge.
-========================================================= */
-
-
-/* =========================================================
-   START - BASIC RESET
-========================================================= */
-
 * {
   box-sizing: border-box;
   margin: 0;
@@ -25,657 +5,713 @@
 }
 
 html {
-  background: #07090d;
   scroll-behavior: smooth;
+  background: #05070b;
 }
 
 body {
-  width: 100%;
-  min-height: 100vh;
-  background: #07090d;
+  background:
+    radial-gradient(circle at 50% -10%, rgba(255, 85, 20, 0.08), transparent 35%),
+    #05070b;
   color: #ffffff;
   font-family: Arial, Helvetica, sans-serif;
 }
 
 button {
-  font-family: inherit;
-  cursor: pointer;
+  font: inherit;
 }
 
-.home-page {
-  width: 100%;
-  max-width: 600px;
+.site-shell {
   min-height: 100vh;
-  margin: 0 auto;
-  background: #07090d;
-  overflow-x: hidden;
+  background: #05070b;
+  padding-bottom: 90px;
 }
 
-/* =========================================================
-   END - BASIC RESET
-========================================================= */
-
-
-/* =========================================================
-   START - TOP HEADER
-========================================================= */
-
-.top-header {
+.topbar {
+  width: 100%;
+  height: 74px;
+  padding: 0 22px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(5, 7, 11, 0.88);
+  backdrop-filter: blur(18px);
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-  padding: 22px 20px 18px;
-
-  background: rgba(7, 9, 13, 0.96);
-
-  border-bottom: 1px solid #1b2029;
-
   position: sticky;
   top: 0;
   z-index: 50;
 }
 
 .brand {
-  font-size: 26px;
-  font-weight: 900;
-  letter-spacing: -1px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
 }
 
-.tagline {
+.brand-mark {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #ff4d00, #ff7a00);
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 900;
+  box-shadow:
+    0 0 18px rgba(255, 77, 0, 0.5),
+    0 0 40px rgba(255, 77, 0, 0.15);
+}
+
+.brand h1 {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.brand p {
   margin-top: 5px;
-
-  font-size: 9px;
-  font-weight: 700;
-
-  color: #89909d;
-
-  letter-spacing: 1.4px;
+  font-size: 7px;
+  letter-spacing: 1.5px;
+  color: #8d96a5;
 }
 
 .profile-button {
-  width: 43px;
-  height: 43px;
-
-  border: 1px solid #2a303b;
+  width: 39px;
+  height: 39px;
   border-radius: 50%;
-
-  background: #11151c;
+  border: 1px solid rgba(141, 82, 255, 0.45);
   color: white;
-
-  font-size: 18px;
+  background: rgba(116, 59, 255, 0.1);
+  cursor: pointer;
+  box-shadow: 0 0 18px rgba(116, 59, 255, 0.15);
 }
 
-/* =========================================================
-   END - TOP HEADER
-========================================================= */
+.main-content {
+  width: min(1180px, calc(100% - 32px));
+  margin: auto;
+}
 
-
-/* =========================================================
-   START - FREE FIRE HERO
-========================================================= */
-
-.game-hero {
-  min-height: 310px;
-
-  margin: 16px;
-
-  padding: 32px 24px;
-
-  border: 1px solid #242a35;
-  border-radius: 22px;
-
+.hero {
+  min-height: 400px;
+  margin-top: 22px;
+  padding: 45px;
+  border-radius: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   background:
-    radial-gradient(
-      circle at 85% 20%,
-      rgba(255, 95, 31, 0.24),
-      transparent 32%
-    ),
-    linear-gradient(
-      145deg,
-      #181d26 0%,
-      #0d1016 52%,
-      #090b0f 100%
-    );
-
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-
+    linear-gradient(120deg, rgba(255, 72, 0, 0.13), transparent 45%),
+    linear-gradient(145deg, #111722, #080b11);
   position: relative;
   overflow: hidden;
+  display: flex;
+  align-items: center;
 }
 
-.game-hero::after {
-  content: "FF";
-
+.hero::after {
+  content: "";
   position: absolute;
-
-  right: -12px;
-  bottom: -38px;
-
-  font-size: 150px;
-  font-weight: 900;
-
-  color: rgba(255, 255, 255, 0.025);
-
-  transform: rotate(-8deg);
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
 }
 
-.game-badge {
-  display: inline-flex;
+.hero-content {
+  position: relative;
+  z-index: 3;
+  max-width: 650px;
+}
 
-  padding: 7px 11px;
-
-  margin-bottom: 18px;
-
-  border: 1px solid rgba(255, 111, 32, 0.45);
-  border-radius: 50px;
-
-  background: rgba(255, 92, 20, 0.08);
-
-  color: #ff792f;
-
+.live-badge {
+  display: inline-block;
+  border: 1px solid rgba(255, 85, 20, 0.45);
+  background: rgba(255, 85, 20, 0.1);
+  color: #ff6a24;
+  border-radius: 999px;
+  padding: 8px 12px;
   font-size: 10px;
   font-weight: 800;
-
   letter-spacing: 1px;
 }
 
-.game-hero h1 {
-  font-size: 46px;
-  line-height: 1;
-
-  font-weight: 900;
-
-  letter-spacing: -2px;
+.hero h2 {
+  margin-top: 22px;
+  font-size: clamp(48px, 7vw, 92px);
+  line-height: 0.88;
+  letter-spacing: -4px;
 }
 
-.game-hero p {
-  margin-top: 13px;
-
-  color: #b9bec8;
-
-  font-size: 14px;
-  line-height: 1.5;
+.hero h2 span {
+  color: #ff5a16;
+  text-shadow: 0 0 30px rgba(255, 78, 0, 0.3);
 }
 
-.hero-button {
+.hero p {
   margin-top: 25px;
-
-  padding: 13px 18px;
-
-  border: 0;
-  border-radius: 10px;
-
-  background: #ff641e;
-  color: #ffffff;
-
-  font-size: 12px;
-  font-weight: 900;
-
-  letter-spacing: 0.5px;
+  max-width: 520px;
+  color: #a7afbd;
+  font-size: 16px;
+  line-height: 1.6;
 }
 
-/* =========================================================
-   END - FREE FIRE HERO
-========================================================= */
+.primary-button,
+.join-button {
+  border: 0;
+  cursor: pointer;
+  color: white;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  background: linear-gradient(90deg, #ff4d00, #ff6b20);
+  box-shadow: 0 0 22px rgba(255, 77, 0, 0.25);
+  transition: 0.2s ease;
+}
 
+.primary-button {
+  margin-top: 28px;
+  padding: 14px 19px;
+  border-radius: 9px;
+}
 
-/* =========================================================
-   START - TOURNAMENT SECTION
-========================================================= */
+.primary-button:hover,
+.join-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 30px rgba(255, 77, 0, 0.5);
+}
 
-.tournament-section {
-  padding: 15px 16px 10px;
+.hero-art {
+  position: absolute;
+  right: -15px;
+  bottom: -45px;
+  font-size: 210px;
+  font-weight: 1000;
+  color: rgba(255,255,255,.025);
+  transform: rotate(-8deg);
+}
+
+.hero-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+}
+
+.hero-glow-one {
+  width: 220px;
+  height: 220px;
+  background: rgba(255, 68, 0, 0.18);
+  right: 10%;
+  top: 10%;
+}
+
+.hero-glow-two {
+  width: 160px;
+  height: 160px;
+  background: rgba(91, 46, 255, 0.12);
+  right: 30%;
+  bottom: -40px;
+}
+
+.section {
+  margin-top: 42px;
 }
 
 .section-heading {
   display: flex;
-  align-items: flex-end;
   justify-content: space-between;
-
-  margin-bottom: 17px;
+  align-items: flex-end;
+  margin-bottom: 15px;
 }
 
-.small-heading {
-  display: block;
-
-  margin-bottom: 6px;
-
-  color: #ff702b;
-
+.eyebrow {
+  color: #ff5b18;
   font-size: 9px;
-  font-weight: 900;
-
   letter-spacing: 1.5px;
-}
-
-.section-heading h2,
-.how-section h2 {
-  font-size: 23px;
   font-weight: 900;
-
-  letter-spacing: -0.7px;
 }
 
-.view-all {
+.section h3,
+.future-box h3 {
+  margin-top: 5px;
+  font-size: 25px;
+}
+
+.section-small,
+.text-button {
+  color: #7e8999;
+  font-size: 11px;
+}
+
+.text-button {
   border: 0;
   background: transparent;
-
-  color: #969daa;
-
-  font-size: 12px;
-  font-weight: 700;
+  cursor: pointer;
 }
 
-.tournament-list {
-  display: flex;
-  flex-direction: column;
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
 
-  gap: 14px;
+.game-card {
+  min-height: 230px;
+  border-radius: 18px;
+  border: 1px solid #242c39;
+  padding: 18px;
+  text-align: left;
+  color: white;
+  background: #0d121a;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: 0.25s ease;
+}
+
+.game-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(255, 91, 24, 0.6);
+  box-shadow: 0 10px 40px rgba(0,0,0,.4);
+}
+
+.freefire {
+  background:
+    radial-gradient(circle at 80% 20%, rgba(255, 76, 0, 0.25), transparent 40%),
+    #0d121a;
+}
+
+.bgmi {
+  background:
+    radial-gradient(circle at 80% 20%, rgba(55, 255, 140, 0.1), transparent 40%),
+    #0d121a;
+}
+
+.moregame {
+  background:
+    radial-gradient(circle at 80% 20%, rgba(119, 66, 255, 0.15), transparent 40%),
+    #0d121a;
+}
+
+.game-card-top {
+  display: flex;
+  justify-content: space-between;
+}
+
+.status {
+  padding: 5px 8px;
+  border-radius: 5px;
+  font-size: 8px;
+  font-weight: 900;
+}
+
+.status-live {
+  color: #63ffb0;
+  border: 1px solid rgba(0, 255, 132, 0.35);
+  background: rgba(0, 255, 132, 0.08);
+}
+
+.status-soon {
+  color: #a7afbd;
+  border: 1px solid #303846;
+}
+
+.game-arrow {
+  color: #7f8998;
+}
+
+.game-visual {
+  height: 115px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.game-visual span {
+  font-size: 64px;
+  font-weight: 1000;
+  opacity: 0.08;
+}
+
+.freefire .game-visual span {
+  color: #ff5a16;
+  opacity: 0.28;
+  text-shadow: 0 0 30px #ff4d00;
+}
+
+.game-info h4 {
+  font-size: 20px;
+}
+
+.game-info p {
+  color: #788393;
+  margin-top: 5px;
+  font-size: 12px;
+}
+
+.tournament-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
 }
 
 .tournament-card {
-  padding: 18px;
-
-  background: #10141b;
-
-  border: 1px solid #242a34;
-  border-radius: 17px;
+  padding: 19px;
+  border: 1px solid #252e3a;
+  background: linear-gradient(145deg, #101620, #0b1017);
+  border-radius: 15px;
+  transition: 0.2s;
 }
 
-.match-top {
+.tournament-card:hover {
+  border-color: rgba(255, 85, 20, 0.5);
+  box-shadow: 0 0 25px rgba(255, 75, 0, 0.08);
+}
+
+.tournament-top {
   display: flex;
   justify-content: space-between;
-
-  gap: 12px;
 }
 
-.game-name {
-  color: #ff6e28;
-
-  font-size: 9px;
-  font-weight: 900;
-
-  letter-spacing: 1.2px;
-}
-
-.match-top h3 {
-  margin-top: 5px;
-
-  font-size: 20px;
+.game-label {
+  color: #ff5b18;
+  font-size: 8px;
   font-weight: 900;
 }
 
-.match-id {
-  display: block;
-
-  margin-top: 5px;
-
-  color: #6f7682;
-
-  font-size: 9px;
+.tournament-top h4 {
+  margin-top: 4px;
+  font-size: 18px;
 }
 
-.match-status {
+.tournament-top p {
+  margin-top: 4px;
+  color: #788393;
+  font-size: 8px;
+}
+
+.open-badge {
+  color: #43f79a;
+  border: 1px solid rgba(67,247,154,.4);
+  background: rgba(67,247,154,.08);
+  border-radius: 4px;
   height: fit-content;
-
-  padding: 6px 9px;
-
-  border: 1px solid rgba(63, 216, 125, 0.25);
-  border-radius: 6px;
-
-  background: rgba(63, 216, 125, 0.08);
-
-  color: #49dc86;
-
-  font-size: 9px;
-  font-weight: 900;
+  padding: 5px 8px;
+  font-size: 8px;
+  font-weight: 800;
 }
 
 .match-time {
   display: grid;
   grid-template-columns: 1fr 1fr;
-
-  margin-top: 18px;
-
-  padding: 13px 0;
-
-  border-top: 1px solid #222832;
-  border-bottom: 1px solid #222832;
+  gap: 10px;
+  border-top: 1px solid #252d38;
+  border-bottom: 1px solid #252d38;
+  margin: 15px 0;
+  padding: 12px 0;
 }
 
-.match-time div {
+.match-time div,
+.prize-grid div {
   display: flex;
   flex-direction: column;
-
   gap: 5px;
 }
 
-.match-time div:last-child {
-  padding-left: 18px;
-
-  border-left: 1px solid #222832;
-}
-
-.match-time span {
-  color: #747c89;
-
-  font-size: 9px;
-  font-weight: 700;
-
-  text-transform: uppercase;
+.match-time span,
+.prize-grid span {
+  color: #687484;
+  font-size: 7px;
 }
 
 .match-time strong {
-  font-size: 13px;
-}
-
-.money-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-
-  margin-top: 16px;
-
-  gap: 8px;
-}
-
-.money-grid div {
-  padding: 12px 8px;
-
-  text-align: center;
-
-  background: #0a0d12;
-
-  border: 1px solid #202630;
-  border-radius: 10px;
-}
-
-.money-grid span {
-  display: block;
-
-  margin-bottom: 6px;
-
-  color: #747c89;
-
-  font-size: 8px;
-  font-weight: 800;
-}
-
-.money-grid strong {
-  font-size: 18px;
-  font-weight: 900;
-}
-
-.money-grid div:nth-child(3) strong {
-  color: #ff742f;
-}
-
-.players-row {
-  display: flex;
-  justify-content: space-between;
-
-  margin-top: 17px;
-
-  color: #8d94a0;
-
   font-size: 11px;
 }
 
+.prize-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+}
+
+.prize-grid div {
+  background: #080d13;
+  border: 1px solid #222b36;
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.prize-grid strong {
+  font-size: 15px;
+}
+
+.orange-text {
+  color: #ff5b18;
+}
+
+.players-row {
+  margin-top: 14px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  color: #8893a2;
+}
+
 .players-row strong {
-  color: #ffffff;
+  color: white;
 }
 
 .progress {
-  width: 100%;
-  height: 5px;
-
-  margin-top: 8px;
-
-  background: #252b34;
-
-  border-radius: 20px;
-
+  height: 4px;
+  background: #252d38;
+  border-radius: 99px;
+  margin: 8px 0 13px;
   overflow: hidden;
 }
 
 .progress-value {
   height: 100%;
-
-  background: linear-gradient(
-    90deg,
-    #ff5418,
-    #ff8a35
-  );
-
-  border-radius: 20px;
+  background: linear-gradient(90deg, #ff4c00, #ff9b38);
+  box-shadow: 0 0 10px #ff5a16;
 }
 
 .join-button {
   width: 100%;
-
-  margin-top: 18px;
-
-  padding: 14px;
-
-  border: 0;
-  border-radius: 10px;
-
-  background: #ff641e;
-  color: #ffffff;
-
-  font-size: 13px;
-  font-weight: 900;
-
-  letter-spacing: 0.4px;
+  padding: 12px;
+  border-radius: 7px;
+  font-size: 10px;
 }
 
-.join-button:active,
-.hero-button:active {
-  transform: scale(0.98);
-}
-
-/* =========================================================
-   END - TOURNAMENT SECTION
-========================================================= */
-
-
-/* =========================================================
-   START - MY MATCHES QUICK CARD
-========================================================= */
-
-.quick-card {
+.my-matches {
+  width: 100%;
+  border: 1px solid #252e3a;
+  background: #101620;
+  color: white;
+  border-radius: 14px;
+  padding: 17px;
   display: grid;
   grid-template-columns: auto 1fr auto;
-  align-items: center;
-
   gap: 13px;
-
-  margin: 16px;
-  padding: 17px;
-
-  background: #10141b;
-
-  border: 1px solid #242a34;
-  border-radius: 16px;
+  align-items: center;
+  text-align: left;
+  cursor: pointer;
 }
 
-.quick-icon {
-  width: 44px;
-  height: 44px;
+.match-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: rgba(108, 62, 255, 0.12);
+  display: grid;
+  place-items: center;
+}
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.my-matches h4 {
+  font-size: 15px;
+}
 
-  background: #191f29;
+.my-matches p {
+  color: #788393;
+  font-size: 9px;
+  margin-top: 4px;
+}
 
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.step-card {
+  border: 1px solid #252e3a;
+  background: #0d121a;
   border-radius: 12px;
+  padding: 20px;
+  min-height: 125px;
+}
 
+.step-card strong {
+  color: #ff5a16;
   font-size: 20px;
 }
 
-.quick-card h3 {
-  font-size: 15px;
-  font-weight: 900;
-}
-
-.quick-card p {
-  margin-top: 4px;
-
-  color: #7f8793;
-
+.step-card span {
+  display: block;
+  margin-top: 12px;
   font-size: 10px;
-  line-height: 1.4;
-}
-
-.arrow {
-  color: #8e95a0;
-
-  font-size: 27px;
-}
-
-/* =========================================================
-   END - MY MATCHES QUICK CARD
-========================================================= */
-
-
-/* =========================================================
-   START - HOW PLAY2PROVE WORKS
-========================================================= */
-
-.how-section {
-  padding: 25px 16px 20px;
-}
-
-.steps {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-
-  gap: 8px;
-
-  margin-top: 17px;
-}
-
-.steps div {
-  min-height: 84px;
-
-  padding: 13px 6px;
-
-  background: #10141b;
-
-  border: 1px solid #222833;
-  border-radius: 12px;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  gap: 7px;
-}
-
-.steps strong {
-  color: #ff6b27;
-
-  font-size: 18px;
-}
-
-.steps span {
-  color: #a1a7b1;
-
-  font-size: 9px;
   font-weight: 900;
-
-  letter-spacing: 0.5px;
 }
 
-/* =========================================================
-   END - HOW PLAY2PROVE WORKS
-========================================================= */
+.step-card p {
+  color: #687484;
+  font-size: 9px;
+  margin-top: 5px;
+}
 
+.future-box {
+  margin: 42px 0;
+  min-height: 190px;
+  border-radius: 18px;
+  padding: 30px;
+  border: 1px solid #252e3a;
+  background:
+    radial-gradient(circle at 90% 50%, rgba(105, 56, 255, .14), transparent 30%),
+    #0d121a;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+}
 
-/* =========================================================
-   START - BOTTOM NAVIGATION
-========================================================= */
+.future-box p {
+  max-width: 600px;
+  margin-top: 12px;
+  color: #788393;
+  line-height: 1.6;
+  font-size: 12px;
+}
 
-.bottom-space {
-  height: 100px;
+.future-number {
+  font-size: 120px;
+  color: rgba(116, 69, 255, 0.25);
+  text-shadow: 0 0 30px rgba(116, 69, 255, .2);
 }
 
 .bottom-nav {
   position: fixed;
-
   bottom: 0;
   left: 50%;
-
   transform: translateX(-50%);
-
-  width: 100%;
-  max-width: 600px;
-
-  height: 76px;
-
+  width: min(700px, 100%);
+  height: 68px;
+  border: 1px solid #252e3a;
+  border-bottom: 0;
+  background: rgba(8, 11, 16, 0.94);
+  backdrop-filter: blur(18px);
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-
-  background: rgba(12, 15, 21, 0.97);
-
-  border-top: 1px solid #262c35;
-
   z-index: 100;
 }
 
 .bottom-nav button {
   border: 0;
-
   background: transparent;
-  color: #707784;
-
-  font-size: 8px;
+  color: #677282;
+  font-size: 7px;
   font-weight: 800;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  gap: 6px;
+  cursor: pointer;
 }
 
 .bottom-nav button span {
-  font-size: 18px;
-  font-weight: 900;
+  display: block;
+  margin-bottom: 5px;
+  font-size: 17px;
 }
 
 .bottom-nav .nav-active {
-  color: #ff6b27;
+  color: #ff5b18;
+  text-shadow: 0 0 10px rgba(255, 91, 24, .4);
 }
 
-/* =========================================================
-   END - BOTTOM NAVIGATION
-========================================================= */
+/* MOBILE */
 
-
-/* =========================================================
-   START - LARGE SCREEN SUPPORT
-========================================================= */
-
-@media (min-width: 601px) {
-
-  body {
-    background: #050609;
+@media (max-width: 700px) {
+  .main-content {
+    width: calc(100% - 22px);
   }
 
-  .home-page {
-    border-left: 1px solid #1b2029;
-    border-right: 1px solid #1b2029;
+  .topbar {
+    height: 65px;
+    padding: 0 14px;
   }
 
+  .brand-mark {
+    width: 32px;
+    height: 32px;
+  }
+
+  .brand h1 {
+    font-size: 15px;
+  }
+
+  .hero {
+    min-height: 330px;
+    padding: 25px 20px;
+    border-radius: 17px;
+  }
+
+  .hero h2 {
+    font-size: 48px;
+    letter-spacing: -2px;
+  }
+
+  .hero p {
+    font-size: 12px;
+    max-width: 300px;
+  }
+
+  .hero-art {
+    font-size: 120px;
+  }
+
+  .games-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .game-card {
+    min-height: 190px;
+    padding: 13px;
+  }
+
+  .game-visual {
+    height: 90px;
+  }
+
+  .game-visual span {
+    font-size: 45px;
+  }
+
+  .game-info h4 {
+    font-size: 15px;
+  }
+
+  .tournament-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .steps-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .future-number {
+    font-size: 70px;
+  }
+
+  .future-box {
+    padding: 22px;
+  }
 }
 
-/* =========================================================
-   END - LARGE SCREEN SUPPORT
-========================================================= */
+/* LAPTOP / DESKTOP */
+
+@media (min-width: 1000px) {
+  .site-shell {
+    padding-bottom: 30px;
+  }
+
+  .bottom-nav {
+    position: sticky;
+    bottom: 18px;
+    border-radius: 15px;
+    border: 1px solid #252e3a;
+    overflow: hidden;
+    margin-top: 20px;
+  }
+
+  .games-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .tournament-card {
+    padding: 24px;
+  }
+}
