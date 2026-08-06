@@ -16,6 +16,13 @@ export default function SignupPage() {
 
     setLoading(true);
     setMessage("");
+    const cleanPhone = phone.replace(/\D/g, "");
+
+if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
+  setMessage("Please enter a valid 10-digit Indian mobile number.");
+  setLoading(false);
+  return;
+}
 
     try {
       // Create Supabase Auth user
@@ -25,7 +32,7 @@ export default function SignupPage() {
         options: {
           data: {
             full_name: fullName.trim(),
-            phone: phone.trim(),
+            phone: cleanPhone,
           },
         },
       });
