@@ -185,7 +185,17 @@ export default function SignupPage() {
       );
 
       return;
+if(!referralValid){
 
+setErrorMessage(
+
+"Please enter a valid referral code."
+
+);
+
+return;
+
+}
     }
 
     // ---------------- EMAIL ----------------
@@ -2275,17 +2285,7 @@ cleanReferral==="" ||
 // BEFORE SUBMIT VALIDATION
 // -----------------------------------------------------
 
-if(!referralValid){
 
-setErrorMessage(
-
-"Please enter a valid referral code."
-
-);
-
-return;
-
-}
 
 
 
@@ -2466,5 +2466,5 @@ lib/validation.js
 // END
 // -----------------------------------------------------
 
-export default SignupPage;
+
 
