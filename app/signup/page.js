@@ -508,5 +508,636 @@ export default function SignupPage() {
             style={inputStyle}
 
           />
+                        <label>
+
+            Referral Code
+
+            <span
+              style={{
+                color: "#9ca3af",
+                fontSize: "12px",
+                marginLeft: "8px"
+              }}
+            >
+              (Optional)
+            </span>
+
+          </label>
+
+          <input
+
+            type="text"
+
+            value={referralCode}
+
+            onChange={(e)=>
+
+              setReferralCode(
+
+                e.target.value
+
+                  .toUpperCase()
+
+              )
+
+            }
+
+            placeholder="Enter referral code"
+
+            style={inputStyle}
+
+          />
+
+          <label>
+
+            Password
+
+          </label>
+
+          <div
+
+            style={{
+
+              position:"relative",
+
+              marginBottom:"18px"
+
+            }}
+
+          >
+
+            <input
+
+              type={
+
+                showPassword
+
+                ?
+
+                "text"
+
+                :
+
+                "password"
+
+              }
+
+              value={password}
+
+              onChange={(e)=>
+
+                setPassword(e.target.value)
+
+              }
+
+              placeholder="Create Password"
+
+              style={inputStyle}
+
+            />
+
+            <button
+
+              type="button"
+
+              onClick={()=>
+
+                setShowPassword(
+
+                  !showPassword
+
+                )
+
+              }
+
+              style={{
+
+                position:"absolute",
+
+                right:"12px",
+
+                top:"50%",
+
+                transform:"translateY(-50%)",
+
+                background:"transparent",
+
+                border:"none",
+
+                color:"#22c55e",
+
+                cursor:"pointer",
+
+                fontWeight:"700"
+
+              }}
+
+            >
+
+              {
+
+                showPassword
+
+                ?
+
+                "Hide"
+
+                :
+
+                "Show"
+
+              }
+
+            </button>
+
+          </div>
+          <div
+
+            style={{
+
+              background:"#111827",
+
+              border:"1px solid #1f2937",
+
+              borderRadius:"10px",
+
+              padding:"14px",
+
+              marginBottom:"20px"
+
+            }}
+
+          >
+
+            <div style={passwordItem(passwordChecks.length)}>
+
+              {passwordChecks.length ? "🟢" : "⚪"}
+
+              <span>
+
+                8 or more characters
+
+              </span>
+
+            </div>
+
+            <div style={passwordItem(passwordChecks.uppercase)}>
+
+              {passwordChecks.uppercase ? "🟢" : "⚪"}
+
+              <span>
+
+                One uppercase letter (A–Z)
+
+              </span>
+
+            </div>
+
+            <div style={passwordItem(passwordChecks.lowercase)}>
+
+              {passwordChecks.lowercase ? "🟢" : "⚪"}
+
+              <span>
+
+                One lowercase letter (a–z)
+
+              </span>
+
+            </div>
+
+            <div style={passwordItem(passwordChecks.number)}>
+
+              {passwordChecks.number ? "🟢" : "⚪"}
+
+              <span>
+
+                One number (0–9)
+
+              </span>
+
+            </div>
+
+            <div style={passwordItem(passwordChecks.special)}>
+
+              {passwordChecks.special ? "🟢" : "⚪"}
+
+              <span>
+
+                One special character
+
+              </span>
+
+            </div>
+
+            <div
+
+              style={{
+
+                marginTop:"14px",
+
+                height:"8px",
+
+                background:"#222",
+
+                borderRadius:"999px",
+
+                overflow:"hidden"
+
+              }}
+
+            >
+
+              <div
+
+                style={{
+
+                  width:passwordPercentage+"%",
+
+                  height:"100%",
+
+                  background:"#22c55e",
+
+                  transition:"0.35s"
+
+                }}
+
+              />
+
+            </div>
+
+          </div>
+
+          <label>
+
+            Confirm Password
+
+          </label>
+
+          <div
+
+            style={{
+
+              position:"relative",
+
+              marginBottom:"22px"
+
+            }}
+
+          >
+
+            <input
+
+              type={
+
+                showConfirmPassword
+
+                ?
+
+                "text"
+
+                :
+
+                "password"
+
+              }
+
+              value={confirmPassword}
+
+              onChange={(e)=>
+
+                setConfirmPassword(e.target.value)
+
+              }
+
+              placeholder="Confirm Password"
+
+              style={inputStyle}
+
+            />
+
+            <button
+
+              type="button"
+
+              onClick={()=>
+
+                setShowConfirmPassword(
+
+                  !showConfirmPassword
+
+                )
+
+              }
+
+              style={{
+
+                position:"absolute",
+
+                right:"12px",
+
+                top:"50%",
+
+                transform:"translateY(-50%)",
+
+                background:"transparent",
+
+                border:"none",
+
+                color:"#22c55e",
+
+                cursor:"pointer",
+
+                fontWeight:"700"
+
+              }}
+
+            >
+
+              {
+
+                showConfirmPassword
+
+                ?
+
+                "Hide"
+
+                :
+
+                "Show"
+
+              }
+
+            </button>
+
+          </div>
+
+          {
+
+            confirmPassword.length>0 &&
+
+            password!==confirmPassword && (
+
+              <div
+
+                style={{
+
+                  color:"#ef4444",
+
+                  marginBottom:"18px",
+
+                  fontSize:"14px"
+
+                }}
+
+              >
+
+                Passwords do not match.
+
+              </div>
+
+            )
+
+                }
+                            {
+
+            successMessage && (
+
+              <div
+
+                style={{
+
+                  background:"#052e16",
+
+                  border:"1px solid #22c55e",
+
+                  color:"#dcfce7",
+
+                  padding:"14px",
+
+                  borderRadius:"10px",
+
+                  marginBottom:"18px",
+
+                  lineHeight:"24px"
+
+                }}
+
+              >
+
+                ✅ {successMessage}
+
+              </div>
+
+            )
+
+          }
+
+          {
+
+            errorMessage && (
+
+              <div
+
+                style={{
+
+                  background:"#3b0a0a",
+
+                  border:"1px solid #ef4444",
+
+                  color:"#fecaca",
+
+                  padding:"14px",
+
+                  borderRadius:"10px",
+
+                  marginBottom:"18px",
+
+                  lineHeight:"24px"
+
+                }}
+
+              >
+
+                ❌ {errorMessage}
+
+              </div>
+
+            )
+
+          }
+
+          <button
+
+            type="submit"
+
+            disabled={loading}
+
+            style={{
+
+              width:"100%",
+
+              border:"none",
+
+              borderRadius:"12px",
+
+              padding:"15px",
+
+              background:
+
+                loading
+
+                ?
+
+                "#4b5563"
+
+                :
+
+                "#16a34a",
+
+              color:"#ffffff",
+
+              fontSize:"17px",
+
+              fontWeight:"700",
+
+              cursor:
+
+                loading
+
+                ?
+
+                "not-allowed"
+
+                :
+
+                "pointer"
+
+            }}
+
+          >
+
+            {
+
+              loading
+
+              ?
+
+              "Creating Account..."
+
+              :
+
+              "Create Account"
+
+            }
+
+          </button>
+
+        </form>
+
+        <p
+
+          style={{
+
+            marginTop:"24px",
+
+            textAlign:"center",
+
+            color:"#9ca3af"
+
+          }}
+
+        >
+
+          Already have an account?
+
+          {" "}
+
+          <a
+
+            href="/login"
+
+            style={{
+
+              color:"#22c55e",
+
+              textDecoration:"none",
+
+              fontWeight:"700"
+
+            }}
+
+          >
+
+            Login
+
+          </a>
+
+        </p>
+
+      </div>
+
+    </main>
+
+  );
+
+}
+
+const inputStyle={
+
+  width:"100%",
+
+  boxSizing:"border-box",
+
+  padding:"14px",
+
+  marginTop:"8px",
+
+  marginBottom:"18px",
+
+  borderRadius:"10px",
+
+  border:"1px solid #30363d",
+
+  background:"#05070a",
+
+  color:"#ffffff",
+
+  fontSize:"15px",
+
+  outline:"none"
+
+};
+
+function passwordItem(active){
+
+  return{
+
+    display:"flex",
+
+    alignItems:"center",
+
+    gap:"10px",
+
+    marginBottom:"8px",
+
+    color:
+
+      active
+
+      ?
+
+      "#22c55e"
+
+      :
+
+      "#9ca3af",
+
+    fontSize:"14px"
+
+  };
+
+}
+
+                  
 
       
