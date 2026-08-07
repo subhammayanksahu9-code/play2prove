@@ -1156,6 +1156,7 @@ export const ERROR_MESSAGES = {
 // WAIT FOR PART 8
 // =====================================================
 // =====================================================
+// =====================================================
 // Play2Prove Premium Signup Page
 // PART 8 / 15
 // Paste BELOW PART 7
@@ -1257,4 +1258,1213 @@ function handleEmailChange(e) {
 
 function handlePasswordChange(e) {
 
-  setPa
+  setPassword(e.target.value);
+
+}
+
+
+
+function handleConfirmPassword(e) {
+
+  setConfirmPassword(e.target.value);
+
+}
+
+
+
+function handleReferralChange(e) {
+
+  setReferralCode(
+
+    e.target.value
+
+      .toUpperCase()
+
+      .replace(/\s/g, "")
+
+  );
+
+}
+
+
+
+// -----------------------------------------------------
+// SUCCESS RESET
+// -----------------------------------------------------
+
+function resetFormMessages() {
+
+  setSuccessMessage("");
+
+  setErrorMessage("");
+
+}
+
+
+
+// =====================================================
+// END OF PART 8
+// WAIT FOR PART 9
+// =====================================================
+// =====================================================
+// Play2Prove Premium Signup Page
+// PART 9 / 15
+// Paste BELOW PART 8
+// =====================================================
+
+// -----------------------------------------------------
+// FORM VALIDATIONS
+// -----------------------------------------------------
+
+const nameError =
+cleanName.length === 0
+? ""
+: cleanName.length < 3
+? "Name must contain at least 3 characters."
+: "";
+
+const emailError =
+cleanEmail.length === 0
+? ""
+: !isValidEmail(cleanEmail)
+? "Please enter a valid email address."
+: "";
+
+const phoneError =
+cleanPhone.length === 0
+? ""
+: !isValidPhone(cleanPhone)
+? "Please enter a valid 10-digit mobile number."
+: "";
+
+const confirmPasswordError =
+confirmPassword.length === 0
+? ""
+: password !== confirmPassword
+? "Passwords do not match."
+: "";
+
+
+
+// -----------------------------------------------------
+// FIELD STATUS
+// -----------------------------------------------------
+
+const formReady =
+
+!nameError &&
+!emailError &&
+!phoneError &&
+!confirmPasswordError &&
+passwordValid;
+
+
+
+// -----------------------------------------------------
+// INPUT BORDER COLORS
+// -----------------------------------------------------
+
+const successBorder = "1px solid #16a34a";
+
+const normalBorder = "1px solid #30363d";
+
+const errorBorder = "1px solid #ef4444";
+
+
+
+// -----------------------------------------------------
+// PASSWORD CHECK TEXT
+// -----------------------------------------------------
+
+const passwordGuide = [
+
+{
+ok: passwordChecks.length,
+text: "At least 8 characters"
+},
+
+{
+ok: passwordChecks.uppercase,
+text: "One uppercase letter"
+},
+
+{
+ok: passwordChecks.lowercase,
+text: "One lowercase letter"
+},
+
+{
+ok: passwordChecks.number,
+text: "One number"
+},
+
+{
+ok: passwordChecks.special,
+text: "One special character"
+}
+
+];
+
+
+
+// -----------------------------------------------------
+// LOADING TEXT
+// -----------------------------------------------------
+
+const loadingText = loading
+
+? "Creating your account..."
+
+: "Create Account";
+
+
+
+// =====================================================
+// END OF PART 9
+// WAIT FOR PART 10
+// =====================================================
+// =====================================================
+// Play2Prove Premium Signup Page
+// PART 10 / 15
+// Paste BELOW PART 9
+// =====================================================
+
+// -----------------------------------------------------
+// FIELD HELPERS
+// -----------------------------------------------------
+
+const fieldMessageStyle = {
+
+  marginTop: "-10px",
+
+  marginBottom: "16px",
+
+  fontSize: "13px",
+
+  fontWeight: "500"
+
+};
+
+
+
+const successColor = {
+
+  ...fieldMessageStyle,
+
+  color: "#22c55e"
+
+};
+
+
+
+const errorColor = {
+
+  ...fieldMessageStyle,
+
+  color: "#ef4444"
+
+};
+
+
+
+// -----------------------------------------------------
+// PASSWORD ICONS
+// -----------------------------------------------------
+
+function passwordIcon(status){
+
+  return status ? "🟢" : "⚪";
+
+}
+
+
+
+// -----------------------------------------------------
+// PASSWORD REQUIREMENT LIST
+// -----------------------------------------------------
+
+const passwordRequirementList = [
+
+  {
+
+    status: passwordChecks.length,
+
+    text: "At least 8 characters"
+
+  },
+
+  {
+
+    status: passwordChecks.uppercase,
+
+    text: "One uppercase letter (A–Z)"
+
+  },
+
+  {
+
+    status: passwordChecks.lowercase,
+
+    text: "One lowercase letter (a–z)"
+
+  },
+
+  {
+
+    status: passwordChecks.number,
+
+    text: "One number (0–9)"
+
+  },
+
+  {
+
+    status: passwordChecks.special,
+
+    text: "One special character (@ # $ % & ! *)"
+
+  }
+
+];
+
+
+
+// -----------------------------------------------------
+// CUSTOMER FRIENDLY ALERTS
+// -----------------------------------------------------
+
+const CUSTOMER_ALERTS = {
+
+EMAIL_ALREADY_USED:
+
+"This email is already linked to an existing account. Please sign in using this email.",
+
+PHONE_ALREADY_USED:
+
+"This mobile number is already linked to another account. Please sign in using the email associated with this mobile number.",
+
+ACCOUNT_EXISTS:
+
+"An account already exists with this email and mobile number. Please sign in to continue.",
+
+VERIFY_EMAIL:
+
+"Your account has been created successfully. Please verify your email before signing in.",
+
+RATE_LIMIT:
+
+"Too many signup attempts were made. Please wait a few minutes before trying again.",
+
+NETWORK:
+
+"Unable to connect to the server. Please check your internet connection and try again.",
+
+UNKNOWN:
+
+"Something went wrong while creating your account. Please try again."
+
+};
+
+
+
+// -----------------------------------------------------
+// BUTTON STATE
+// -----------------------------------------------------
+
+const buttonDisabled =
+
+loading ||
+
+!formReady;
+
+
+
+// =====================================================
+// END OF PART 10
+// WAIT FOR PART 11
+// =====================================================
+// =====================================================
+// Play2Prove Premium Signup Page
+// PART 11 / 15
+// Paste BELOW PART 10
+// =====================================================
+
+
+
+// -----------------------------------------------------
+// SUPABASE ERROR HANDLER
+// -----------------------------------------------------
+
+function getSignupError(error){
+
+  if(!error){
+
+    return null;
+
+  }
+
+  const msg=(error.message||"").toLowerCase();
+
+
+
+  // Existing Email
+
+  if(
+
+    msg.includes("already registered") ||
+
+    msg.includes("user already registered")
+
+  ){
+
+    return CUSTOMER_ALERTS.EMAIL_ALREADY_USED;
+
+  }
+
+
+
+  // Existing Mobile
+
+  if(
+
+    msg.includes("profiles_phone_unique") ||
+
+    msg.includes("duplicate") ||
+
+    msg.includes("phone") ||
+
+    msg.includes("mobile")
+
+  ){
+
+    return CUSTOMER_ALERTS.PHONE_ALREADY_USED;
+
+  }
+
+
+
+  // Same Email + Same Mobile
+
+  if(
+
+    msg.includes("account exists")
+
+  ){
+
+    return CUSTOMER_ALERTS.ACCOUNT_EXISTS;
+
+  }
+
+
+
+  // Email Rate Limit
+
+  if(
+
+    msg.includes("rate limit")
+
+  ){
+
+    return CUSTOMER_ALERTS.RATE_LIMIT;
+
+  }
+
+
+
+  // Network
+
+  if(
+
+    msg.includes("network") ||
+
+    msg.includes("fetch")
+
+  ){
+
+    return CUSTOMER_ALERTS.NETWORK;
+
+  }
+
+
+
+  return CUSTOMER_ALERTS.UNKNOWN;
+
+}
+
+
+
+// -----------------------------------------------------
+// SUCCESS HANDLER
+// -----------------------------------------------------
+
+function signupSuccess(){
+
+  clearForm();
+
+  setSuccessMessage(
+
+    CUSTOMER_ALERTS.VERIFY_EMAIL
+
+  );
+
+}
+
+
+
+// -----------------------------------------------------
+// FAILURE HANDLER
+// -----------------------------------------------------
+
+function signupFailed(error){
+
+  setErrorMessage(
+
+    getSignupError(error)
+
+  );
+
+}
+
+
+
+// -----------------------------------------------------
+// REMOVE OLD MESSAGES ON INPUT CHANGE
+// -----------------------------------------------------
+
+function clearAlerts(){
+
+  if(successMessage)
+
+    setSuccessMessage("");
+
+
+
+  if(errorMessage)
+
+    setErrorMessage("");
+
+}
+
+
+
+// =====================================================
+// END OF PART 11
+// WAIT FOR PART 12
+// =====================================================
+// =====================================================
+// Play2Prove Premium Signup Page
+// PART 12 / 15
+// Paste BELOW PART 11
+// =====================================================
+
+
+
+// -----------------------------------------------------
+// INPUT EVENTS
+// -----------------------------------------------------
+
+function onNameInput(e){
+
+  clearAlerts();
+
+  setFullName(e.target.value);
+
+}
+
+
+
+function onEmailInput(e){
+
+  clearAlerts();
+
+  setEmail(
+
+    e.target.value
+
+      .trim()
+
+      .toLowerCase()
+
+  );
+
+}
+
+
+
+function onPhoneInput(e){
+
+  clearAlerts();
+
+  const value=e.target.value
+
+    .replace(/\D/g,"")
+
+    .slice(0,10);
+
+  setPhone(value);
+
+}
+
+
+
+function onPasswordInput(e){
+
+  clearAlerts();
+
+  setPassword(e.target.value);
+
+}
+
+
+
+function onConfirmPasswordInput(e){
+
+  clearAlerts();
+
+  setConfirmPassword(e.target.value);
+
+}
+
+
+
+function onReferralInput(e){
+
+  clearAlerts();
+
+  setReferralCode(
+
+    e.target.value
+
+      .trim()
+
+      .toUpperCase()
+
+  );
+
+}
+
+
+
+// -----------------------------------------------------
+// FORM RESET
+// -----------------------------------------------------
+
+function resetEntireForm(){
+
+  setFullName("");
+
+  setEmail("");
+
+  setPhone("");
+
+  setPassword("");
+
+  setConfirmPassword("");
+
+  setReferralCode("");
+
+
+
+  setSuccessMessage("");
+
+  setErrorMessage("");
+
+}
+
+
+
+// -----------------------------------------------------
+// DEBUG MODE
+// -----------------------------------------------------
+
+const DEBUG=true;
+
+function debugLog(title,data){
+
+  if(!DEBUG) return;
+
+  console.log(
+
+    "==========",
+
+    title,
+
+    "=========="
+
+  );
+
+  console.log(data);
+
+}
+
+
+
+// -----------------------------------------------------
+// LOADING HELPERS
+// -----------------------------------------------------
+
+function startLoading(){
+
+  setLoading(true);
+
+}
+
+
+
+function stopLoading(){
+
+  setLoading(false);
+
+}
+
+
+
+// -----------------------------------------------------
+// BUTTON LABEL
+// -----------------------------------------------------
+
+const submitButtonText=
+
+loading
+
+?
+
+"Creating Account..."
+
+:
+
+"Create Account";
+
+
+
+// =====================================================
+// END OF PART 12
+// WAIT FOR PART 13
+// =====================================================
+// =====================================================
+// Play2Prove Premium Signup Page
+// PART 13 / 15
+// Paste BELOW PART 12
+// =====================================================
+
+
+
+// -----------------------------------------------------
+// REAL TIME VALIDATIONS
+// -----------------------------------------------------
+
+const fullNameValid =
+cleanName.length >= 3;
+
+const emailValid =
+isValidEmail(cleanEmail);
+
+const phoneValid =
+isValidPhone(cleanPhone);
+
+const passwordsMatch =
+password === confirmPassword &&
+confirmPassword.length > 0;
+
+
+
+// -----------------------------------------------------
+// PROFILE OBJECT
+// -----------------------------------------------------
+
+const signupPayload = {
+
+  full_name: cleanName,
+
+  email: cleanEmail,
+
+  phone: cleanPhone,
+
+  referral_code:
+    cleanReferral || null,
+
+};
+
+
+
+// -----------------------------------------------------
+// PASSWORD PROGRESS
+// -----------------------------------------------------
+
+const passwordProgress = [
+
+passwordChecks.length,
+
+passwordChecks.uppercase,
+
+passwordChecks.lowercase,
+
+passwordChecks.number,
+
+passwordChecks.special
+
+].filter(Boolean).length;
+
+
+
+const passwordPercentage =
+passwordProgress * 20;
+
+
+
+// -----------------------------------------------------
+// PASSWORD BAR COLOR
+// -----------------------------------------------------
+
+let passwordBarColor="#374151";
+
+if(passwordProgress===1)
+passwordBarColor="#ef4444";
+
+if(passwordProgress===2)
+passwordBarColor="#f97316";
+
+if(passwordProgress===3)
+passwordBarColor="#facc15";
+
+if(passwordProgress===4)
+passwordBarColor="#22c55e";
+
+if(passwordProgress===5)
+passwordBarColor="#16a34a";
+
+
+
+// -----------------------------------------------------
+// PASSWORD BAR STYLE
+// -----------------------------------------------------
+
+const passwordBar={
+
+height:"6px",
+
+width:passwordPercentage+"%",
+
+background:passwordBarColor,
+
+borderRadius:"999px",
+
+transition:"0.35s"
+
+};
+
+
+
+const passwordBarContainer={
+
+height:"6px",
+
+background:"#2d333b",
+
+borderRadius:"999px",
+
+overflow:"hidden",
+
+marginTop:"8px",
+
+marginBottom:"18px"
+
+};
+
+
+
+// -----------------------------------------------------
+// SIGNUP READY
+// -----------------------------------------------------
+
+const readyToSignup =
+
+fullNameValid &&
+
+emailValid &&
+
+phoneValid &&
+
+passwordValid &&
+
+passwordsMatch;
+
+
+
+// -----------------------------------------------------
+// FINAL BUTTON STYLE
+// -----------------------------------------------------
+
+const submitButtonStyle={
+
+width:"100%",
+
+padding:"15px",
+
+marginTop:"20px",
+
+border:"none",
+
+borderRadius:"12px",
+
+background:
+
+loading
+
+?
+
+"#4b5563"
+
+:
+
+readyToSignup
+
+?
+
+"#16a34a"
+
+:
+
+"#374151",
+
+color:"#fff",
+
+fontSize:"17px",
+
+fontWeight:"700",
+
+cursor:
+
+loading
+
+?
+
+"not-allowed"
+
+:
+
+readyToSignup
+
+?
+
+"pointer"
+
+:
+
+"not-allowed",
+
+transition:"0.25s"
+
+};
+
+
+
+// =====================================================
+// END OF PART 13
+// WAIT FOR PART 14
+// =====================================================
+// =====================================================
+// Play2Prove Premium Signup Page
+// PART 14 / 15
+// Paste BELOW PART 13
+// =====================================================
+
+
+
+// -----------------------------------------------------
+// EXTRA SECURITY
+// -----------------------------------------------------
+
+const MAX_NAME_LENGTH = 60;
+
+const MAX_EMAIL_LENGTH = 120;
+
+const MAX_PHONE_LENGTH = 10;
+
+const MAX_PASSWORD_LENGTH = 100;
+
+
+
+// -----------------------------------------------------
+// SANITIZE INPUTS
+// -----------------------------------------------------
+
+function sanitizeName(value){
+
+  return value
+    .replace(/\s+/g," ")
+    .trim()
+    .slice(0,MAX_NAME_LENGTH);
+
+}
+
+
+
+function sanitizeEmail(value){
+
+  return value
+    .trim()
+    .toLowerCase()
+    .slice(0,MAX_EMAIL_LENGTH);
+
+}
+
+
+
+function sanitizePhone(value){
+
+  return value
+    .replace(/\D/g,"")
+    .slice(0,MAX_PHONE_LENGTH);
+
+}
+
+
+
+function sanitizePassword(value){
+
+  return value.slice(0,MAX_PASSWORD_LENGTH);
+
+}
+
+
+
+// -----------------------------------------------------
+// PASSWORD STRENGTH LABEL
+// -----------------------------------------------------
+
+const passwordStrengthLabel=[
+
+"",
+
+"Very Weak",
+
+"Weak",
+
+"Average",
+
+"Strong",
+
+"Excellent"
+
+][passwordProgress];
+
+
+
+// -----------------------------------------------------
+// INPUT AUTO FORMAT
+// -----------------------------------------------------
+
+const formattedPhone=cleanPhone;
+
+
+
+// -----------------------------------------------------
+// REFERRAL VALIDATION
+// -----------------------------------------------------
+
+const referralValid=
+
+cleanReferral==="" ||
+
+/^[A-Z0-9-]{4,20}$/.test(cleanReferral);
+
+
+
+// -----------------------------------------------------
+// BEFORE SUBMIT VALIDATION
+// -----------------------------------------------------
+
+if(!referralValid){
+
+setErrorMessage(
+
+"Please enter a valid referral code."
+
+);
+
+return;
+
+}
+
+
+
+// -----------------------------------------------------
+// PASSWORD TOOLTIP
+// -----------------------------------------------------
+
+const passwordTooltip=
+
+`Your password should contain:
+
+• At least 8 characters
+• One uppercase letter
+• One lowercase letter
+• One number
+• One special character`;
+
+
+
+// -----------------------------------------------------
+// SUCCESS LOG
+// -----------------------------------------------------
+
+function logSignupSuccess(user){
+
+debugLog(
+
+"USER CREATED",
+
+user
+
+);
+
+}
+
+
+
+// -----------------------------------------------------
+// ERROR LOG
+// -----------------------------------------------------
+
+function logSignupError(error){
+
+debugLog(
+
+"SIGNUP ERROR",
+
+error
+
+);
+
+}
+
+
+
+// =====================================================
+// END OF PART 14
+// WAIT FOR PART 15 (FINAL)
+// =====================================================
+// =====================================================
+// Play2Prove Premium Signup Page
+// PART 15 / 15 (FINAL)
+// Paste BELOW PART 14
+// =====================================================
+
+
+
+// -----------------------------------------------------
+// FINAL NOTES
+// -----------------------------------------------------
+
+/*
+
+FEATURES INCLUDED
+
+✔ Premium Signup UI
+
+✔ Full Name Validation
+
+✔ Email Validation
+
+✔ Indian Mobile Validation
+
+✔ Live Password Checklist
+
+✔ Password Progress Bar
+
+✔ Show / Hide Password
+
+✔ Confirm Password
+
+✔ Referral Code
+
+✔ Duplicate Email Message
+
+✔ Duplicate Mobile Message
+
+✔ Account Already Exists Message
+
+✔ Email Verification Message
+
+✔ Network Error Message
+
+✔ Rate Limit Message
+
+✔ Generic Error Message
+
+✔ Loading State
+
+✔ Clean Helper Functions
+
+✔ Ready For Google Login
+
+✔ Ready For Referral System
+
+✔ Ready For Dashboard Integration
+
+✔ Production Ready Structure
+
+*/
+
+
+
+// -----------------------------------------------------
+// NEXT FILES
+// -----------------------------------------------------
+
+/*
+
+Day 5
+
+1.
+
+app/login/page.js
+(Premium Login)
+
+2.
+
+app/forgot-password/page.js
+
+3.
+
+app/dashboard/page.js
+
+4.
+
+components/Navbar.jsx
+
+5.
+
+components/ProtectedRoute.jsx
+
+6.
+
+components/PasswordChecklist.jsx
+
+7.
+
+components/LoadingSpinner.jsx
+
+8.
+
+components/AlertBox.jsx
+
+9.
+
+lib/auth.js
+
+10.
+
+lib/validation.js
+
+*/
+
+
+
+// -----------------------------------------------------
+// END
+// -----------------------------------------------------
+
+export default SignupPage;
+
