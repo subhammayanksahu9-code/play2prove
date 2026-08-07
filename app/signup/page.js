@@ -38,8 +38,20 @@ if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
       });
 
       if (error) {
-        throw error;
-      }
+  const errorText = (error.message || "").toLowerCase();
+
+  if (
+    errorText.includes("duplicate") ||
+    errorText.includes("profiles_phone_unique") ||
+    errorText.includes("database error saving new user")
+  ) {
+    throw new Error(
+      "This mobile number is already registered. Please login with your existing account."
+    );
+  }
+
+  throw error;
+}
 
       setMessage(
         "Account created successfully. Please check your email for verification."
@@ -50,10 +62,13 @@ if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
       setPhone("");
       setPassword("");
     } catch (error) {
-      setMessage(error.message || "Something went wrong.");
-    } finally {
-      setLoading(false);
-    }
+  setMessage(
+    error.message ||
+    "Unable to create account. Please try again."
+  );
+} finally {
+  setLoading(false);
+}
   }
 
   return (
