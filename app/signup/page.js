@@ -37,6 +37,9 @@ if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
         },
       });
 
+      console.log("DATA:", data);
+      console.log("ERROR:", error);
+
       if (error) {
   const errorText = (error.message || "").toLowerCase();
 
