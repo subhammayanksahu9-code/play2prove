@@ -215,6 +215,63 @@ export default function SignupPage() {
 
     setLoading(true);
 
+          // ===============================
+      // BASIC SECURITY CHECKS
+      // ===============================
+
+      if (cleanPhone.length !== 10) {
+
+        throw new Error(
+          "Please enter a valid 10-digit mobile number."
+        );
+
+      }
+
+      if (!/^[6-9]/.test(cleanPhone)) {
+
+        throw new Error(
+          "Mobile number must start with 6, 7, 8 or 9."
+        );
+
+      }
+
+      if (cleanName.length > 60) {
+
+        throw new Error(
+          "Full name is too long."
+        );
+
+      }
+
+      if (cleanEmail.length > 120) {
+
+        throw new Error(
+          "Email address is too long."
+        );
+
+      }
+
+      if (
+
+        cleanReferral.length > 0 &&
+
+        !/^[A-Z0-9-]{4,20}$/.test(cleanReferral)
+
+      ) {
+
+        throw new Error(
+
+          "Please enter a valid referral code."
+
+        );
+
+      }
+
+      setErrorMessage("");
+
+      setSuccessMessage("");
+    
+
     try {
 
       const { data, error } =
@@ -746,6 +803,117 @@ export default function SignupPage() {
               }}
 
             >
+                          <div
+
+              style={{
+
+                marginTop:"12px",
+
+                display:"flex",
+
+                justifyContent:"space-between",
+
+                alignItems:"center"
+
+              }}
+
+            >
+
+              <span
+
+                style={{
+
+                  fontSize:"13px",
+
+                  color:"#9ca3af"
+
+                }}
+
+              >
+
+                Password Strength
+
+              </span>
+
+              <span
+
+                style={{
+
+                  fontSize:"13px",
+
+                  fontWeight:"700",
+
+                  color:passwordStrengthColor
+
+                }}
+
+              >
+
+                {passwordStrength}
+
+              </span>
+
+            </div>
+
+            {
+
+              password.length>0 &&
+
+              !passwordValid && (
+
+                <div
+
+                  style={{
+
+                    marginTop:"12px",
+
+                    color:"#f59e0b",
+
+                    fontSize:"13px",
+
+                    lineHeight:"22px"
+
+                  }}
+
+                >
+
+                  Complete all password requirements to continue.
+
+                </div>
+
+              )
+
+            }
+
+            {
+
+              password.length>0 &&
+
+              passwordValid && (
+
+                <div
+
+                  style={{
+
+                    marginTop:"12px",
+
+                    color:"#22c55e",
+
+                    fontSize:"13px",
+
+                    fontWeight:"600"
+
+                  }}
+
+                >
+
+                  ✓ Password meets all security requirements.
+
+                </div>
+
+              )
+
+                }
 
               <div
 
@@ -1137,6 +1305,150 @@ function passwordItem(active){
   };
 
 }
+// =====================================================
+// PART 9
+// ADVANCED HELPERS
+// =====================================================
+
+// Email already exists
+function isEmailAlreadyRegistered(error) {
+
+  const msg = (error?.message || "").toLowerCase();
+
+  return (
+
+    msg.includes("already registered") ||
+
+    msg.includes("user already registered") ||
+
+    msg.includes("email already exists")
+
+  );
+
+}
+
+// Phone already exists
+function isPhoneAlreadyRegistered(error) {
+
+  const msg = (error?.message || "").toLowerCase();
+
+  return (
+
+    msg.includes("profiles_phone_unique") ||
+
+    msg.includes("duplicate") ||
+
+    msg.includes("phone")
+
+  );
+
+}
+
+// Network error
+function isNetworkError(error) {
+
+  const msg = (error?.message || "").toLowerCase();
+
+  return (
+
+    msg.includes("network") ||
+
+    msg.includes("fetch") ||
+
+    msg.includes("failed to fetch")
+
+  );
+
+}
+
+// Rate limit
+function isRateLimit(error) {
+
+  const msg = (error?.message || "").toLowerCase();
+
+  return (
+
+    msg.includes("rate limit") ||
+
+    msg.includes("security purposes")
+
+  );
+
+}
+
+// Password Strength Text
+function getPasswordStrength(score) {
+
+  switch (score) {
+
+    case 0:
+
+    case 1:
+
+      return "Very Weak";
+
+    case 2:
+
+      return "Weak";
+
+    case 3:
+
+      return "Average";
+
+    case 4:
+
+      return "Strong";
+
+    case 5:
+
+      return "Excellent";
+
+    default:
+
+      return "";
+
+  }
+
+}
+
+// Password Strength Color
+function getPasswordColor(score) {
+
+  switch (score) {
+
+    case 1:
+
+      return "#ef4444";
+
+    case 2:
+
+      return "#f97316";
+
+    case 3:
+
+      return "#eab308";
+
+    case 4:
+
+      return "#22c55e";
+
+    case 5:
+
+      return "#16a34a";
+
+    default:
+
+      return "#374151";
+
+  }
+
+}
+
+const passwordStrength =
+  getPasswordStrength(passwordScore);
+
+const passwordStrengthColor =
+  getPasswordColor(passwordScore);
 
                   
 
