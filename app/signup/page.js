@@ -273,7 +273,7 @@ if (phoneCheckError) {
   throw phoneCheckError;
 }
 
-if (phoneExists === true) {
+if (phoneExists) {
 
   setErrorMessage(
     "This mobile number is already registered. Please sign in using your existing account."
@@ -684,4 +684,6 @@ if (phoneExists === true) {
                         {password.length > 0 && passwordValid && (
                             <div
                                 style={{
-                                    marginTop: "12
+                                    marginTop: "12px",
+
+   
