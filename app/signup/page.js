@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { supabase } from "../../lib/supabase";
-import { useRouter } from "next/navigation";
+import {useEffect, useMemo, useRef, useState} from "react";
+import {supabase} from "../../lib/supabase";
+import {useRouter} from "next/navigation";
 
 export default function SignupPage() {
     const router = useRouter();
@@ -253,9 +253,7 @@ export default function SignupPage() {
 
             return;
         }
-        
-        
-        
+
         // Prevent multiple submit clicks
 
         if (loading) {
@@ -264,23 +262,22 @@ export default function SignupPage() {
         setLoading(true);
 
         try {
-          const { data: phoneExists, error: phoneCheckError } =
-  await supabase.rpc("check_phone_exists", {
-    p_phone: cleanPhone
-  });
+            const {data: phoneExists, error: phoneCheckError} =
+                await supabase.rpc("check_phone_exists", {
+                    p_phone: cleanPhone
+                });
 
-if (phoneCheckError) {
-  throw phoneCheckError;
-}
+            if (phoneCheckError) {
+                throw phoneCheckError;
+            }
 
-if (phoneExists) {
+            if (phoneExists) {
+                setErrorMessage(
+                    "This mobile number is already registered. Please sign in using your existing account."
+                );
 
-  setErrorMessage(
-    "This mobile number is already registered. Please sign in using your existing account."
-  );
-
-  return;
-}
+                return;
+            }
             // ===============================
             // BASIC SECURITY CHECKS
             // ===============================
@@ -312,7 +309,7 @@ if (phoneExists) {
 
             setSuccessMessage("");
 
-            const { data, error } = await supabase.auth.signUp({
+            const {data, error} = await supabase.auth.signUp({
                 email: cleanEmail,
 
                 password,
@@ -686,4 +683,494 @@ if (phoneExists) {
                                 style={{
                                     marginTop: "12px",
 
-   
+                                    color: "#22c55e",
+
+                                    fontSize: "13px",
+
+                                    fontWeight: "600"
+                                }}
+                            >
+                                ✓ Password meets all security requirements.
+                            </div>
+                        )}
+                    </div>
+
+                    <label>Confirm Password</label>
+
+                    <div
+                        style={{
+                            position: "relative",
+
+                            marginBottom: "22px"
+                        }}
+                    >
+                        <input
+                            type={showConfirmPassword ? "text" : "password"}
+                            value={confirmPassword}
+                            onChange={e => setConfirmPassword(e.target.value)}
+                            placeholder="Confirm Password"
+                            autoComplete="new-password"
+                            ref={confirmPasswordRef}
+                            maxLength={100}
+                            style={inputStyle}
+                        />
+
+                        <button
+                            type="button"
+                            onClick={() =>
+                                setShowConfirmPassword(!showConfirmPassword)
+                            }
+                            style={{
+                                position: "absolute",
+
+                                right: "12px",
+
+                                top: "50%",
+
+                                transform: "translateY(-50%)",
+
+                                background: "transparent",
+
+                                border: "none",
+
+                                color: "#22c55e",
+
+                                cursor: "pointer",
+
+                                fontWeight: "700"
+                            }}
+                        >
+                            {showConfirmPassword ? "Hide" : "Show"}
+                        </button>
+                    </div>
+
+                    {confirmPassword.length > 0 &&
+                        password === confirmPassword && (
+                            <div
+                                style={{
+                                    marginTop: "-10px",
+
+                                    marginBottom: "18px",
+
+                                    color: "#22c55e",
+
+                                    fontSize: "14px",
+
+                                    fontWeight: "600",
+
+                                    display: "flex",
+
+                                    alignItems: "center",
+
+                                    gap: "8px"
+                                }}
+                            >
+                                ✓ Passwords match
+                            </div>
+                        )}
+
+                    {confirmPassword.length > 0 &&
+                        password !== confirmPassword && (
+                            <div
+                                style={{
+                                    marginTop: "-10px",
+
+                                    marginBottom: "18px",
+
+                                    color: "#ef4444",
+
+                                    fontSize: "14px",
+
+                                    fontWeight: "600",
+
+                                    display: "flex",
+
+                                    alignItems: "center",
+
+                                    gap: "8px"
+                                }}
+                            >
+                                ✗ Passwords do not match
+                            </div>
+                        )}
+
+                    {successMessage && (
+                        <div
+                            style={{
+                                background: "#052e16",
+
+                                border: "1px solid #22c55e",
+
+                                color: "#dcfce7",
+
+                                padding: "14px",
+
+                                borderRadius: "10px",
+
+                                marginBottom: "18px",
+
+                                lineHeight: "24px"
+                            }}
+                        >
+                            <div
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "10px"
+                                }}
+                            >
+                                <span
+                                    style={{
+                                        fontSize: "20px"
+                                    }}
+                                >
+                                    ✅
+                                </span>
+
+                                <span>{successMessage}</span>
+                            </div>
+                        </div>
+                    )}
+
+                    {errorMessage && (
+                        <div
+                            style={{
+                                background: "#3b0a0a",
+
+                                border: "1px solid #ef4444",
+
+                                color: "#fecaca",
+
+                                padding: "14px",
+
+                                borderRadius: "10px",
+
+                                marginBottom: "18px",
+
+                                lineHeight: "24px"
+                            }}
+                        >
+                            ❌ {errorMessage}
+                        </div>
+                    )}
+                    <div
+                        style={{
+                            display: "flex",
+
+                            alignItems: "flex-start",
+
+                            gap: "10px",
+
+                            marginBottom: "20px"
+                        }}
+                    >
+                        <input
+                            type="checkbox"
+                            checked={acceptedTerms}
+                            onChange={e => setAcceptedTerms(e.target.checked)}
+                            style={{
+                                marginTop: "4px",
+
+                                cursor: "pointer"
+                            }}
+                        />
+
+                        <label
+                            style={{
+                                fontSize: "14px",
+
+                                lineHeight: "22px",
+
+                                color: "#d1d5db"
+                            }}
+                        >
+                            I agree to the{" "}
+                            <a
+                                href="/terms"
+                                target="_blank"
+                                style={{
+                                    color: "#22c55e",
+
+                                    textDecoration: "none"
+                                }}
+                            >
+                                Terms & Conditions
+                            </a>{" "}
+                            and{" "}
+                            <a
+                                href="/privacy"
+                                target="_blank"
+                                style={{
+                                    color: "#22c55e",
+
+                                    textDecoration: "none"
+                                }}
+                            >
+                                Privacy Policy
+                            </a>
+                        </label>
+                    </div>
+
+                    <button
+                        type="submit"
+                        disabled={
+                            loading ||
+                            !passwordValid ||
+                            password !== confirmPassword ||
+                            !fullName ||
+                            !email ||
+                            !phone ||
+                            !acceptedTerms
+                        }
+                        style={{
+                            width: "100%",
+
+                            border: "none",
+
+                            borderRadius: "12px",
+
+                            padding: "15px",
+
+                            background:
+                                loading ||
+                                !passwordValid ||
+                                password !== confirmPassword ||
+                                !fullName ||
+                                !email ||
+                                !phone ||
+                                !acceptedTerms
+                                    ? "#4b5563"
+                                    : "#16a34a",
+
+                            color: "#ffffff",
+
+                            fontSize: "17px",
+
+                            fontWeight: "700",
+
+                            cursor: loading ? "not-allowed" : "pointer"
+                        }}
+                    >
+                        {loading ? (
+                            <span
+                                style={{
+                                    display: "flex",
+
+                                    justifyContent: "center",
+
+                                    alignItems: "center",
+
+                                    gap: "10px"
+                                }}
+                            >
+                                <span
+                                    style={{
+                                        width: "18px",
+
+                                        height: "18px",
+
+                                        border: "3px solid rgba(255,255,255,.35)",
+
+                                        borderTop: "3px solid #ffffff",
+
+                                        borderRadius: "50%",
+
+                                        animation: "spin 0.8s linear infinite",
+
+                                        display: "inline-block"
+                                    }}
+                                />
+                                Creating Account...
+                            </span>
+                        ) : (
+                            "Create Account"
+                        )}
+                    </button>
+                </form>
+
+                <p
+                    style={{
+                        marginTop: "24px",
+
+                        textAlign: "center",
+
+                        color: "#9ca3af"
+                    }}
+                >
+                    Already have an account?{" "}
+                    <a
+                        href="/login"
+                        onClick={e => {
+                            e.preventDefault();
+
+                            router.push("/login");
+                        }}
+                        style={{
+                            color: "#22c55e",
+
+                            textDecoration: "none",
+
+                            fontWeight: "700"
+                        }}
+                    >
+                        Login
+                    </a>
+                </p>
+            </div>
+
+            <style>
+                {`
+
+@keyframes spin {
+
+from {
+
+transform: rotate(0deg);
+
+}
+
+to {
+
+transform: rotate(360deg);
+
+}
+
+}
+
+`}
+            </style>
+        </main>
+    );
+}
+
+const inputStyle = {
+    width: "100%",
+
+    boxSizing: "border-box",
+
+    padding: "14px",
+
+    marginTop: "8px",
+
+    marginBottom: "18px",
+
+    borderRadius: "10px",
+
+    border: "1px solid #30363d",
+
+    background: "#05070a",
+
+    color: "#ffffff",
+
+    fontSize: "15px",
+
+    outline: "none"
+};
+
+function passwordItem(active) {
+    return {
+        display: "flex",
+
+        alignItems: "center",
+
+        gap: "10px",
+
+        marginBottom: "8px",
+
+        color: active ? "#22c55e" : "#9ca3af",
+
+        fontSize: "14px"
+    };
+}
+// =====================================================
+// PART 9
+// ADVANCED HELPERS
+// =====================================================
+
+// Email already exists
+function isEmailAlreadyRegistered(error) {
+    const msg = (error?.message || "").toLowerCase();
+
+    return (
+        msg.includes("already registered") ||
+        msg.includes("user already registered") ||
+        msg.includes("email already exists")
+    );
+}
+
+// Phone already exists
+function isPhoneAlreadyRegistered(error) {
+    const msg = (error?.message || "").toLowerCase();
+
+    return (
+        msg.includes("profiles_phone_unique") ||
+        msg.includes("duplicate") ||
+        msg.includes("phone")
+    );
+}
+
+// Network error
+function isNetworkError(error) {
+    const msg = (error?.message || "").toLowerCase();
+
+    return (
+        msg.includes("network") ||
+        msg.includes("fetch") ||
+        msg.includes("failed to fetch")
+    );
+}
+
+// Rate limit
+function isRateLimit(error) {
+    const msg = (error?.message || "").toLowerCase();
+
+    return msg.includes("rate limit") || msg.includes("security purposes");
+}
+
+// Password Strength Text
+function getPasswordStrength(score) {
+    switch (score) {
+        case 0:
+
+        case 1:
+            return "Very Weak";
+
+        case 2:
+            return "Weak";
+
+        case 3:
+            return "Average";
+
+        case 4:
+            return "Strong";
+
+        case 5:
+            return "Excellent";
+
+        default:
+            return "";
+    }
+}
+
+// Password Strength Color
+function getPasswordColor(score) {
+    switch (score) {
+        case 1:
+            return "#ef4444";
+
+        case 2:
+            return "#f97316";
+
+        case 3:
+            return "#eab308";
+
+        case 4:
+            return "#22c55e";
+
+        case 5:
+            return "#16a34a";
+
+        default:
+            return "#374151";
+    }
+}
