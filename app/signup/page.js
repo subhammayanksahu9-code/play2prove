@@ -253,6 +253,9 @@ export default function SignupPage() {
 
             return;
         }
+        
+        
+        
         // Prevent multiple submit clicks
 
         if (loading) {
@@ -261,6 +264,23 @@ export default function SignupPage() {
         setLoading(true);
 
         try {
+          const { data: phoneExists, error: phoneCheckError } =
+  await supabase.rpc("check_phone_exists", {
+    p_phone: cleanPhone
+  });
+
+if (phoneCheckError) {
+  throw phoneCheckError;
+}
+
+if (phoneExists === true) {
+
+  setErrorMessage(
+    "This mobile number is already registered. Please sign in using your existing account."
+  );
+
+  return;
+}
             // ===============================
             // BASIC SECURITY CHECKS
             // ===============================
@@ -664,16 +684,4 @@ export default function SignupPage() {
                         {password.length > 0 && passwordValid && (
                             <div
                                 style={{
-                                    marginTop: "12px",
-
-                                    color: "#22c55e",
-
-                                    fontSize: "13px",
-
-                                    fontWeight: "600"
-                                }}
-                            >
-                                ✓ Password meets all security requirements.
-                            </div>
-                        )}
-   
+                                    marginTop: "12
