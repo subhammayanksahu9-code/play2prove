@@ -41,25 +41,33 @@ export default function LoginPage() {
         password,
       });
 
-      if (error) {
-        const errorText = error.message.toLowerCase();
+     if (error) {
+  const errorText = error.message.toLowerCase();
 
-        if (errorText.includes("invalid login credentials")) {
-          setMessage(
-            "Incorrect email or password. Please check your details and try again."
-          );
-        } else if (errorText.includes("email not confirmed")) {
-          setMessage(
-            "Your email is not confirmed yet. Please check your email."
-          );
-        } else {
-          setMessage(error.message);
-        }
+  if (
+    errorText.includes("email not confirmed") ||
+    errorText.includes("email_not_confirmed")
+  ) {
+    setMessage(
+      "Your email address hasn’t been verified yet. Please check your inbox and verify your email before signing in."
+    );
+  } else if (
+    errorText.includes("invalid login credentials") ||
+    errorText.includes("invalid credentials")
+  ) {
+    setMessage(
+      "Incorrect email or password. Please check your details and try again."
+    );
+  } else {
+    setMessage(
+      "We couldn’t sign you in right now. Please check your details and try again."
+    );
+  }
 
-        setMessageType("error");
-        setLoading(false);
-        return;
-      }
+  setMessageType("error");
+  setLoading(false);
+  return;
+}
 
       if (data?.user) {
         window.location.href = "/dashboard";
