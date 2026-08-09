@@ -142,7 +142,13 @@ export default function LoginPage() {
     <main style={styles.main}>
     <button
   type="button"
-  onClick={() => window.history.back()}
+  onClick={() => {
+  if (window.history.length > 1) {
+    window.history.back();
+  } else {
+    window.location.href = "/";
+  }
+}}
   style={styles.backButton}
 >
   ← Back
