@@ -24,68 +24,70 @@ export default function ProfilePage() {
     loadProfile();
   }, []);
 
-  async function loadProfile() {
-    setLoading(true);
-    setError("");
-    setMessage("");
+async function loadProfile() {
+  setLoading(true);
+  setError("");
+  setMessage("");
 
-    try {
-      const {
-        data: { user: currentUser },
-        error: userError,
-      } = await supabase.auth.getUser();
+  try {
+    const {
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession();
 
-      if (userError) {
-        throw userError;
-      }
-
-      if (!currentUser) {
-        window.location.href = "/login";
-        return;
-      }
-
-      setUser(currentUser);
-
-      const { data: profileData, error: profileError } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", currentUser.id)
-        .maybeSingle();
-
-      if (profileError) {
-        throw profileError;
-      }
-
-      setProfile(profileData);
-
-      setFullName(
-        profileData?.full_name ||
-          currentUser.user_metadata?.full_name ||
-          ""
-      );
-
-      setUsername(
-        profileData?.username ||
-          currentUser.user_metadata?.username ||
-          ""
-      );
-
-      setPhone(
-        profileData?.phone ||
-          currentUser.user_metadata?.phone ||
-          ""
-      );
-    } catch (err) {
-      console.error("Profile loading error:", err);
-
-      setError(
-        err?.message ||
-          "Unable to load your profile. Please try again."
-      );
-    } finally {
-      setLoading(false);
+    if (sessionError) {
+      throw sessionError;
     }
+
+    if (!session?.user) {
+      window.location.replace("/login");
+      return;
+    }
+
+    const currentUser = session.user;
+
+    setUser(currentUser);
+
+    const { data: profileData, error: profileError } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", currentUser.id)
+      .maybeSingle();
+
+    if (profileError) {
+      throw profileError;
+    }
+
+    setProfile(profileData);
+
+    setFullName(
+      profileData?.full_name ||
+        currentUser.user_metadata?.full_name ||
+        ""
+    );
+
+    setUsername(
+      profileData?.username ||
+        currentUser.user_metadata?.username ||
+        ""
+    );
+
+    setPhone(
+      profileData?.phone ||
+        currentUser.user_metadata?.phone ||
+        ""
+    );
+  } catch (err) {
+    console.error("Profile loading error:", err);
+
+    setError(
+      err?.message ||
+        "Unable to load your profile. Please try again."
+    );
+  } finally {
+    setLoading(false);
   }
+}
 
   async function saveProfile() {
     if (!user) return;
