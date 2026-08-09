@@ -140,6 +140,13 @@ export default function LoginPage() {
 
   return (
     <main style={styles.main}>
+    <button
+  type="button"
+  onClick={() => window.history.back()}
+  style={styles.backButton}
+>
+  ← Back
+</button>
       <div style={styles.card}>
         <div style={styles.logo}>Play2Prove</div>
 
@@ -444,15 +451,17 @@ const styles = {
   },
 
   backButton: {
-    width: "100%",
-    marginTop: "16px",
-    padding: "12px",
-    background: "transparent",
-    border: "1px solid #30363d",
-    borderRadius: "9px",
-    color: "#fff",
-    fontSize: "14px",
-    fontWeight: "600",
-    cursor: "pointer",
-  },
+  position: "fixed",
+  top: "20px",
+  left: "20px",
+  padding: "10px 16px",
+  background: "#0b0e13",
+  color: "#fff",
+  border: "1px solid #30363d",
+  borderRadius: "9px",
+  fontSize: "14px",
+  fontWeight: "700",
+  cursor: "pointer",
+  zIndex: 100,
+},
 };
