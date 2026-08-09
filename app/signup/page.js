@@ -402,6 +402,29 @@ export default function SignupPage() {
                 fontFamily: "Arial, sans-serif"
             }}
         >
+            <button
+    type="button"
+    onClick={() => {
+        window.location.href = "/login";
+    }}
+    style={{
+        position: "fixed",
+        top: "20px",
+        left: "20px",
+        padding: "10px 16px",
+        background: "#0d1117",
+        color: "#ffffff",
+        border: "1px solid #30363d",
+        borderRadius: "9px",
+        fontSize: "14px",
+        fontWeight: "700",
+        cursor: "pointer",
+        zIndex: 100
+    }}
+>
+    ← Back
+</button>
+            
             <div
                 style={{
                     width: "100%",
