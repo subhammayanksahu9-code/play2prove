@@ -78,33 +78,21 @@ export default function HomePage() {
     );
   }
 
-  function handleNav(tab) {
-    setActiveTab(tab);
+ function handleNav(tab) {
+  setActiveTab(tab);
 
-    if (tab === "home") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
+  const routes = {
+    home: "/",
+    tournaments: "/tournaments",
+    matches: "/matches",
+    wallet: "/wallet",
+    profile: "/profile",
+  };
 
-    if (tab === "tournaments") {
-      document
-        .getElementById("tournaments")
-        ?.scrollIntoView({ behavior: "smooth" });
-    }
-
-    if (tab === "matches") {
-      document
-        .getElementById("my-matches")
-        ?.scrollIntoView({ behavior: "smooth" });
-    }
-
-    if (tab === "wallet") {
-      alert("Wallet system upcoming step me connect hoga.");
-    }
-
-    if (tab === "profile") {
-      alert("Login / Profile system upcoming step me connect hoga.");
-    }
+  if (routes[tab]) {
+    window.location.href = routes[tab];
   }
+}
 
   return (
     <div className="site-shell">
@@ -151,9 +139,7 @@ export default function HomePage() {
             <button
               className="primary-button"
               onClick={() =>
-                document
-                  .getElementById("games")
-                  ?.scrollIntoView({ behavior: "smooth" })
+                window.location.href = "/tournaments";
               }
             >
               EXPLORE GAMES →
