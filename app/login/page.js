@@ -22,20 +22,14 @@ export default function LoginPage() {
 async function handleLogin(e) {
   e.preventDefault();
 
+  setLoading(true);
   setMessage("");
   setMessageType("");
-  setLoading(true);
 
   const cleanEmail = email.trim().toLowerCase();
 
-  if (!cleanEmail || !password) {
-    setMessage("Please enter your email and password.");
-    setMessageType("error");
-    setLoading(false);
-    return;
-  }
-
   try {
+    // Check whether the email is registered in profiles
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("id, email")
@@ -53,6 +47,7 @@ async function handleLogin(e) {
       return;
     }
 
+    // EMAIL NOT REGISTERED
     if (!profile) {
       setMessage(
         "This email address isn’t registered. Please check your email or create a new account."
@@ -62,6 +57,7 @@ async function handleLogin(e) {
       return;
     }
 
+    // EMAIL EXISTS → CHECK PASSWORD
     const { data, error } = await supabase.auth.signInWithPassword({
       email: cleanEmail,
       password,
@@ -97,6 +93,7 @@ async function handleLogin(e) {
       "We couldn’t complete your login. Please try again."
     );
     setMessageType("error");
+
   } catch (err) {
     console.error("Login error:", err);
 
