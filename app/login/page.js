@@ -19,71 +19,95 @@ export default function LoginPage() {
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
 
-  async function handleLogin(e) {
-    e.preventDefault();
+async function handleLogin(e) {
+  e.preventDefault();
 
-    setMessage("");
-    setMessageType("");
-    setLoading(true);
+  setMessage("");
+  setMessageType("");
+  setLoading(true);
 
-    const cleanEmail = email.trim().toLowerCase();
+  const cleanEmail = email.trim().toLowerCase();
 
-    if (!cleanEmail || !password) {
-      setMessage("Please enter your email and password.");
+  if (!cleanEmail || !password) {
+    setMessage("Please enter your email and password.");
+    setMessageType("error");
+    setLoading(false);
+    return;
+  }
+
+  try {
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("id, email")
+      .eq("email", cleanEmail)
+      .maybeSingle();
+
+    if (profileError) {
+      console.error("Profile check error:", profileError);
+
+      setMessage(
+        "We couldn’t verify your account right now. Please try again."
+      );
       setMessageType("error");
       setLoading(false);
       return;
     }
 
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: cleanEmail,
-        password,
-      });
-
-     if (error) {
-  const errorText = error.message.toLowerCase();
-
-  if (
-    errorText.includes("email not confirmed") ||
-    errorText.includes("email_not_confirmed")
-  ) {
-    setMessage(
-      "Your email address hasn’t been verified yet. Please check your inbox and verify your email before signing in."
-    );
-  } else if (
-    errorText.includes("invalid login credentials") ||
-    errorText.includes("invalid credentials")
-  ) {
-    setMessage(
-      "Incorrect email or password. Please check your details and try again."
-    );
-  } else {
-    setMessage(
-      "We couldn’t sign you in right now. Please check your details and try again."
-    );
-  }
-
-  setMessageType("error");
-  setLoading(false);
-  return;
-}
-
-      if (data?.user) {
-        window.location.href = "/dashboard";
-        return;
-      }
-
-      setMessage("Login could not be completed. Please try again.");
+    if (!profile) {
+      setMessage(
+        "This email address isn’t registered. Please check your email or create a new account."
+      );
       setMessageType("error");
-    } catch (error) {
-      console.error("Login error:", error);
-      setMessage("Something went wrong. Please try again.");
-      setMessageType("error");
+      setLoading(false);
+      return;
     }
 
-    setLoading(false);
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: cleanEmail,
+      password,
+    });
+
+    if (error) {
+      const errorText = error.message.toLowerCase();
+
+      if (
+        errorText.includes("email not confirmed") ||
+        errorText.includes("email_not_confirmed")
+      ) {
+        setMessage(
+          "Your email address hasn’t been verified yet. Please check your inbox and verify your email before signing in."
+        );
+      } else {
+        setMessage(
+          "Incorrect password. Please try again, or reset your password if you’ve forgotten it."
+        );
+      }
+
+      setMessageType("error");
+      setLoading(false);
+      return;
+    }
+
+    if (data?.user) {
+      window.location.href = "/dashboard";
+      return;
+    }
+
+    setMessage(
+      "We couldn’t complete your login. Please try again."
+    );
+    setMessageType("error");
+  } catch (err) {
+    console.error("Login error:", err);
+
+    setMessage(
+      "Something went wrong while signing in. Please try again."
+    );
+    setMessageType("error");
   }
+
+  setLoading(false);
+}
 
   async function handleForgotPassword(e) {
     e.preventDefault();
