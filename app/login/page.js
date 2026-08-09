@@ -22,22 +22,29 @@ export default function LoginPage() {
 async function handleLogin(e) {
   e.preventDefault();
 
-  setLoading(true);
   setMessage("");
   setMessageType("");
+  setLoading(true);
 
   const cleanEmail = email.trim().toLowerCase();
 
-  try {
-    // Check whether the email is registered in profiles
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("id, email")
-      .eq("email", cleanEmail)
-      .maybeSingle();
+  if (!cleanEmail || !password) {
+    setMessage("Please enter your email and password.");
+    setMessageType("error");
+    setLoading(false);
+    return;
+  }
 
-    if (profileError) {
-      console.error("Profile check error:", profileError);
+  try {
+    const { data: emailExists, error: checkError } = await supabase.rpc(
+      "check_email_registered",
+      {
+        check_email: cleanEmail,
+      }
+    );
+
+    if (checkError) {
+      console.error("Email check error:", checkError);
 
       setMessage(
         "We couldn’t verify your account right now. Please try again."
@@ -47,8 +54,7 @@ async function handleLogin(e) {
       return;
     }
 
-    // EMAIL NOT REGISTERED
-    if (!profile) {
+    if (!emailExists) {
       setMessage(
         "This email address isn’t registered. Please check your email or create a new account."
       );
@@ -57,7 +63,6 @@ async function handleLogin(e) {
       return;
     }
 
-    // EMAIL EXISTS → CHECK PASSWORD
     const { data, error } = await supabase.auth.signInWithPassword({
       email: cleanEmail,
       password,
@@ -105,7 +110,6 @@ async function handleLogin(e) {
 
   setLoading(false);
 }
-
   async function handleForgotPassword(e) {
     e.preventDefault();
 
