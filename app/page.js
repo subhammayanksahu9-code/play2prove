@@ -137,13 +137,13 @@ export default function HomePage() {
             </p>
 
             <button
-              className="primary-button"
-              onClick={() =>
-                window.location.href = "/tournaments";
-              }
-            >
-              EXPLORE GAMES →
-            </button>
+  className="primary-button"
+  onClick={() => {
+    window.location.href = "/tournaments";
+  }}
+>
+  EXPLORE GAMES →
+</button>
           </div>
 
           <div className="hero-art">P2P</div>
