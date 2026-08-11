@@ -1,565 +1,510 @@
 "use client";
 
-import { useState } from "react";
+import "./styles.css";
+
+const games = [
+  {
+    name: "FREE FIRE",
+    mode: "SOLO • SQUAD",
+    icon: "🔥",
+    glow: "orange",
+  },
+  {
+    name: "BGMI",
+    mode: "SOLO • SQUAD",
+    icon: "🎯",
+    glow: "blue",
+  },
+  {
+    name: "MORE GAMES",
+    mode: "COMING SOON",
+    icon: "⚡",
+    glow: "purple",
+  },
+];
+
+const tournaments = [
+  {
+    game: "FREE FIRE",
+    title: "Bermuda • Solo",
+    date: "Today",
+    time: "6:00 PM",
+    entry: "₹30",
+    prize: "₹500",
+    joined: "37/48",
+    progress: 77,
+  },
+  {
+    game: "FREE FIRE",
+    title: "Squad Clash #01",
+    date: "Today",
+    time: "8:00 PM",
+    entry: "₹100",
+    prize: "₹1,500",
+    joined: "12/12",
+    progress: 100,
+  },
+];
+
+const rules = [
+  {
+    no: "01",
+    title: "One Player, One Entry",
+    text: "Use your own registered account and valid game details.",
+  },
+  {
+    no: "02",
+    title: "Fair Play",
+    text: "Cheating, hacking, exploiting or unfair gameplay may lead to disqualification.",
+  },
+  {
+    no: "03",
+    title: "Correct Game Details",
+    text: "Players are responsible for providing correct in-game information.",
+  },
+  {
+    no: "04",
+    title: "Results & Rewards",
+    text: "Verified results and eligible rewards are processed according to tournament rules.",
+  },
+];
 
 export default function HomePage() {
-  const [activeTab, setActiveTab] = useState("home");
-
-  const goTo = (path, tab) => {
-    setActiveTab(tab);
-    window.location.href = path;
-  };
-
-  const games = [
-    {
-      name: "FREE FIRE",
-      subtitle: "Battle Royale",
-      status: "LIVE",
-      active: true,
-      code: "FF",
-    },
-    {
-      name: "BGMI",
-      subtitle: "Coming Soon",
-      status: "SOON",
-      active: false,
-      code: "BG",
-    },
-    {
-      name: "MORE GAMES",
-      subtitle: "New games coming soon",
-      status: "SOON",
-      active: false,
-      code: "+",
-    },
-  ];
-
-  const tournaments = [
-    {
-      title: "Bermuda • Solo",
-      type: "SOLO MATCH",
-      time: "6:00 PM",
-      entry: "₹30",
-      kill: "₹5",
-      prize: "₹500",
-      joined: 37,
-      total: 48,
-    },
-    {
-      title: "Bermuda • Solo",
-      type: "SOLO MATCH",
-      time: "11:30 PM",
-      entry: "₹30",
-      kill: "₹5",
-      prize: "₹500",
-      joined: 21,
-      total: 48,
-    },
-  ];
-
   return (
-    <div className="p2p-home">
+    <main className="home">
 
-      <div className="ambient ambient-orange"></div>
-      <div className="ambient ambient-purple"></div>
-      <div className="screen-scan"></div>
-
-      {/* HEADER */}
-      <header className="home-header">
-
+      {/* ================= HEADER ================= */}
+      <header className="topbar">
         <div className="brand">
-          <div className="brand-logo">P2P</div>
+          <div className="brandLogo">P2P</div>
 
           <div>
-            <div className="brand-name">Play2Prove</div>
-            <div className="brand-tagline">
+            <div className="brandName">Play2Prove</div>
+            <div className="brandTag">
               PLAY • COMPETE • EARN • PROVE
             </div>
           </div>
         </div>
 
-        <div className="header-actions">
+        <div className="headerRight">
 
-          <button
-            className="wallet-mini"
-            onClick={() => goTo("/wallet", "wallet")}
-          >
-            <span>WALLET</span>
-            <strong>₹0</strong>
+          {/* SINGLE WALLET */}
+          <button className="walletButton">
+            <span className="walletIcon">◈</span>
+            <span>
+              <small>WALLET</small>
+              <strong>₹0</strong>
+            </span>
           </button>
 
-          <button
-            className="profile-mini"
-            onClick={() => goTo("/profile", "profile")}
-          >
-            ♙
+          {/* PROFILE */}
+          <button className="profileButton">
+            ◉
           </button>
+        </div>
+      </header>
+
+      {/* ================= NEON TOP LINE ================= */}
+      <div className="neonRail topRail">
+        <span />
+        <span />
+        <span />
+      </div>
+
+      {/* ================= HERO ================= */}
+      <section className="hero">
+
+        {/* LIVE VIDEO */}
+        <video
+          className="heroVideo"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+        >
+          <source src="/gaming.mp4" type="video/mp4" />
+        </video>
+
+        {/* DARK VIDEO COVER */}
+        <div className="videoOverlay" />
+
+        {/* MOVING RGB ENERGY */}
+        <div className="energyOrb orbOne" />
+        <div className="energyOrb orbTwo" />
+        <div className="energyOrb orbThree" />
+
+        {/* PARTICLES */}
+        <div className="particles" />
+
+        {/* GRID */}
+        <div className="cyberGrid" />
+
+        <div className="heroContent">
+
+          <div className="heroBadge">
+            <span className="liveDot" />
+            LIVE GAMING ARENA
+          </div>
+
+          <h1>
+            PLAY.
+            <br />
+            <span>COMPETE.</span>
+            <br />
+            <em>PROVE.</em>
+          </h1>
+
+          <p>
+            Enter the arena. Compete with real players.
+            <br />
+            Win matches. Earn rewards.
+          </p>
+
+          <div className="heroActions">
+            <button className="primaryButton">
+              EXPLORE TOURNAMENTS
+              <span>→</span>
+            </button>
+
+            <button className="ghostButton">
+              VIEW GAMES
+            </button>
+          </div>
+
+          <div className="heroStats">
+            <div>
+              <strong>24/7</strong>
+              <span>ARENA</span>
+            </div>
+
+            <div>
+              <strong>LIVE</strong>
+              <span>MATCHES</span>
+            </div>
+
+            <div>
+              <strong>REAL</strong>
+              <span>REWARDS</span>
+            </div>
+          </div>
 
         </div>
 
-      </header>
+        <div className="scrollHint">
+          <span />
+          SCROLL TO ENTER
+        </div>
+      </section>
 
-      <main className="home-container">
+      {/* ================= MOVING NEON SPLASH ================= */}
+      <section className="neonSplash">
+        <div className="splashLine lineA" />
+        <div className="splashLine lineB" />
+        <div className="splashLine lineC" />
 
-        {/* HERO */}
-        <section className="hero">
+        <div className="splashText">
+          <span>THE ARENA IS LIVE</span>
+          <strong>YOUR NEXT MATCH STARTS HERE.</strong>
+        </div>
+      </section>
 
-          <div className="hero-grid"></div>
+      {/* ================= GAMES ================= */}
+      <section className="section gamesSection">
 
-          <div className="hero-content">
+        <div className="sectionHeading">
+          <div>
+            <span className="eyebrow">CHOOSE YOUR BATTLE</span>
+            <h2>Games</h2>
+          </div>
 
-            <div className="hero-badge">
-              <span></span>
-              GAMING TOURNAMENT PLATFORM
-            </div>
+          <span className="sectionSideText">
+            MORE GAMES COMING SOON
+          </span>
+        </div>
 
-            <h1>
-              PLAY.
-              <br />
-              COMPETE.
-              <br />
-              <em>PROVE.</em>
-            </h1>
+        <div className="gamesGrid">
 
-            <p>
-              Join competitive gaming tournaments, show your
-              skills and earn rewards.
-            </p>
-
-            <button
-              className="primary-button"
-              onClick={() => goTo("/tournaments", "tournaments")}
+          {games.map((game) => (
+            <article
+              key={game.name}
+              className={`gameCard ${game.glow}`}
             >
-              EXPLORE TOURNAMENTS
-              <b>→</b>
-            </button>
+              <div className="gameGlow" />
 
+              <div className="gameIcon">
+                {game.icon}
+              </div>
+
+              <div className="gameInfo">
+                <span>{game.mode}</span>
+                <h3>{game.name}</h3>
+              </div>
+
+              <div className="gameArrow">
+                →
+              </div>
+            </article>
+          ))}
+
+        </div>
+      </section>
+
+      {/* ================= TOURNAMENTS ================= */}
+      <section className="section tournamentsSection">
+
+        <div className="sectionHeading">
+          <div>
+            <span className="eyebrow">LIVE & UPCOMING</span>
+            <h2>Upcoming Tournaments</h2>
           </div>
+        </div>
 
-          {/* GAMING VISUAL */}
-          <div className="hero-visual">
+        <div className="tournamentGrid">
 
-            <div className="ring ring-one"></div>
-            <div className="ring ring-two"></div>
-            <div className="ring ring-three"></div>
+          {tournaments.map((item) => (
+            <article className="tournamentCard" key={item.title}>
 
-            <div className="cross-line one"></div>
-            <div className="cross-line two"></div>
-
-            <div className="p2p-mark">P2P</div>
-
-            <div className="ready">
-              <i></i>
-              READY TO PLAY
-            </div>
-
-          </div>
-
-          <div className="neon-strip">
-            <span></span>
-          </div>
-
-        </section>
-
-        {/* GAMES */}
-        <section className="section">
-
-          <div className="section-heading">
-            <div>
-              <small>CHOOSE YOUR GAME</small>
-              <h2>Games</h2>
-            </div>
-
-            <span>MORE COMING SOON</span>
-          </div>
-
-          <div className="games-grid">
-
-            {games.map((game) => (
-
-              <button
-                key={game.name}
-                className="game-card"
-                onClick={() => {
-                  if (game.active) {
-                    goTo("/tournaments", "tournaments");
-                  }
-                }}
-              >
-
-                <div className="game-top">
-
-                  <span className={game.active ? "live" : "soon"}>
-                    {game.status}
+              <div className="tournamentTop">
+                <div>
+                  <span className="gameLabel">
+                    {item.game}
                   </span>
 
-                  <b>↗</b>
-
+                  <h3>{item.title}</h3>
                 </div>
 
-                <div className="game-art">
+                <span className="openBadge">
+                  OPEN
+                </span>
+              </div>
 
-                  <div className="art-grid"></div>
+              <div className="tournamentMeta">
 
-                  <div className="art-glow"></div>
-
-                  <strong>{game.code}</strong>
-
-                  <div className="laser laser-a"></div>
-                  <div className="laser laser-b"></div>
-
+                <div>
+                  <small>DATE</small>
+                  <strong>{item.date}</strong>
                 </div>
 
-                <div className="game-info">
-                  <h3>{game.name}</h3>
-                  <p>{game.subtitle}</p>
+                <div>
+                  <small>START TIME</small>
+                  <strong>{item.time}</strong>
                 </div>
 
-              </button>
+              </div>
 
-            ))}
+              <div className="moneyRow">
 
-          </div>
+                <div>
+                  <small>ENTRY</small>
+                  <strong>{item.entry}</strong>
+                </div>
 
-        </section>
+                <div>
+                  <small>PER KILL</small>
+                  <strong>₹5</strong>
+                </div>
 
-        {/* UPCOMING TOURNAMENTS */}
-        <section className="section">
+                <div>
+                  <small>PRIZE</small>
+                  <strong className="prize">
+                    {item.prize}
+                  </strong>
+                </div>
 
-          <div className="section-heading">
-            <div>
-              <small>PLAY NOW</small>
-              <h2>Upcoming Tournaments</h2>
-            </div>
+              </div>
 
-            <button
-              className="text-button"
-              onClick={() => goTo("/tournaments", "tournaments")}
-            >
-              VIEW ALL →
-            </button>
-          </div>
+              <div className="joinedHeader">
+                <span>Players Joined</span>
+                <strong>{item.joined}</strong>
+              </div>
 
-          <div className="tournaments-grid">
+              <div className="progress">
+                <span
+                  style={{
+                    width: `${item.progress}%`,
+                  }}
+                />
+              </div>
 
-            {tournaments.map((tournament, index) => {
-
-              const progress =
-                (tournament.joined / tournament.total) * 100;
-
-              return (
-
-                <article
-                  className="tournament-card"
-                  key={index}
-                >
-
-                  <div className="tournament-glow"></div>
-
-                  <div className="tournament-head">
-
-                    <div>
-                      <small>FREE FIRE</small>
-                      <h3>{tournament.title}</h3>
-                      <p>{tournament.type}</p>
-                    </div>
-
-                    <span className="open">
-                      <i></i>
-                      OPEN
-                    </span>
-
-                  </div>
-
-                  <div className="match-info">
-
-                    <div>
-                      <small>DATE</small>
-                      <strong>TODAY</strong>
-                    </div>
-
-                    <div>
-                      <small>START TIME</small>
-                      <strong>{tournament.time}</strong>
-                    </div>
-
-                  </div>
-
-                  <div className="reward-grid">
-
-                    <div>
-                      <small>ENTRY</small>
-                      <strong>{tournament.entry}</strong>
-                    </div>
-
-                    <div>
-                      <small>PER KILL</small>
-                      <strong>{tournament.kill}</strong>
-                    </div>
-
-                    <div>
-                      <small>PRIZE POOL</small>
-                      <strong>{tournament.prize}</strong>
-                    </div>
-
-                  </div>
-
-                  <div className="players">
-
-                    <span>Players Joined</span>
-
-                    <strong>
-                      {tournament.joined}/{tournament.total}
-                    </strong>
-
-                  </div>
-
-                  <div className="progress">
-                    <span
-                      style={{ width: `${progress}%` }}
-                    ></span>
-                  </div>
-
-                  <button
-                    className="join-button"
-                    onClick={() =>
-                      alert(
-                        "Tournament join system will be connected next."
-                      )
-                    }
-                  >
-                    JOIN {tournament.entry}
-                    <b>→</b>
-                  </button>
-
-                </article>
-
-              );
-            })}
-
-          </div>
-
-        </section>
-
-        {/* TOURNAMENT OVERVIEW */}
-        <section className="section">
-
-          <div className="section-heading">
-            <div>
-              <small>KNOW BEFORE YOU JOIN</small>
-              <h2>Tournament Overview</h2>
-            </div>
-          </div>
-
-          <div className="overview-grid">
-
-            <article className="overview-card featured">
-
-              <strong className="number">01</strong>
-
-              <small>UPCOMING MATCHES</small>
-
-              <h3>Compete. Perform. Prove.</h3>
-
-              <p>
-                Choose your game, select an available tournament
-                and enter the match. Tournament details, entry
-                fee, prize pool and match timing are shown before
-                you join.
-              </p>
-
-              <button
-                onClick={() =>
-                  goTo("/tournaments", "tournaments")
-                }
-              >
-                VIEW TOURNAMENTS →
+              <button className="joinButton">
+                JOIN {item.entry}
+                <span>→</span>
               </button>
 
             </article>
+          ))}
 
-            <article className="overview-card">
+        </div>
+      </section>
 
-              <strong className="number">02</strong>
+      {/* ================= TOURNAMENT OVERVIEW ================= */}
+      <section className="section overviewSection">
 
-              <small>MATCH DETAILS</small>
+        <div className="sectionHeading">
+          <div>
+            <span className="eyebrow">
+              KNOW BEFORE YOU JOIN
+            </span>
+            <h2>Tournament Overview</h2>
+          </div>
+        </div>
 
-              <h3>Clear information</h3>
+        <div className="overviewGrid">
 
-              <ul>
-                <li>Entry fee</li>
-                <li>Per-kill reward</li>
-                <li>Prize pool</li>
-                <li>Match timing</li>
-                <li>Player capacity</li>
-              </ul>
+          <article className="overviewCard active">
+            <span className="cardNumber">01</span>
+            <small>UPCOMING MATCHES</small>
+            <h3>Compete. Perform. Prove.</h3>
+            <p>
+              Choose your game, select an available tournament
+              and enter the match.
+            </p>
+          </article>
 
-            </article>
+          <article className="overviewCard">
+            <span className="cardNumber">02</span>
+            <small>MATCH DETAILS</small>
+            <h3>Clear information</h3>
 
-            <article className="overview-card">
+            <ul>
+              <li>Entry fee</li>
+              <li>Per-kill reward</li>
+              <li>Prize pool</li>
+              <li>Match timing</li>
+              <li>Player capacity</li>
+            </ul>
+          </article>
 
-              <strong className="number">03</strong>
+          <article className="overviewCard">
+            <span className="cardNumber">03</span>
+            <small>RESULTS & REWARDS</small>
+            <h3>Play for the win</h3>
+            <p>
+              Verified results are processed according to
+              tournament rules and eligible rewards are credited
+              to the player's wallet.
+            </p>
+          </article>
 
-              <small>RESULTS & REWARDS</small>
+        </div>
+      </section>
 
-              <h3>Play for the win</h3>
+      {/* ================= RULES ================= */}
+      <section className="section rulesSection">
 
-              <p>
-                Results are processed according to tournament
-                rules and eligible rewards are credited to the
-                player's wallet.
-              </p>
+        <div className="sectionHeading">
+          <div>
+            <span className="eyebrow">PLAY FAIR</span>
+            <h2>Rules</h2>
+          </div>
+        </div>
 
-              <div className="reward-word">
-                REWARDS
+        <div className="rulesGrid">
+
+          {rules.map((rule) => (
+            <article className="ruleCard" key={rule.no}>
+
+              <span className="ruleNumber">
+                {rule.no}
+              </span>
+
+              <div>
+                <h3>{rule.title}</h3>
+                <p>{rule.text}</p>
               </div>
 
             </article>
+          ))}
 
+        </div>
+
+      </section>
+
+      {/* ================= TERMS ================= */}
+      <section className="termsSection">
+
+        <div className="termsIcon">
+          §
+        </div>
+
+        <div>
+          <span className="eyebrow">
+            IMPORTANT INFORMATION
+          </span>
+
+          <h2>Terms & Conditions</h2>
+
+          <p>
+            By participating in Play2Prove tournaments,
+            players agree to follow platform rules,
+            tournament-specific conditions and fair-play
+            requirements.
+          </p>
+
+          <div className="termsLinks">
+            Terms of Use →
+            Privacy Policy →
+            Responsible Play →
+          </div>
+        </div>
+
+      </section>
+
+      {/* ================= CHATGPT PARTNER ================= */}
+      <section className="partnerSection">
+
+        <div className="partnerGlow" />
+
+        <span className="eyebrow">
+          TECHNOLOGY PARTNER
+        </span>
+
+        <div className="partnerMain">
+          <div className="partnerLogo">
+            ✦
           </div>
 
-        </section>
-
-        {/* RULES */}
-        <section className="section">
-
-          <div className="section-heading">
-            <div>
-              <small>PLAY FAIR</small>
-              <h2>Rules</h2>
-            </div>
+          <div>
+            <h2>ChatGPT</h2>
+            <p>
+              AI-powered technology & intelligent experiences.
+            </p>
           </div>
+        </div>
 
-          <div className="rules-grid">
+        <span className="partnerTag">
+          POWERING THE FUTURE OF PLAY
+        </span>
 
-            <article>
-              <strong>01</strong>
-              <div>
-                <h3>One Player, One Entry</h3>
-                <p>
-                  Players must use their own registered account
-                  and valid game details.
-                </p>
-              </div>
-            </article>
+      </section>
 
-            <article>
-              <strong>02</strong>
-              <div>
-                <h3>Fair Play</h3>
-                <p>
-                  Cheating, hacking, exploiting or unfair
-                  gameplay may result in disqualification.
-                </p>
-              </div>
-            </article>
+      {/* ================= BOTTOM NEON ================= */}
+      <div className="neonRail bottomRail">
+        <span />
+        <span />
+        <span />
+      </div>
 
-            <article>
-              <strong>03</strong>
-              <div>
-                <h3>Correct Game Details</h3>
-                <p>
-                  Players are responsible for providing correct
-                  in-game username and game information.
-                </p>
-              </div>
-            </article>
+      {/* ================= FOOTER ================= */}
+      <footer>
+        <div className="footerBrand">
+          <strong>Play2Prove</strong>
+          <span>PLAY • COMPETE • EARN • PROVE</span>
+        </div>
 
-            <article>
-              <strong>04</strong>
-              <div>
-                <h3>Results</h3>
-                <p>
-                  Tournament results and rewards are processed
-                  according to applicable tournament rules.
-                </p>
-              </div>
-            </article>
+        <div className="footerLinks">
+          <span>Rules</span>
+          <span>Terms</span>
+          <span>Privacy</span>
+          <span>Responsible Play</span>
+        </div>
 
-          </div>
+        <div className="copyright">
+          © 2026 Play2Prove
+        </div>
+      </footer>
 
-        </section>
-
-        {/* TERMS */}
-        <section className="section terms-section">
-
-          <div className="terms-card">
-
-            <div className="terms-icon">§</div>
-
-            <div>
-              <small>IMPORTANT INFORMATION</small>
-
-              <h2>Terms & Conditions</h2>
-
-              <p>
-                By participating in Play2Prove tournaments,
-                players agree to follow the platform rules,
-                tournament-specific conditions and fair-play
-                requirements.
-              </p>
-
-              <div className="terms-links">
-                <button>Terms of Use →</button>
-                <button>Privacy Policy →</button>
-                <button>Responsible Play →</button>
-              </div>
-
-            </div>
-
-            <strong className="terms-p2p">P2P</strong>
-
-          </div>
-
-        </section>
-
-      </main>
-
-      {/* BOTTOM NAV */}
-      <nav className="bottom-nav">
-
-        <button
-          className={activeTab === "home" ? "active" : ""}
-          onClick={() => goTo("/", "home")}
-        >
-          <span>⌂</span>
-          HOME
-        </button>
-
-        <button
-          className={activeTab === "tournaments" ? "active" : ""}
-          onClick={() => goTo("/tournaments", "tournaments")}
-        >
-          <span>♛</span>
-          TOURNAMENTS
-        </button>
-
-        <button
-          className={activeTab === "matches" ? "active" : ""}
-          onClick={() => goTo("/matches", "matches")}
-        >
-          <span>⚔</span>
-          MATCHES
-        </button>
-
-        <button
-          className={activeTab === "wallet" ? "active" : ""}
-          onClick={() => goTo("/wallet", "wallet")}
-        >
-          <span>▣</span>
-          WALLET
-        </button>
-
-        <button
-          className={activeTab === "profile" ? "active" : ""}
-          onClick={() => goTo("/profile", "profile")}
-        >
-          <span>♙</span>
-          PROFILE
-        </button>
-
-      </nav>
-
-    </div>
+    </main>
   );
 }
