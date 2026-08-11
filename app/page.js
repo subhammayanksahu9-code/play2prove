@@ -5,6 +5,8 @@ import { useState } from "react";
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState("home");
 
+  const walletBalance = "₹0";
+
   const games = [
     {
       id: 1,
@@ -25,7 +27,7 @@ export default function HomePage() {
     {
       id: 3,
       name: "MORE GAMES",
-      subtitle: "More games will be added",
+      subtitle: "New games coming soon",
       status: "SOON",
       active: false,
       className: "moregame",
@@ -61,26 +63,6 @@ export default function HomePage() {
     },
   ];
 
-  function handleGame(game) {
-    if (!game.active) {
-      alert(`${game.name} tournaments will be available soon.`);
-      return;
-    }
-
-    document
-      .getElementById("tournaments")
-      ?.scrollIntoView({ behavior: "smooth" });
-  }
-
-  function joinTournament(tournament) {
-    alert(
-      `${tournament.title}\n${tournament.time}\n\nLogin / Join system next step me connect hoga.`
-    );
-  }
-
- function handleNav(tab) {
-  setActiveTab(tab);
-
   const routes = {
     home: "/",
     tournaments: "/tournaments",
@@ -89,39 +71,78 @@ export default function HomePage() {
     profile: "/profile",
   };
 
-  if (routes[tab]) {
-    window.location.href = routes[tab];
+  function handleNav(tab) {
+    setActiveTab(tab);
+
+    if (routes[tab]) {
+      window.location.href = routes[tab];
+    }
   }
-}
+
+  function handleGame(game) {
+    if (!game.active) {
+      alert(`${game.name} tournaments will be available soon.`);
+      return;
+    }
+
+    window.location.href = "/tournaments";
+  }
+
+  function joinTournament(tournament) {
+    alert(
+      `${tournament.title}\n${tournament.time}\n\nLogin / Join system next step me connect hoga.`
+    );
+  }
 
   return (
     <div className="site-shell">
+      {/* ================= HEADER ================= */}
       <header className="topbar">
         <div className="brand">
           <div className="brand-mark">P2P</div>
 
-          <div>
+          <div className="brand-copy">
             <h1>Play2Prove</h1>
             <p>PLAY • COMPETE • EARN • PROVE</p>
           </div>
         </div>
 
-        <button
-          className="profile-button"
-          onClick={() => handleNav("profile")}
-          aria-label="Profile"
-        >
-          👤
-        </button>
+        <div className="header-actions">
+          {/* SMALL WALLET */}
+          <button
+            className="mini-wallet"
+            onClick={() => handleNav("wallet")}
+          >
+            <span className="wallet-icon">◆</span>
+
+            <span className="wallet-info">
+              <small>WALLET</small>
+              <strong>{walletBalance}</strong>
+            </span>
+          </button>
+
+          {/* PROFILE */}
+          <button
+            className="profile-button"
+            onClick={() => handleNav("profile")}
+            aria-label="Profile"
+          >
+            <span>👤</span>
+          </button>
+        </div>
       </header>
 
       <main className="main-content">
+        {/* ================= HERO ================= */}
         <section className="hero">
+          <div className="hero-grid" />
           <div className="hero-glow hero-glow-one" />
           <div className="hero-glow hero-glow-two" />
 
           <div className="hero-content">
-            <span className="live-badge">● GAMING TOURNAMENT PLATFORM</span>
+            <span className="live-badge">
+              <i /> GAMING TOURNAMENT PLATFORM
+            </span>
 
             <h2>
               PLAY.
@@ -136,19 +157,33 @@ export default function HomePage() {
               rewards.
             </p>
 
-            <button
-  className="primary-button"
-  onClick={() => {
-    window.location.href = "/tournaments";
-  }}
->
-  EXPLORE GAMES →
-</button>
+            <div className="hero-buttons">
+              <button
+                className="primary-button"
+                onClick={() => handleNav("tournaments")}
+              >
+                EXPLORE TOURNAMENTS
+                <span>→</span>
+              </button>
+
+              <button
+                className="secondary-button"
+                onClick={() => handleNav("wallet")}
+              >
+                WALLET
+              </button>
+            </div>
           </div>
 
-          <div className="hero-art">P2P</div>
+          <div className="hero-art">
+            <div className="hero-art-ring ring-one" />
+            <div className="hero-art-ring ring-two" />
+            <div className="hero-art-text">P2P</div>
+            <div className="hero-art-label">COMPETE</div>
+          </div>
         </section>
 
+        {/* ================= GAMES ================= */}
         <section className="section" id="games">
           <div className="section-heading">
             <div>
@@ -169,7 +204,9 @@ export default function HomePage() {
                 <div className="game-card-top">
                   <span
                     className={
-                      game.active ? "status status-live" : "status status-soon"
+                      game.active
+                        ? "status status-live"
+                        : "status status-soon"
                     }
                   >
                     {game.status}
@@ -179,7 +216,14 @@ export default function HomePage() {
                 </div>
 
                 <div className="game-visual">
-                  <span>{game.name.substring(0, 2)}</span>
+                  <div className="game-visual-glow" />
+                  <span>
+                    {game.name === "FREE FIRE"
+                      ? "FF"
+                      : game.name === "BGMI"
+                      ? "BG"
+                      : "+"}
+                  </span>
                 </div>
 
                 <div className="game-info">
@@ -191,6 +235,7 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* ================= UPCOMING TOURNAMENTS ================= */}
         <section className="section" id="tournaments">
           <div className="section-heading">
             <div>
@@ -198,7 +243,12 @@ export default function HomePage() {
               <h3>Upcoming Tournaments</h3>
             </div>
 
-            <button className="text-button">View All</button>
+            <button
+              className="text-button"
+              onClick={() => handleNav("tournaments")}
+            >
+              VIEW ALL →
+            </button>
           </div>
 
           <div className="tournament-grid">
@@ -208,14 +258,21 @@ export default function HomePage() {
 
               return (
                 <article className="tournament-card" key={tournament.id}>
+                  <div className="card-shine" />
+
                   <div className="tournament-top">
                     <div>
                       <span className="game-label">{tournament.game}</span>
+
                       <h4>{tournament.title}</h4>
+
                       <p>{tournament.type} MATCH</p>
                     </div>
 
-                    <span className="open-badge">OPEN</span>
+                    <span className="open-badge">
+                      <i />
+                      OPEN
+                    </span>
                   </div>
 
                   <div className="match-time">
@@ -242,7 +299,7 @@ export default function HomePage() {
                     </div>
 
                     <div>
-                      <span>PRIZE</span>
+                      <span>PRIZE POOL</span>
                       <strong className="orange-text">
                         {tournament.prize}
                       </strong>
@@ -251,6 +308,7 @@ export default function HomePage() {
 
                   <div className="players-row">
                     <span>Players Joined</span>
+
                     <strong>
                       {tournament.joined}/{tournament.capacity}
                     </strong>
@@ -268,6 +326,7 @@ export default function HomePage() {
                     onClick={() => joinTournament(tournament)}
                   >
                     JOIN {tournament.entry}
+                    <span>→</span>
                   </button>
                 </article>
               );
@@ -275,69 +334,150 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="section" id="my-matches">
-          <button
-            className="my-matches"
-            onClick={() =>
-              alert("Joined matches customer login ke baad yahan dikhenge.")
-            }
-          >
-            <div className="match-icon">🎮</div>
-
+        {/* ================= TOURNAMENT OVERVIEW ================= */}
+        <section className="section overview-section">
+          <div className="section-heading">
             <div>
-              <h4>My Matches</h4>
-              <p>Joined matches, room details and live results</p>
+              <span className="eyebrow">KNOW BEFORE YOU JOIN</span>
+              <h3>Tournament Overview</h3>
+            </div>
+          </div>
+
+          <div className="overview-grid">
+            <div className="overview-card overview-main">
+              <span className="overview-number">01</span>
+
+              <div>
+                <span className="overview-tag">UPCOMING MATCHES</span>
+                <h4>Compete. Perform. Prove.</h4>
+
+                <p>
+                  Choose your game, select an available tournament and enter
+                  the match. Tournament details, entry fee, prize pool and
+                  match timing are shown before you join.
+                </p>
+
+                <button
+                  className="outline-button"
+                  onClick={() => handleNav("tournaments")}
+                >
+                  VIEW TOURNAMENTS →
+                </button>
+              </div>
             </div>
 
-            <span>→</span>
-          </button>
-        </section>
+            <div className="overview-card">
+              <span className="overview-number">02</span>
+              <span className="overview-tag">MATCH DETAILS</span>
 
-        <section className="section">
-          <span className="eyebrow">SIMPLE & FAST</span>
-          <h3>How Play2Prove Works</h3>
+              <h4>Clear information</h4>
 
-          <div className="steps-grid">
-            <div className="step-card">
-              <strong>01</strong>
-              <span>JOIN</span>
-              <p>Select your tournament</p>
+              <ul>
+                <li>Entry fee</li>
+                <li>Per-kill reward</li>
+                <li>Prize pool</li>
+                <li>Match timing</li>
+                <li>Player capacity</li>
+              </ul>
             </div>
 
-            <div className="step-card">
-              <strong>02</strong>
-              <span>PLAY</span>
-              <p>Enter room & compete</p>
-            </div>
+            <div className="overview-card">
+              <span className="overview-number">03</span>
+              <span className="overview-tag">RESULTS & REWARDS</span>
 
-            <div className="step-card">
-              <strong>03</strong>
-              <span>WIN</span>
-              <p>Results are calculated</p>
-            </div>
+              <h4>Play for the win</h4>
 
-            <div className="step-card">
-              <strong>04</strong>
-              <span>EARN</span>
-              <p>Reward goes to wallet</p>
+              <p>
+                Results are processed according to the tournament rules and
+                eligible rewards are credited to the player's wallet.
+              </p>
             </div>
           </div>
         </section>
 
-        <section className="future-box">
-          <div>
-            <span className="eyebrow">BUILT TO EXPAND</span>
-            <h3>More Games. More Tournaments.</h3>
-            <p>
-              Play2Prove is being built so new games and tournament formats can
-              be added without redesigning the complete platform.
-            </p>
+        {/* ================= RULES ================= */}
+        <section className="section info-section">
+          <div className="section-heading">
+            <div>
+              <span className="eyebrow">PLAY FAIR</span>
+              <h3>Rules</h3>
+            </div>
           </div>
 
-          <div className="future-number">∞</div>
+          <div className="rules-grid">
+            <div className="rule-card">
+              <span>01</span>
+              <div>
+                <h4>One Player, One Entry</h4>
+                <p>
+                  Players must use their own registered account and valid game
+                  details.
+                </p>
+              </div>
+            </div>
+
+            <div className="rule-card">
+              <span>02</span>
+              <div>
+                <h4>Fair Play</h4>
+                <p>
+                  Any cheating, hacking, exploiting or unfair gameplay may
+                  result in disqualification.
+                </p>
+              </div>
+            </div>
+
+            <div className="rule-card">
+              <span>03</span>
+              <div>
+                <h4>Correct Game Details</h4>
+                <p>
+                  Players are responsible for providing correct in-game
+                  username and game information.
+                </p>
+              </div>
+            </div>
+
+            <div className="rule-card">
+              <span>04</span>
+              <div>
+                <h4>Results</h4>
+                <p>
+                  Tournament results and rewards are processed according to
+                  the applicable tournament rules.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ================= TERMS ================= */}
+        <section className="section terms-section">
+          <div className="terms-card">
+            <div className="terms-icon">§</div>
+
+            <div className="terms-content">
+              <span className="eyebrow">IMPORTANT INFORMATION</span>
+
+              <h3>Terms & Conditions</h3>
+
+              <p>
+                By participating in Play2Prove tournaments, players agree to
+                follow the platform rules, tournament-specific conditions and
+                fair-play requirements.
+              </p>
+
+              <div className="terms-links">
+                <button>Terms of Use →</button>
+                <button>Privacy Policy →</button>
+                <button>Responsible Play →</button>
+              </div>
+            </div>
+          </div>
         </section>
       </main>
 
+      {/* ================= BOTTOM NAV ================= */}
       <nav className="bottom-nav">
         <button
           className={activeTab === "home" ? "nav-active" : ""}
