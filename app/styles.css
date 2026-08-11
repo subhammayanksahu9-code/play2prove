@@ -2464,3 +2464,808 @@ a:focus-visible {
     transition-duration: 0.01ms !important;
   }
 }
+/* ============================================================
+   PLAY2PROVE — FINAL VISUAL OVERRIDE
+   FIX: OVERLAP + TINY TEXT + FOOTER + SECTION SPACING
+   ============================================================ */
+
+/* ---------- GLOBAL RESET ---------- */
+
+.p2pHome,
+.p2pHome * {
+  box-sizing: border-box;
+}
+
+.p2pHome {
+  font-size: 16px;
+}
+
+.p2pHome button {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.p2pHome p {
+  margin-top: 0;
+}
+
+.p2pHome h1,
+.p2pHome h2,
+.p2pHome h3,
+.p2pHome h4 {
+  margin-top: 0;
+}
+
+
+/* ============================================================
+   HERO — KEEP LARGE + CLEAN
+   ============================================================ */
+
+.p2pHero {
+  width: min(1400px, 92vw);
+  min-height: 720px;
+
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+
+  align-items: center;
+  gap: 55px;
+
+  margin: 0 auto;
+}
+
+.heroLeft {
+  padding: 70px 0;
+}
+
+.p2pHero h1 {
+  margin: 28px 0 24px;
+
+  font-size: clamp(68px, 7.2vw, 112px);
+  line-height: 0.84;
+
+  letter-spacing: -5px;
+
+  font-weight: 950;
+}
+
+.heroDescription {
+  max-width: 570px;
+
+  margin: 0;
+
+  color: #929bad;
+
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.heroButtons {
+  display: flex;
+  gap: 12px;
+
+  margin-top: 30px;
+}
+
+.heroPrimary,
+.heroSecondary {
+  min-width: 180px;
+  height: 52px;
+
+  padding: 0 24px;
+
+  border-radius: 9px;
+
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.heroStats {
+  display: flex;
+  gap: 48px;
+
+  margin-top: 45px;
+}
+
+.heroStats strong {
+  display: block;
+
+  font-size: 22px;
+}
+
+.heroStats span {
+  display: block;
+
+  margin-top: 6px;
+
+  color: #666e81;
+
+  font-size: 8px;
+
+  letter-spacing: 1.4px;
+}
+
+
+/* ============================================================
+   COMMAND CENTER
+   ============================================================ */
+
+.heroCommand {
+  min-height: 500px;
+
+  padding: 18px;
+
+  border-radius: 22px;
+
+  overflow: hidden;
+}
+
+.commandScreen {
+  min-height: 395px;
+}
+
+.arenaCore {
+  width: 250px;
+  height: 250px;
+}
+
+.coreCenter {
+  width: 82px;
+  height: 82px;
+}
+
+.coreCenter span {
+  font-size: 21px;
+}
+
+.matchMini {
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+
+  gap: 10px;
+}
+
+.matchMini > div {
+  padding: 13px;
+}
+
+.matchMini small {
+  font-size: 6px;
+}
+
+.matchMini strong {
+  font-size: 10px;
+}
+
+
+/* ============================================================
+   LIVE STRIP
+   ============================================================ */
+
+.liveStrip {
+  width: min(1200px, 90vw);
+
+  min-height: 68px;
+
+  margin: 0 auto;
+
+  padding: 0 22px;
+
+  gap: 30px;
+}
+
+.liveStrip div {
+  font-size: 8px;
+}
+
+.liveStrip strong {
+  font-size: 12px;
+}
+
+.liveStrip button {
+  font-size: 8px;
+}
+
+
+/* ============================================================
+   PLATFORM STATS
+   ============================================================ */
+
+.platformStats {
+  width: min(1200px, 90vw);
+
+  margin: 75px auto;
+
+  border-radius: 14px;
+}
+
+.platformStat {
+  padding: 30px 24px;
+}
+
+.platformStat strong {
+  font-size: 27px;
+}
+
+.platformStat span {
+  margin-top: 8px;
+
+  font-size: 7px;
+}
+
+
+/* ============================================================
+   ALL CONTENT SECTIONS
+   ============================================================ */
+
+.contentSection {
+  width: min(1200px, 90vw);
+
+  margin: 120px auto;
+}
+
+.sectionTitle {
+  margin-bottom: 34px;
+}
+
+.sectionTitle > span,
+.sectionEyebrow {
+  display: block;
+
+  margin-bottom: 8px;
+
+  font-size: 8px;
+  letter-spacing: 2px;
+}
+
+.sectionTitle h2 {
+  margin: 0 0 10px;
+
+  font-size: clamp(34px, 4vw, 52px);
+  line-height: 1;
+
+  letter-spacing: -2px;
+}
+
+.sectionTitle p {
+  margin: 0;
+
+  max-width: 650px;
+
+  color: #687185;
+
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+
+/* ============================================================
+   TOURNAMENT CARDS
+   ============================================================ */
+
+.tournamentGrid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 18px;
+}
+
+.tournamentCard,
+.newTournamentCard {
+  min-width: 0;
+
+  padding: 24px;
+
+  border-radius: 15px;
+}
+
+.tournamentTop,
+.tournamentCardTop {
+  display: flex;
+
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.tournamentTop h3,
+.tournamentCardTop h3,
+.newTournamentCard h3 {
+  margin: 8px 0 0;
+
+  font-size: 21px;
+}
+
+.gameLabel,
+.tournamentCardTop > span {
+  font-size: 8px;
+}
+
+.openBadge,
+.statusOpen,
+.statusSoon {
+  font-size: 7px;
+}
+
+.tournamentMeta,
+.moneyRow,
+.tournamentData {
+  margin-top: 18px;
+}
+
+.tournamentMeta small,
+.moneyRow small,
+.tournamentData small {
+  font-size: 7px;
+}
+
+.tournamentMeta strong,
+.moneyRow strong,
+.tournamentData strong {
+  margin-top: 5px;
+
+  font-size: 13px;
+}
+
+.joinedHeader {
+  margin-top: 19px;
+
+  font-size: 9px;
+}
+
+.joinButton,
+.newTournamentCard button {
+  height: 46px;
+
+  margin-top: 18px;
+
+  font-size: 10px;
+}
+
+
+/* ============================================================
+   GAMES
+   ============================================================ */
+
+.gamesGrid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 16px;
+}
+
+.newGameCard {
+  min-height: 220px;
+
+  padding: 24px;
+
+  border-radius: 15px;
+}
+
+.gameIconNew {
+  font-size: 42px;
+}
+
+.newGameCard span {
+  font-size: 7px;
+}
+
+.newGameCard h3 {
+  margin-top: 8px;
+
+  font-size: 21px;
+}
+
+.gameArrowNew {
+  font-size: 24px;
+}
+
+
+/* ============================================================
+   HOW IT WORKS
+   ============================================================ */
+
+.stepsGrid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 15px;
+}
+
+.newStep {
+  min-height: 190px;
+
+  padding: 24px;
+}
+
+.newStep > strong {
+  font-size: 35px;
+}
+
+.newStep span {
+  margin-top: 38px;
+
+  font-size: 10px;
+}
+
+.newStep p {
+  margin-top: 9px;
+
+  font-size: 9px;
+
+  line-height: 1.7;
+}
+
+
+/* ============================================================
+   LEADERBOARD
+   ============================================================ */
+
+.leaderboard {
+  width: 100%;
+}
+
+.leaderboardRow {
+  min-height: 70px;
+
+  padding: 0 24px;
+
+  grid-template-columns:
+    80px 1fr 130px 140px;
+
+  gap: 20px;
+
+  font-size: 10px;
+}
+
+.rank {
+  font-size: 12px;
+}
+
+.playerName {
+  font-size: 11px;
+}
+
+.earnings {
+  font-size: 10px;
+}
+
+
+/* ============================================================
+   REWARD SECTION
+   ============================================================ */
+
+.rewardSection {
+  width: min(1200px, 90vw);
+
+  margin: 120px auto;
+
+  padding: 60px 50px;
+
+  border-radius: 22px;
+}
+
+.rewardSection h2 {
+  margin: 10px 0 15px;
+
+  font-size: clamp(38px, 5vw, 60px);
+
+  line-height: 0.95;
+
+  letter-spacing: -3px;
+}
+
+.rewardSection p {
+  font-size: 11px;
+
+  line-height: 1.7;
+}
+
+.rewardGrid {
+  margin-top: 40px;
+
+  gap: 15px;
+}
+
+.rewardCard {
+  padding: 25px;
+}
+
+.rewardCard strong {
+  font-size: 27px;
+}
+
+.rewardCard span {
+  font-size: 8px;
+}
+
+
+/* ============================================================
+   FINAL CTA
+   ============================================================ */
+
+.finalCTA {
+  width: min(1200px, 90vw);
+
+  margin: 130px auto 90px;
+
+  padding: 90px 30px;
+
+  border-radius: 24px;
+}
+
+.finalCTA h2 {
+  font-size: clamp(45px, 6vw, 76px);
+
+  line-height: 0.9;
+
+  letter-spacing: -4px;
+}
+
+.finalCTA p {
+  margin: 24px auto 30px;
+
+  font-size: 11px;
+}
+
+.finalCTA button {
+  min-width: 190px;
+
+  height: 52px;
+
+  padding: 0 30px;
+
+  font-size: 10px;
+}
+
+
+/* ============================================================
+   FOOTER — IMPORTANT FIX
+   ============================================================ */
+
+.p2pFooter {
+  width: min(1200px, 90vw);
+
+  min-height: 120px;
+
+  margin: 0 auto;
+
+  padding: 35px 0 45px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 30px;
+}
+
+.p2pFooter strong {
+  font-size: 17px;
+}
+
+.p2pFooter small {
+  margin-top: 6px;
+
+  font-size: 7px;
+}
+
+.footerLinks {
+  display: flex;
+
+  align-items: center;
+
+  gap: 25px;
+
+  font-size: 9px;
+}
+
+.footerLinks button,
+.footerLinks a {
+  appearance: none;
+
+  border: 0;
+
+  background: transparent;
+
+  padding: 7px 0;
+
+  color: #777f92;
+
+  font-size: 9px;
+
+  text-decoration: none;
+
+  cursor: pointer;
+}
+
+.footerLinks button:hover,
+.footerLinks a:hover {
+  color: #fff;
+}
+
+.copyright {
+  font-size: 8px;
+}
+
+
+/* ============================================================
+   PREVENT RANDOM TEXT COLLAPSE
+   ============================================================ */
+
+.p2pHome .p2pFooter *,
+.p2pHome .rewardSection *,
+.p2pHome .finalCTA *,
+.p2pHome .contentSection * {
+  max-width: 100%;
+}
+
+.p2pHome .p2pFooter button {
+  width: auto;
+  min-height: auto;
+}
+
+.p2pHome .contentSection button {
+  font-family: inherit;
+}
+
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+
+@media (max-width: 1100px) {
+
+  .p2pHero {
+    grid-template-columns: 1fr;
+
+    gap: 30px;
+
+    padding:
+      30px 0 70px;
+  }
+
+  .heroLeft {
+    padding: 50px 0 10px;
+  }
+
+  .heroCommand {
+    min-height: 470px;
+  }
+
+  .gamesGrid {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+  .stepsGrid {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+}
+
+
+@media (max-width: 800px) {
+
+  .p2pHero {
+    width: calc(100% - 28px);
+  }
+
+  .p2pHero h1 {
+    font-size:
+      clamp(55px, 14vw, 82px);
+
+    letter-spacing: -4px;
+  }
+
+  .heroDescription {
+    font-size: 12px;
+  }
+
+  .heroStats {
+    gap: 25px;
+  }
+
+  .heroStats strong {
+    font-size: 18px;
+  }
+
+  .heroStats span {
+    font-size: 7px;
+  }
+
+  .tournamentGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .gamesGrid {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+  .stepsGrid {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+  .leaderboardRow {
+    grid-template-columns:
+      50px 1fr 90px;
+
+    gap: 10px;
+
+    padding: 0 14px;
+  }
+
+  .leaderboardRow > :last-child {
+    display: none;
+  }
+
+  .p2pFooter {
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    padding-bottom: 35px;
+  }
+
+  .footerLinks {
+    flex-wrap: wrap;
+
+    gap: 15px;
+  }
+}
+
+
+@media (max-width: 500px) {
+
+  .gamesGrid,
+  .stepsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .heroStats {
+    flex-wrap: wrap;
+  }
+
+  .heroCommand {
+    min-height: 410px;
+  }
+
+  .commandScreen {
+    min-height: 335px;
+  }
+
+  .arenaCore {
+    width: 200px;
+    height: 200px;
+  }
+
+  .p2pHero h1 {
+    font-size: 52px;
+
+    letter-spacing: -3px;
+  }
+
+  .sectionTitle h2 {
+    font-size: 34px;
+  }
+
+  .rewardSection {
+    padding: 45px 20px;
+  }
+
+  .finalCTA {
+    padding: 60px 18px;
+  }
+
+  .finalCTA h2 {
+    font-size: 42px;
+  }
+}
