@@ -3,6 +3,7 @@
 // Isse poori website ki design/style load hogi
 // ==========================================
 
+import "./styles.css";
 import "./globals.css";
 
 // ==========================================
