@@ -158,21 +158,14 @@ export default function HomePage() {
             </p>
 
             <div className="hero-buttons">
-              <button
-                className="primary-button"
-                onClick={() => handleNav("tournaments")}
-              >
-                EXPLORE TOURNAMENTS
-                <span>→</span>
-              </button>
-
-              <button
-                className="secondary-button"
-                onClick={() => handleNav("wallet")}
-              >
-                WALLET
-              </button>
-            </div>
+  <button
+    className="primary-button"
+    onClick={() => handleNav("tournaments")}
+  >
+    EXPLORE TOURNAMENTS
+    <span>→</span>
+  </button>
+</div>
           </div>
 
           <div className="hero-art">
