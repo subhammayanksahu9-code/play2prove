@@ -1,517 +1,1757 @@
-"use client";
+/* =========================================================
+   PLAY2PROVE HOME
+   GAMING ARENA / NEON UI
+   ========================================================= */
 
-import { useState } from "react";
+* {
+  box-sizing: border-box;
+}
 
-export default function HomePage() {
-  const [activeTab, setActiveTab] = useState("home");
+html {
+  scroll-behavior: smooth;
+}
 
-  const walletBalance = "₹0";
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(255, 73, 0, 0.08), transparent 28%),
+    radial-gradient(circle at 85% 30%, rgba(91, 52, 255, 0.09), transparent 30%),
+    #030509;
+  color: #f5f7fb;
+  font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+}
 
-  const games = [
-    {
-      id: 1,
-      name: "FREE FIRE",
-      subtitle: "Battle Royale",
-      status: "LIVE",
-      active: true,
-      className: "freefire",
-    },
-    {
-      id: 2,
-      name: "BGMI",
-      subtitle: "Coming Soon",
-      status: "SOON",
-      active: false,
-      className: "bgmi",
-    },
-    {
-      id: 3,
-      name: "MORE GAMES",
-      subtitle: "New games coming soon",
-      status: "SOON",
-      active: false,
-      className: "moregame",
-    },
-  ];
+button {
+  font-family: inherit;
+}
 
-  const tournaments = [
-    {
-      id: 1,
-      game: "FREE FIRE",
-      title: "Bermuda • Solo",
-      type: "SOLO",
-      date: "Today",
-      time: "6:00 PM",
-      entry: "₹30",
-      perKill: "₹5",
-      prize: "₹500",
-      joined: 37,
-      capacity: 48,
-    },
-    {
-      id: 2,
-      game: "FREE FIRE",
-      title: "Bermuda • Solo",
-      type: "SOLO",
-      date: "Today",
-      time: "11:30 PM",
-      entry: "₹30",
-      perKill: "₹5",
-      prize: "₹500",
-      joined: 21,
-      capacity: 48,
-    },
-  ];
+button:focus-visible {
+  outline: 2px solid #ff5a16;
+  outline-offset: 3px;
+}
 
-  const routes = {
-    home: "/",
-    tournaments: "/tournaments",
-    matches: "/matches",
-    wallet: "/wallet",
-    profile: "/profile",
-  };
+/* =========================================================
+   SHELL
+   ========================================================= */
 
-  function handleNav(tab) {
-    setActiveTab(tab);
+.site-shell {
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255, 72, 0, 0.025) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      rgba(91, 52, 255, 0.025) 1px,
+      transparent 1px
+    ),
+    #030509;
 
-    if (routes[tab]) {
-      window.location.href = routes[tab];
-    }
-  }
+  background-size: 42px 42px;
+}
 
-  function handleGame(game) {
-    if (!game.active) {
-      alert(`${game.name} tournaments will be available soon.`);
-      return;
-    }
+/* =========================================================
+   HEADER
+   ========================================================= */
 
-    window.location.href = "/tournaments";
-  }
+.topbar {
+  height: 62px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 
-  function joinTournament(tournament) {
-    alert(
-      `${tournament.title}\n${tournament.time}\n\nLogin / Join system next step me connect hoga.`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 22px;
+
+  background: rgba(3, 5, 9, 0.94);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-mark {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 9px;
+
+  background: linear-gradient(135deg, #ff6900, #ff3500);
+  color: white;
+
+  font-size: 10px;
+  font-weight: 900;
+
+  box-shadow:
+    0 0 12px rgba(255, 78, 0, 0.65),
+    0 0 28px rgba(255, 78, 0, 0.25);
+}
+
+.brand-copy h1 {
+  margin: 0;
+
+  font-size: 15px;
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: -0.4px;
+}
+
+.brand-copy p {
+  margin: 4px 0 0;
+
+  font-size: 6px;
+  letter-spacing: 1.5px;
+  color: #737b8a;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* WALLET */
+
+.mini-wallet {
+  min-width: 66px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  padding: 4px 10px;
+
+  border: 1px solid rgba(255, 83, 15, 0.55);
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 72, 0, 0.10),
+      rgba(255, 72, 0, 0.02)
     );
+
+  color: white;
+  cursor: pointer;
+
+  box-shadow:
+    inset 0 0 16px rgba(255, 70, 0, 0.04),
+    0 0 15px rgba(255, 70, 0, 0.08);
+
+  transition: 0.25s ease;
+}
+
+.mini-wallet:hover {
+  border-color: #ff5a16;
+
+  box-shadow:
+    0 0 16px rgba(255, 70, 0, 0.35),
+    inset 0 0 20px rgba(255, 70, 0, 0.08);
+
+  transform: translateY(-1px);
+}
+
+.wallet-icon {
+  color: #ff5a16;
+  font-size: 10px;
+}
+
+.wallet-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+}
+
+.wallet-info small {
+  color: #858c9a;
+  font-size: 6px;
+  letter-spacing: 1.2px;
+}
+
+.wallet-info strong {
+  font-size: 10px;
+  color: #fff;
+}
+
+/* PROFILE */
+
+.profile-button {
+  width: 40px;
+  height: 40px;
+
+  border-radius: 50%;
+
+  border: 1px solid rgba(115, 65, 255, 0.75);
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(107, 52, 255, 0.22),
+      rgba(30, 15, 70, 0.2)
+    );
+
+  color: #fff;
+  cursor: pointer;
+
+  box-shadow:
+    0 0 12px rgba(103, 50, 255, 0.3);
+
+  transition: 0.25s ease;
+}
+
+.profile-button:hover {
+  box-shadow:
+    0 0 20px rgba(103, 50, 255, 0.6);
+
+  transform: translateY(-1px);
+}
+
+/* =========================================================
+   MAIN
+   ========================================================= */
+
+.main-content {
+  width: min(1100px, calc(100% - 32px));
+  margin: 0 auto;
+
+  padding:
+    28px
+    0
+    150px;
+}
+
+/* =========================================================
+   HERO
+   ========================================================= */
+
+.hero {
+  position: relative;
+  min-height: 405px;
+
+  display: flex;
+  align-items: center;
+
+  overflow: hidden;
+
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 22px;
+
+  background:
+    radial-gradient(
+      circle at 8% 40%,
+      rgba(255, 70, 0, 0.22),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 75% 30%,
+      rgba(79, 52, 255, 0.16),
+      transparent 34%
+    ),
+    linear-gradient(
+      135deg,
+      #171016 0%,
+      #0a0e16 50%,
+      #070a10 100%
+    );
+
+  box-shadow:
+    0 0 45px rgba(255, 60, 0, 0.08),
+    inset 0 0 80px rgba(255, 255, 255, 0.015);
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 65, 0, 0.08) 45%,
+      transparent 75%
+    );
+
+  pointer-events: none;
+}
+
+.hero::after {
+  content: "";
+
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  height: 2px;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #ff4e0a,
+    #ff8a00,
+    #713cff,
+    transparent
+  );
+
+  box-shadow:
+    0 0 10px #ff4e0a,
+    0 0 22px rgba(113, 60, 255, 0.8);
+}
+
+.hero-grid {
+  position: absolute;
+  inset: 0;
+
+  opacity: 0.35;
+
+  background-image:
+    linear-gradient(
+      rgba(255, 255, 255, 0.035) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.035) 1px,
+      transparent 1px
+    );
+
+  background-size: 30px 30px;
+
+  mask-image: linear-gradient(
+    to right,
+    black,
+    transparent 85%
+  );
+}
+
+.hero-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(45px);
+  pointer-events: none;
+}
+
+.hero-glow-one {
+  width: 190px;
+  height: 190px;
+
+  right: 80px;
+  top: 60px;
+
+  background: rgba(255, 66, 0, 0.15);
+}
+
+.hero-glow-two {
+  width: 220px;
+  height: 220px;
+
+  right: 250px;
+  bottom: -100px;
+
+  background: rgba(84, 47, 255, 0.12);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 3;
+
+  width: 58%;
+
+  padding: 48px 38px;
+}
+
+.live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  padding: 6px 11px;
+
+  border: 1px solid rgba(255, 75, 0, 0.65);
+  border-radius: 999px;
+
+  background: rgba(255, 67, 0, 0.05);
+
+  color: #ff651c;
+
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+
+  box-shadow:
+    0 0 12px rgba(255, 75, 0, 0.13);
+}
+
+.live-badge i {
+  width: 5px;
+  height: 5px;
+
+  border-radius: 50%;
+
+  background: #ff5b15;
+
+  box-shadow: 0 0 8px #ff5b15;
+}
+
+.hero h2 {
+  margin: 18px 0 14px;
+
+  font-size: clamp(54px, 7vw, 76px);
+  line-height: 0.84;
+
+  font-weight: 950;
+  letter-spacing: -4px;
+
+  color: #fff;
+
+  text-shadow:
+    0 0 22px rgba(255, 255, 255, 0.05);
+}
+
+.hero h2 span {
+  color: #ff5412;
+
+  text-shadow:
+    0 0 16px rgba(255, 70, 0, 0.35),
+    0 0 42px rgba(255, 70, 0, 0.14);
+}
+
+.hero-content > p {
+  max-width: 580px;
+
+  margin: 0 0 25px;
+
+  color: #8f98aa;
+
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.hero-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.primary-button,
+.secondary-button,
+.outline-button,
+.text-button {
+  cursor: pointer;
+}
+
+.primary-button {
+  height: 42px;
+
+  padding: 0 18px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  border: 1px solid #ff671d;
+  border-radius: 8px;
+
+  background: linear-gradient(
+    135deg,
+    #ff6a1c,
+    #ff4508
+  );
+
+  color: white;
+
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.3px;
+
+  box-shadow:
+    0 0 15px rgba(255, 70, 0, 0.35),
+    0 8px 25px rgba(255, 50, 0, 0.12);
+
+  transition: 0.25s ease;
+}
+
+.primary-button:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 0 20px rgba(255, 70, 0, 0.65),
+    0 10px 30px rgba(255, 50, 0, 0.18);
+}
+
+.primary-button span {
+  font-size: 15px;
+}
+
+.secondary-button {
+  height: 42px;
+
+  padding: 0 18px;
+
+  border: 1px solid #30394a;
+  border-radius: 8px;
+
+  background: rgba(10, 15, 23, 0.7);
+
+  color: #dfe4ee;
+
+  font-size: 10px;
+  font-weight: 800;
+}
+
+/* HERO ART */
+
+.hero-art {
+  position: absolute;
+
+  right: 55px;
+  top: 50%;
+
+  width: 280px;
+  height: 280px;
+
+  transform: translateY(-50%);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  opacity: 0.7;
+}
+
+.hero-art-ring {
+  position: absolute;
+
+  border-radius: 50%;
+
+  border: 1px solid rgba(255, 73, 0, 0.35);
+
+  box-shadow:
+    0 0 15px rgba(255, 73, 0, 0.08);
+}
+
+.ring-one {
+  width: 210px;
+  height: 210px;
+}
+
+.ring-two {
+  width: 145px;
+  height: 145px;
+
+  border-color: rgba(112, 62, 255, 0.4);
+
+  box-shadow:
+    0 0 20px rgba(112, 62, 255, 0.14);
+}
+
+.hero-art-text {
+  position: relative;
+  z-index: 2;
+
+  font-size: 70px;
+  font-weight: 950;
+
+  color: rgba(255, 255, 255, 0.04);
+
+  text-shadow:
+    0 0 30px rgba(255, 255, 255, 0.05);
+}
+
+.hero-art-label {
+  position: absolute;
+
+  bottom: 30px;
+
+  color: rgba(255, 75, 0, 0.4);
+
+  font-size: 8px;
+  letter-spacing: 5px;
+  font-weight: 900;
+}
+
+/* =========================================================
+   SECTIONS
+   ========================================================= */
+
+.section {
+  position: relative;
+
+  margin-top: 52px;
+}
+
+.section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  margin-bottom: 18px;
+}
+
+.eyebrow {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #ff5715;
+
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+}
+
+.section-heading h3 {
+  margin: 0;
+
+  font-size: 21px;
+  line-height: 1.1;
+
+  letter-spacing: -0.6px;
+}
+
+.section-small {
+  color: #697284;
+  font-size: 8px;
+}
+
+/* =========================================================
+   GAMES
+   ========================================================= */
+
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.game-card {
+  position: relative;
+
+  min-height: 220px;
+
+  overflow: hidden;
+
+  padding: 14px;
+
+  border: 1px solid #293242;
+  border-radius: 14px;
+
+  background: #080d15;
+
+  color: white;
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.game-card:hover {
+  transform: translateY(-5px);
+
+  border-color: rgba(255, 79, 16, 0.8);
+
+  box-shadow:
+    0 0 22px rgba(255, 67, 0, 0.16);
+}
+
+.game-card-top {
+  display: flex;
+  justify-content: space-between;
+}
+
+.status {
+  padding: 4px 7px;
+
+  border-radius: 4px;
+
+  font-size: 6px;
+  font-weight: 900;
+  letter-spacing: 0.7px;
+}
+
+.status-live {
+  border: 1px solid rgba(0, 255, 128, 0.5);
+  color: #36f39a;
+  background: rgba(0, 255, 128, 0.05);
+
+  box-shadow: 0 0 9px rgba(0, 255, 128, 0.12);
+}
+
+.status-soon {
+  border: 1px solid #30384a;
+  color: #747d8e;
+}
+
+.game-arrow {
+  color: #70798a;
+  font-size: 13px;
+}
+
+.game-visual {
+  height: 105px;
+
+  margin-top: 5px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  position: relative;
+}
+
+.game-visual::before {
+  content: "";
+
+  position: absolute;
+
+  width: 120px;
+  height: 70px;
+
+  border-radius: 50%;
+
+  filter: blur(25px);
+
+  background: rgba(255, 65, 0, 0.12);
+}
+
+.game-visual span {
+  position: relative;
+  z-index: 2;
+
+  font-size: 48px;
+  font-weight: 950;
+
+  color: rgba(255, 255, 255, 0.08);
+}
+
+.game-info h4 {
+  margin: 0;
+
+  font-size: 14px;
+}
+
+.game-info p {
+  margin: 4px 0 0;
+
+  color: #697386;
+
+  font-size: 8px;
+}
+
+.freefire {
+  background:
+    radial-gradient(
+      circle at 80% 55%,
+      rgba(255, 70, 0, 0.18),
+      transparent 35%
+    ),
+    #080d15;
+}
+
+.bgmi {
+  background:
+    radial-gradient(
+      circle at 80% 50%,
+      rgba(0, 207, 255, 0.12),
+      transparent 35%
+    ),
+    #080d15;
+}
+
+.moregame {
+  background:
+    radial-gradient(
+      circle at 80% 50%,
+      rgba(105, 57, 255, 0.18),
+      transparent 35%
+    ),
+    #080d15;
+}
+
+/* =========================================================
+   TOURNAMENTS
+   ========================================================= */
+
+.tournament-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.tournament-card {
+  position: relative;
+
+  overflow: hidden;
+
+  padding: 18px;
+
+  border: 1px solid #2b3546;
+  border-radius: 14px;
+
+  background:
+    radial-gradient(
+      circle at 85% 10%,
+      rgba(255, 69, 0, 0.11),
+      transparent 30%
+    ),
+    #080d15;
+
+  box-shadow:
+    inset 0 0 40px rgba(255, 255, 255, 0.008);
+
+  transition: 0.25s ease;
+}
+
+.tournament-card:hover {
+  border-color: rgba(255, 77, 16, 0.75);
+
+  box-shadow:
+    0 0 25px rgba(255, 67, 0, 0.12);
+}
+
+.card-shine {
+  position: absolute;
+
+  top: -50px;
+  right: -70px;
+
+  width: 180px;
+  height: 120px;
+
+  background: rgba(255, 76, 10, 0.08);
+
+  filter: blur(35px);
+
+  pointer-events: none;
+}
+
+.tournament-top {
+  position: relative;
+  z-index: 2;
+
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.game-label,
+.game-label {
+  color: #ff5715;
+
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 1.1px;
+}
+
+.tournament-top h4 {
+  margin: 5px 0 3px;
+
+  font-size: 15px;
+}
+
+.tournament-top p {
+  margin: 0;
+
+  color: #677286;
+
+  font-size: 7px;
+}
+
+.open-badge {
+  height: 22px;
+
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  padding: 0 8px;
+
+  border: 1px solid rgba(0, 255, 130, 0.45);
+  border-radius: 4px;
+
+  color: #36f39a;
+
+  font-size: 6px;
+  font-weight: 900;
+}
+
+.open-badge i {
+  width: 4px;
+  height: 4px;
+
+  border-radius: 50%;
+
+  background: #36f39a;
+
+  box-shadow: 0 0 7px #36f39a;
+}
+
+.match-time {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  margin-top: 17px;
+
+  padding: 12px 0;
+
+  border-top: 1px solid #27303e;
+  border-bottom: 1px solid #27303e;
+}
+
+.match-time div,
+.prize-grid div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.match-time span,
+.prize-grid span {
+  color: #687284;
+
+  font-size: 6px;
+  letter-spacing: 0.6px;
+}
+
+.match-time strong,
+.prize-grid strong {
+  color: #f2f4f8;
+
+  font-size: 9px;
+}
+
+.prize-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+
+  margin-top: 12px;
+}
+
+.prize-grid > div {
+  padding: 10px;
+
+  border: 1px solid #252e3c;
+  border-radius: 7px;
+
+  background: rgba(2, 5, 9, 0.4);
+}
+
+.orange-text {
+  color: #ff5a16 !important;
+
+  text-shadow:
+    0 0 8px rgba(255, 75, 0, 0.35);
+}
+
+.players-row {
+  display: flex;
+  justify-content: space-between;
+
+  margin-top: 14px;
+
+  color: #6e788a;
+
+  font-size: 7px;
+}
+
+.players-row strong {
+  color: #e7ebf2;
+}
+
+.progress {
+  height: 5px;
+
+  margin-top: 7px;
+
+  overflow: hidden;
+
+  border-radius: 99px;
+
+  background: #1b222d;
+}
+
+.progress-value {
+  height: 100%;
+
+  border-radius: inherit;
+
+  background: linear-gradient(
+    90deg,
+    #ff4200,
+    #ff751a
+  );
+
+  box-shadow:
+    0 0 12px rgba(255, 75, 0, 0.6);
+}
+
+.join-button {
+  width: 100%;
+  height: 38px;
+
+  margin-top: 14px;
+
+  border: 0;
+  border-radius: 7px;
+
+  background: linear-gradient(
+    90deg,
+    #ff6819,
+    #ff4c0c
+  );
+
+  color: white;
+
+  font-size: 9px;
+  font-weight: 900;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 0 14px rgba(255, 70, 0, 0.22);
+
+  transition: 0.25s ease;
+}
+
+.join-button:hover {
+  box-shadow:
+    0 0 22px rgba(255, 70, 0, 0.5);
+
+  transform: translateY(-1px);
+}
+
+.join-button span {
+  margin-left: 10px;
+}
+
+/* =========================================================
+   TOURNAMENT OVERVIEW
+   ========================================================= */
+
+.overview-section {
+  position: relative;
+}
+
+.overview-section::before {
+  content: "";
+
+  position: absolute;
+
+  left: -30%;
+  right: -30%;
+
+  top: 35%;
+
+  height: 1px;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 73, 0, 0.25),
+    rgba(100, 55, 255, 0.25),
+    transparent
+  );
+
+  pointer-events: none;
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr 1fr;
+  gap: 10px;
+}
+
+.overview-card {
+  min-height: 190px;
+
+  position: relative;
+  overflow: hidden;
+
+  padding: 18px;
+
+  border: 1px solid #293343;
+  border-radius: 13px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(12, 18, 28, 0.96),
+      rgba(6, 10, 17, 0.98)
+    );
+
+  transition: 0.25s ease;
+}
+
+.overview-card:hover {
+  border-color: rgba(255, 74, 10, 0.65);
+
+  box-shadow:
+    0 0 20px rgba(255, 70, 0, 0.08);
+}
+
+.overview-main {
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      rgba(255, 65, 0, 0.14),
+      transparent 45%
+    ),
+    #080d15;
+}
+
+.overview-number {
+  position: absolute;
+
+  top: 12px;
+  right: 15px;
+
+  color: rgba(255, 255, 255, 0.05);
+
+  font-size: 28px;
+  font-weight: 950;
+}
+
+.overview-tag {
+  display: block;
+
+  margin-bottom: 9px;
+
+  color: #ff5816;
+
+  font-size: 6px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.overview-card h4 {
+  margin: 0 0 9px;
+
+  font-size: 13px;
+}
+
+.overview-card p {
+  margin: 0;
+
+  color: #697386;
+
+  font-size: 8px;
+  line-height: 1.6;
+}
+
+.overview-card ul {
+  margin: 15px 0 0;
+  padding: 0;
+
+  list-style: none;
+}
+
+.overview-card li {
+  padding: 6px 0;
+
+  border-bottom: 1px solid #242c39;
+
+  color: #7f8999;
+
+  font-size: 7px;
+}
+
+.overview-card li::before {
+  content: "•";
+
+  margin-right: 7px;
+
+  color: #ff5a16;
+}
+
+.outline-button {
+  height: 30px;
+
+  margin-top: 15px;
+
+  padding: 0 10px;
+
+  border: 1px solid rgba(255, 79, 16, 0.7);
+  border-radius: 6px;
+
+  background: rgba(255, 72, 0, 0.04);
+
+  color: #ff6720;
+
+  font-size: 7px;
+  font-weight: 900;
+
+  transition: 0.2s ease;
+}
+
+.outline-button:hover {
+  background: rgba(255, 72, 0, 0.12);
+
+  box-shadow:
+    0 0 12px rgba(255, 72, 0, 0.25);
+}
+
+/* =========================================================
+   RULES
+   ========================================================= */
+
+.rules-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.rule-card {
+  min-height: 68px;
+
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+
+  padding: 14px;
+
+  border: 1px solid #293342;
+  border-radius: 11px;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255, 67, 0, 0.035),
+      rgba(8, 13, 21, 0.95)
+    );
+
+  transition: 0.25s ease;
+}
+
+.rule-card:hover {
+  border-color: rgba(255, 76, 10, 0.55);
+
+  box-shadow:
+    inset 3px 0 0 #ff5412,
+    0 0 15px rgba(255, 65, 0, 0.07);
+}
+
+.rule-card > span {
+  min-width: 22px;
+
+  color: #ff5b16;
+
+  font-size: 8px;
+  font-weight: 900;
+}
+
+.rule-card h4 {
+  margin: 0 0 4px;
+
+  font-size: 9px;
+}
+
+.rule-card p {
+  margin: 0;
+
+  color: #687386;
+
+  font-size: 7px;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   TERMS
+   ========================================================= */
+
+.terms-section {
+  margin-bottom: 35px;
+}
+
+.terms-card {
+  position: relative;
+
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+
+  min-height: 100px;
+
+  padding: 20px;
+
+  overflow: hidden;
+
+  border: 1px solid #30374b;
+  border-radius: 14px;
+
+  background:
+    radial-gradient(
+      circle at 100% 50%,
+      rgba(101, 58, 255, 0.18),
+      transparent 50%
+    ),
+    linear-gradient(
+      90deg,
+      #080d15,
+      #0b0e18
+    );
+
+  box-shadow:
+    inset 0 0 35px rgba(83, 47, 255, 0.035);
+}
+
+.terms-card::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  height: 1px;
+
+  background: linear-gradient(
+    90deg,
+    #ff4d0a,
+    transparent 35%,
+    #663cff
+  );
+
+  box-shadow:
+    0 0 12px rgba(255, 70, 0, 0.5);
+}
+
+.terms-icon {
+  width: 36px;
+  height: 36px;
+
+  flex: 0 0 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #613cff;
+  border-radius: 8px;
+
+  color: #a184ff;
+
+  font-size: 20px;
+
+  background: rgba(90, 50, 255, 0.06);
+
+  box-shadow:
+    0 0 15px rgba(91, 52, 255, 0.16);
+}
+
+.terms-content {
+  position: relative;
+  z-index: 2;
+}
+
+.terms-content h3 {
+  margin: 0 0 5px;
+
+  font-size: 18px;
+}
+
+.terms-content p {
+  max-width: 760px;
+
+  margin: 0;
+
+  color: #788396;
+
+  font-size: 7px;
+  line-height: 1.6;
+}
+
+.terms-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  margin-top: 8px;
+}
+
+.terms-links button {
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+
+  color: #8993a4;
+
+  font-size: 6px;
+
+  cursor: pointer;
+}
+
+.terms-links button:hover {
+  color: #ff641c;
+}
+
+/* =========================================================
+   BOTTOM NAV
+   ========================================================= */
+
+.bottom-nav {
+  position: fixed;
+
+  left: 50%;
+  bottom: 18px;
+
+  z-index: 9999;
+
+  width: min(540px, calc(100% - 30px));
+  height: 62px;
+
+  transform: translateX(-50%);
+
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  align-items: stretch;
+
+  padding: 5px;
+
+  border: 1px solid rgba(64, 76, 97, 0.85);
+  border-radius: 15px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(8, 13, 21, 0.96),
+      rgba(6, 9, 16, 0.97)
+    );
+
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  box-shadow:
+    0 15px 50px rgba(0, 0, 0, 0.65),
+    0 0 25px rgba(77, 45, 255, 0.08);
+}
+
+.bottom-nav::before {
+  content: "";
+
+  position: absolute;
+
+  left: 12%;
+  right: 12%;
+  top: -1px;
+
+  height: 1px;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #ff5311,
+    #633bff,
+    transparent
+  );
+
+  box-shadow:
+    0 0 10px rgba(255, 70, 0, 0.6);
+}
+
+.bottom-nav button {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 4px;
+
+  border: 0;
+  border-radius: 10px;
+
+  background: transparent;
+
+  color: #596476;
+
+  font-size: 6px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.bottom-nav button span {
+  font-size: 13px;
+}
+
+.bottom-nav button:hover {
+  color: #dce1e9;
+
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.bottom-nav .nav-active {
+  color: #ff5a16;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(255, 70, 0, 0.10),
+      transparent 70%
+    );
+
+  text-shadow:
+    0 0 9px rgba(255, 70, 0, 0.45);
+}
+
+.bottom-nav .nav-active::after {
+  content: "";
+
+  position: absolute;
+
+  left: 50%;
+  bottom: 4px;
+
+  width: 18px;
+  height: 2px;
+
+  transform: translateX(-50%);
+
+  border-radius: 99px;
+
+  background: #ff5a16;
+
+  box-shadow:
+    0 0 9px #ff5a16;
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 800px) {
+  .topbar {
+    height: 58px;
+    padding: 0 12px;
   }
 
-  return (
-    <div className="site-shell">
-      {/* ================= HEADER ================= */}
-      <header className="topbar">
-        <div className="brand">
-          <div className="brand-mark">P2P</div>
+  .brand-copy h1 {
+    font-size: 13px;
+  }
 
-          <div className="brand-copy">
-            <h1>Play2Prove</h1>
-            <p>PLAY • COMPETE • EARN • PROVE</p>
-          </div>
-        </div>
+  .main-content {
+    width: min(100% - 20px, 650px);
 
-        <div className="header-actions">
-          {/* SMALL WALLET */}
-          <button
-            className="mini-wallet"
-            onClick={() => handleNav("wallet")}
-          >
-            <span className="wallet-icon">◆</span>
+    padding-top: 18px;
+    padding-bottom: 125px;
+  }
 
-            <span className="wallet-info">
-              <small>WALLET</small>
-              <strong>{walletBalance}</strong>
-            </span>
-          </button>
+  .hero {
+    min-height: 470px;
 
-          {/* PROFILE */}
-          <button
-            className="profile-button"
-            onClick={() => handleNav("profile")}
-            aria-label="Profile"
-          >
-            <span>👤</span>
-          </button>
-        </div>
-      </header>
+    border-radius: 17px;
+  }
 
-      <main className="main-content">
-        {/* ================= HERO ================= */}
-        <section className="hero">
-          <div className="hero-grid" />
-          <div className="hero-glow hero-glow-one" />
-          <div className="hero-glow hero-glow-two" />
+  .hero-content {
+    width: 100%;
 
-          <div className="hero-content">
-            <span className="live-badge">
-              <i /> GAMING TOURNAMENT PLATFORM
-            </span>
+    padding: 32px 22px;
+  }
 
-            <h2>
-              PLAY.
-              <br />
-              COMPETE.
-              <br />
-              <span>PROVE.</span>
-            </h2>
+  .hero h2 {
+    font-size: clamp(52px, 16vw, 68px);
+    letter-spacing: -3px;
+  }
 
-            <p>
-              Join competitive gaming tournaments, show your skills and earn
-              rewards.
-            </p>
+  .hero-content > p {
+    max-width: 90%;
 
-            <div className="hero-buttons">
-  <button
-    className="primary-button"
-    onClick={() => handleNav("tournaments")}
-  >
-    EXPLORE TOURNAMENTS
-    <span>→</span>
-  </button>
-</div>
-          </div>
+    font-size: 10px;
+  }
 
-          <div className="hero-art">
-            <div className="hero-art-ring ring-one" />
-            <div className="hero-art-ring ring-two" />
-            <div className="hero-art-text">P2P</div>
-            <div className="hero-art-label">COMPETE</div>
-          </div>
-        </section>
+  .hero-art {
+    width: 180px;
+    height: 180px;
 
-        {/* ================= GAMES ================= */}
-        <section className="section" id="games">
-          <div className="section-heading">
-            <div>
-              <span className="eyebrow">CHOOSE YOUR GAME</span>
-              <h3>Games</h3>
-            </div>
+    right: -40px;
+    bottom: 15px;
+    top: auto;
 
-            <span className="section-small">More coming soon</span>
-          </div>
+    transform: none;
 
-          <div className="games-grid">
-            {games.map((game) => (
-              <button
-                key={game.id}
-                className={`game-card ${game.className}`}
-                onClick={() => handleGame(game)}
-              >
-                <div className="game-card-top">
-                  <span
-                    className={
-                      game.active
-                        ? "status status-live"
-                        : "status status-soon"
-                    }
-                  >
-                    {game.status}
-                  </span>
+    opacity: 0.4;
+  }
 
-                  <span className="game-arrow">↗</span>
-                </div>
+  .ring-one {
+    width: 145px;
+    height: 145px;
+  }
 
-                <div className="game-visual">
-                  <div className="game-visual-glow" />
-                  <span>
-                    {game.name === "FREE FIRE"
-                      ? "FF"
-                      : game.name === "BGMI"
-                      ? "BG"
-                      : "+"}
-                  </span>
-                </div>
+  .ring-two {
+    width: 100px;
+    height: 100px;
+  }
 
-                <div className="game-info">
-                  <h4>{game.name}</h4>
-                  <p>{game.subtitle}</p>
-                </div>
-              </button>
-            ))}
-          </div>
-        </section>
+  .hero-art-text {
+    font-size: 48px;
+  }
 
-        {/* ================= UPCOMING TOURNAMENTS ================= */}
-        <section className="section" id="tournaments">
-          <div className="section-heading">
-            <div>
-              <span className="eyebrow">PLAY NOW</span>
-              <h3>Upcoming Tournaments</h3>
-            </div>
+  .hero-art-label {
+    bottom: 10px;
+  }
 
-            <button
-              className="text-button"
-              onClick={() => handleNav("tournaments")}
-            >
-              VIEW ALL →
-            </button>
-          </div>
+  .games-grid,
+  .tournament-grid,
+  .overview-grid,
+  .rules-grid {
+    grid-template-columns: 1fr;
+  }
 
-          <div className="tournament-grid">
-            {tournaments.map((tournament) => {
-              const percentage =
-                (tournament.joined / tournament.capacity) * 100;
+  .game-card {
+    min-height: 190px;
+  }
 
-              return (
-                <article className="tournament-card" key={tournament.id}>
-                  <div className="card-shine" />
+  .tournament-card {
+    padding: 15px;
+  }
 
-                  <div className="tournament-top">
-                    <div>
-                      <span className="game-label">{tournament.game}</span>
+  .overview-card {
+    min-height: auto;
+  }
 
-                      <h4>{tournament.title}</h4>
+  .overview-main {
+    min-height: 190px;
+  }
 
-                      <p>{tournament.type} MATCH</p>
-                    </div>
+  .section {
+    margin-top: 38px;
+  }
 
-                    <span className="open-badge">
-                      <i />
-                      OPEN
-                    </span>
-                  </div>
+  .section-heading {
+    align-items: flex-end;
+  }
 
-                  <div className="match-time">
-                    <div>
-                      <span>DATE</span>
-                      <strong>{tournament.date}</strong>
-                    </div>
+  .section-heading h3 {
+    font-size: 19px;
+  }
 
-                    <div>
-                      <span>START TIME</span>
-                      <strong>{tournament.time}</strong>
-                    </div>
-                  </div>
+  .terms-card {
+    padding: 16px;
 
-                  <div className="prize-grid">
-                    <div>
-                      <span>ENTRY</span>
-                      <strong>{tournament.entry}</strong>
-                    </div>
+    gap: 11px;
+  }
 
-                    <div>
-                      <span>PER KILL</span>
-                      <strong>{tournament.perKill}</strong>
-                    </div>
+  .terms-content h3 {
+    font-size: 16px;
+  }
 
-                    <div>
-                      <span>PRIZE POOL</span>
-                      <strong className="orange-text">
-                        {tournament.prize}
-                      </strong>
-                    </div>
-                  </div>
+  .bottom-nav {
+    bottom: 10px;
 
-                  <div className="players-row">
-                    <span>Players Joined</span>
+    width: calc(100% - 20px);
+    height: 58px;
 
-                    <strong>
-                      {tournament.joined}/{tournament.capacity}
-                    </strong>
-                  </div>
+    border-radius: 14px;
+  }
+}
 
-                  <div className="progress">
-                    <div
-                      className="progress-value"
-                      style={{ width: `${percentage}%` }}
-                    />
-                  </div>
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
 
-                  <button
-                    className="join-button"
-                    onClick={() => joinTournament(tournament)}
-                  >
-                    JOIN {tournament.entry}
-                    <span>→</span>
-                  </button>
-                </article>
-              );
-            })}
-          </div>
-        </section>
+@media (max-width: 480px) {
+  .mini-wallet {
+    min-width: 58px;
 
-        {/* ================= TOURNAMENT OVERVIEW ================= */}
-        <section className="section overview-section">
-          <div className="section-heading">
-            <div>
-              <span className="eyebrow">KNOW BEFORE YOU JOIN</span>
-              <h3>Tournament Overview</h3>
-            </div>
-          </div>
+    padding: 3px 7px;
+  }
 
-          <div className="overview-grid">
-            <div className="overview-card overview-main">
-              <span className="overview-number">01</span>
+  .wallet-info small {
+    font-size: 5px;
+  }
 
-              <div>
-                <span className="overview-tag">UPCOMING MATCHES</span>
-                <h4>Compete. Perform. Prove.</h4>
+  .wallet-info strong {
+    font-size: 9px;
+  }
 
-                <p>
-                  Choose your game, select an available tournament and enter
-                  the match. Tournament details, entry fee, prize pool and
-                  match timing are shown before you join.
-                </p>
+  .profile-button {
+    width: 36px;
+    height: 36px;
+  }
 
-                <button
-                  className="outline-button"
-                  onClick={() => handleNav("tournaments")}
-                >
-                  VIEW TOURNAMENTS →
-                </button>
-              </div>
-            </div>
+  .hero {
+    min-height: 455px;
+  }
 
-            <div className="overview-card">
-              <span className="overview-number">02</span>
-              <span className="overview-tag">MATCH DETAILS</span>
+  .hero-content {
+    padding: 28px 18px;
+  }
 
-              <h4>Clear information</h4>
+  .hero h2 {
+    font-size: 49px;
 
-              <ul>
-                <li>Entry fee</li>
-                <li>Per-kill reward</li>
-                <li>Prize pool</li>
-                <li>Match timing</li>
-                <li>Player capacity</li>
-              </ul>
-            </div>
+    letter-spacing: -2.5px;
+  }
 
-            <div className="overview-card">
-              <span className="overview-number">03</span>
-              <span className="overview-tag">RESULTS & REWARDS</span>
+  .hero-content > p {
+    font-size: 9px;
+  }
 
-              <h4>Play for the win</h4>
+  .primary-button {
+    height: 40px;
 
-              <p>
-                Results are processed according to the tournament rules and
-                eligible rewards are credited to the player's wallet.
-              </p>
-            </div>
-          </div>
-        </section>
+    padding: 0 14px;
 
-        {/* ================= RULES ================= */}
-        <section className="section info-section">
-          <div className="section-heading">
-            <div>
-              <span className="eyebrow">PLAY FAIR</span>
-              <h3>Rules</h3>
-            </div>
-          </div>
+    font-size: 8px;
+  }
 
-          <div className="rules-grid">
-            <div className="rule-card">
-              <span>01</span>
-              <div>
-                <h4>One Player, One Entry</h4>
-                <p>
-                  Players must use their own registered account and valid game
-                  details.
-                </p>
-              </div>
-            </div>
+  .prize-grid {
+    gap: 5px;
+  }
 
-            <div className="rule-card">
-              <span>02</span>
-              <div>
-                <h4>Fair Play</h4>
-                <p>
-                  Any cheating, hacking, exploiting or unfair gameplay may
-                  result in disqualification.
-                </p>
-              </div>
-            </div>
+  .prize-grid > div {
+    padding: 8px;
+  }
 
-            <div className="rule-card">
-              <span>03</span>
-              <div>
-                <h4>Correct Game Details</h4>
-                <p>
-                  Players are responsible for providing correct in-game
-                  username and game information.
-                </p>
-              </div>
-            </div>
+  .terms-card {
+    align-items: flex-start;
+  }
 
-            <div className="rule-card">
-              <span>04</span>
-              <div>
-                <h4>Results</h4>
-                <p>
-                  Tournament results and rewards are processed according to
-                  the applicable tournament rules.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
+  .terms-icon {
+    width: 32px;
+    height: 32px;
+    flex-basis: 32px;
+  }
 
-        {/* ================= TERMS ================= */}
-        <section className="section terms-section">
-          <div className="terms-card">
-            <div className="terms-icon">§</div>
+  .bottom-nav button {
+    font-size: 5px;
+  }
 
-            <div className="terms-content">
-              <span className="eyebrow">IMPORTANT INFORMATION</span>
-
-              <h3>Terms & Conditions</h3>
-
-              <p>
-                By participating in Play2Prove tournaments, players agree to
-                follow the platform rules, tournament-specific conditions and
-                fair-play requirements.
-              </p>
-
-              <div className="terms-links">
-                <button>Terms of Use →</button>
-                <button>Privacy Policy →</button>
-                <button>Responsible Play →</button>
-              </div>
-            </div>
-          </div>
-        </section>
-      </main>
-
-      {/* ================= BOTTOM NAV ================= */}
-      <nav className="bottom-nav">
-        <button
-          className={activeTab === "home" ? "nav-active" : ""}
-          onClick={() => handleNav("home")}
-        >
-          <span>⌂</span>
-          HOME
-        </button>
-
-        <button
-          className={activeTab === "tournaments" ? "nav-active" : ""}
-          onClick={() => handleNav("tournaments")}
-        >
-          <span>♛</span>
-          TOURNAMENTS
-        </button>
-
-        <button
-          className={activeTab === "matches" ? "nav-active" : ""}
-          onClick={() => handleNav("matches")}
-        >
-          <span>⚔</span>
-          MATCHES
-        </button>
-
-        <button
-          className={activeTab === "wallet" ? "nav-active" : ""}
-          onClick={() => handleNav("wallet")}
-        >
-          <span>▣</span>
-          WALLET
-        </button>
-
-        <button
-          className={activeTab === "profile" ? "nav-active" : ""}
-          onClick={() => handleNav("profile")}
-        >
-          <span>○</span>
-          PROFILE
-        </button>
-      </nav>
-    </div>
-  );
+  .bottom-nav button span {
+    font-size: 12px;
+  }
 }
