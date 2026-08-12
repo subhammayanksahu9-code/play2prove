@@ -10,12 +10,8 @@ import "./tournaments.css";
 const GAMES_API =
   "https://script.google.com/macros/s/AKfycbx3vZuDmwpqykeX45oWhNffRqySbFQZ6a5ZukM3KEhB6B5e8I6rzWBmg8tsm_zUNz0/exec";
 
-
 /* =========================================================
    TEMP TOURNAMENT DATA
-   -----------------------------------------
-   Games will come from Google Sheet.
-   Tournament data will be connected separately.
 ========================================================= */
 
 const tournaments = [
@@ -101,7 +97,6 @@ const tournaments = [
   },
 ];
 
-
 /* =========================================================
    TIME SLOTS
 ========================================================= */
@@ -114,13 +109,11 @@ const timeSlots = {
   Night: "8:00 PM – 12:00 AM",
 };
 
-
 /* =========================================================
    MAIN PAGE
 ========================================================= */
 
 export default function TournamentsPage() {
-
   /* -----------------------------
      GAMES FROM GOOGLE SHEET
   ----------------------------- */
@@ -128,7 +121,6 @@ export default function TournamentsPage() {
   const [games, setGames] = useState([]);
   const [gamesLoading, setGamesLoading] = useState(true);
   const [gamesError, setGamesError] = useState("");
-
 
   /* -----------------------------
      PAGE FILTER STATE
@@ -143,187 +135,139 @@ export default function TournamentsPage() {
   const [mode, setMode] = useState("All");
   const [map, setMap] = useState("All");
 
-
   /* =========================================================
      FETCH GAMES FROM GOOGLE SHEETS
   ========================================================= */
 
-useEffect(() => {
-  let cancelled = false;
+  useEffect(() => {
+    let cancelled = false;
 
-  const CACHE_KEY = "play2prove_games_v1";
+    const CACHE_KEY = "play2prove_games_v1";
 
-  function normalizeGames(data) {
-    if (!Array.isArray(data)) return [];
+    function normalizeGames(data) {
+      if (!Array.isArray(data)) return [];
 
-    return data
-      .filter((item) => {
-        const publishValue = String(
-          item.publish ?? ""
-        )
-          .trim()
-          .toLowerCase();
+      return data
+        .filter((item) => {
+          const publishValue = String(item.publish ?? "")
+            .trim()
+            .toLowerCase();
 
-        return (
-          publishValue === "true" ||
-          publishValue === "yes" ||
-          publishValue === "1" ||
-          item.publish === true
-        );
-      })
-      .map((item, index) => {
-        const gameName = String(
-          item.gameName ?? ""
-        ).trim();
+          return (
+            publishValue === "true" ||
+            publishValue === "yes" ||
+            publishValue === "1" ||
+            item.publish === true
+          );
+        })
+        .map((item, index) => {
+          const gameName = String(item.gameName ?? "").trim();
 
-        return {
-          id:
-            gameName
-              .toLowerCase()
-              .replace(/[^a-z0-9]+/g, "-")
-              .replace(/^-|-$/g, "") ||
-            `game-${index + 1}`,
+          return {
+            id:
+              gameName
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/^-|-$/g, "") ||
+              `game-${index + 1}`,
 
-          name: gameName || "GAME",
+            name: gameName || "GAME",
 
-          image: String(
-            item.image ?? ""
-          ).trim(),
+            image: String(item.image ?? "").trim(),
 
-          status: String(
-            item.status ?? "Upcoming"
-          ).trim(),
+            status: String(item.status ?? "Upcoming").trim(),
 
-          device: "MOBILE + PC",
-        };
-      })
-      .filter((game) => game.name);
-  }
+            device: "MOBILE + PC",
+          };
+        })
+        .filter((game) => game.name);
+    }
 
-  async function loadGames() {
-    try {
-      /* =====================================
-         1. SHOW CACHED DATA IMMEDIATELY
-      ===================================== */
-
+    async function loadGames() {
       try {
-        const cached =
-          localStorage.getItem(CACHE_KEY);
+        /* =====================================
+           1. SHOW CACHED DATA IMMEDIATELY
+        ===================================== */
 
-        if (cached) {
-          const cachedGames =
-            JSON.parse(cached);
+        try {
+          const cached = localStorage.getItem(CACHE_KEY);
 
-          if (
-            Array.isArray(cachedGames) &&
-            cachedGames.length > 0 &&
-            !cancelled
-          ) {
-            setGames(cachedGames);
-            setGamesLoading(false);
+          if (cached) {
+            const cachedGames = JSON.parse(cached);
+
+            if (
+              Array.isArray(cachedGames) &&
+              cachedGames.length > 0 &&
+              !cancelled
+            ) {
+              setGames(cachedGames);
+              setGamesLoading(false);
+            }
           }
+        } catch (cacheError) {
+          console.log("Cache read skipped");
         }
-      } catch (cacheError) {
-        console.log(
-          "Cache read skipped"
-        );
-      }
 
+        /* =====================================
+           2. FETCH FRESH DATA
+        ===================================== */
 
-      /* =====================================
-         2. FETCH FRESH DATA IN BACKGROUND
-      ===================================== */
-
-      const response = await fetch(
-        `${GAMES_API}?t=${Date.now()}`,
-        {
+        const response = await fetch(`${GAMES_API}?t=${Date.now()}`, {
           method: "GET",
           cache: "no-store",
+        });
+
+        if (!response.ok) {
+          throw new Error("Games API failed");
         }
-      );
 
-      if (!response.ok) {
-        throw new Error(
-          "Games API failed"
-        );
+        const data = await response.json();
+
+        const freshGames = normalizeGames(data);
+
+        /* =====================================
+           3. UPDATE SCREEN
+        ===================================== */
+
+        if (!cancelled) {
+          setGames(freshGames);
+          setGamesLoading(false);
+          setGamesError("");
+        }
+
+        /* =====================================
+           4. SAVE CACHE
+        ===================================== */
+
+        try {
+          localStorage.setItem(
+            CACHE_KEY,
+            JSON.stringify(freshGames)
+          );
+        } catch (cacheError) {
+          console.log("Cache save skipped");
+        }
+      } catch (error) {
+        console.error("Games API Error:", error);
+
+        if (!cancelled) {
+          setGamesLoading(false);
+
+          /*
+            API fail hone par cached data
+            already screen par rahega.
+          */
+          setGamesError("");
+        }
       }
-
-      const data =
-        await response.json();
-
-      const freshGames =
-        normalizeGames(data);
-
-
-      /* =====================================
-         3. UPDATE SCREEN
-      ===================================== */
-
-      if (!cancelled) {
-
-        setGames(freshGames);
-
-        setGamesLoading(false);
-
-        setGamesError("");
-
-      }
-
-
-      /* =====================================
-         4. SAVE FOR NEXT VISIT
-      ===================================== */
-
-      try {
-
-        localStorage.setItem(
-          CACHE_KEY,
-          JSON.stringify(freshGames)
-        );
-
-      } catch (cacheError) {
-
-        console.log(
-          "Cache save skipped"
-        );
-
-      }
-
-    } catch (error) {
-
-      console.error(
-        "Games API Error:",
-        error
-      );
-
-
-      /*
-        Agar API fail bhi ho jaye,
-        cached games already screen par
-        rahenge.
-      */
-
-      if (!cancelled) {
-
-        setGamesLoading(false);
-
-        setGamesError("");
-
-      }
-
     }
-  }
 
+    loadGames();
 
-  loadGames();
-
-
-  return () => {
-    cancelled = true;
-  };
-
-}, []);
-
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   /* =========================================================
      SELECTED GAME
@@ -333,130 +277,92 @@ useEffect(() => {
     (game) => game.id === selectedGame
   );
 
-
   /* =========================================================
      AVAILABLE DATES
   ========================================================= */
 
   const dates = useMemo(() => {
-
     if (!selectedGame) return [];
 
     return [
       ...new Set(
         tournaments
-          .filter(
-            (t) => t.game === selectedGame
-          )
+          .filter((t) => t.game === selectedGame)
           .map((t) => t.date)
       ),
     ];
-
   }, [selectedGame]);
-
 
   /* =========================================================
      AVAILABLE TIMES
   ========================================================= */
 
   const availableTimes = useMemo(() => {
-
     if (!selectedGame) return [];
 
     return [
       ...new Set(
         tournaments
-          .filter(
-            (t) => t.game === selectedGame
-          )
+          .filter((t) => t.game === selectedGame)
           .map((t) => t.time)
       ),
     ];
-
   }, [selectedGame]);
-
 
   /* =========================================================
      AVAILABLE MAPS
   ========================================================= */
 
   const maps = useMemo(() => {
-
     if (!selectedGame) return [];
 
     return [
       ...new Set(
         tournaments
-          .filter(
-            (t) => t.game === selectedGame
-          )
+          .filter((t) => t.game === selectedGame)
           .map((t) => t.map)
       ),
     ];
-
   }, [selectedGame]);
-
 
   /* =========================================================
      FILTER TOURNAMENTS
   ========================================================= */
 
   const filteredTournaments = useMemo(() => {
-
     if (!selectedGame) return [];
 
     return tournaments.filter((t) => {
-
       if (t.game !== selectedGame) {
         return false;
       }
 
-      if (
-        status !== "All" &&
-        t.status !== status
-      ) {
+      if (status !== "All" && t.status !== status) {
         return false;
       }
 
-      if (
-        date !== "All" &&
-        t.date !== date
-      ) {
+      if (date !== "All" && t.date !== date) {
         return false;
       }
 
-      if (
-        slot !== "All" &&
-        t.slot !== slot
-      ) {
+      if (slot !== "All" && t.slot !== slot) {
         return false;
       }
 
-      if (
-        time !== "All" &&
-        t.time !== time
-      ) {
+      if (time !== "All" && t.time !== time) {
         return false;
       }
 
-      if (
-        mode !== "All" &&
-        t.mode !== mode
-      ) {
+      if (mode !== "All" && t.mode !== mode) {
         return false;
       }
 
-      if (
-        map !== "All" &&
-        t.map !== map
-      ) {
+      if (map !== "All" && t.map !== map) {
         return false;
       }
 
       return true;
-
     });
-
   }, [
     selectedGame,
     status,
@@ -467,13 +373,11 @@ useEffect(() => {
     map,
   ]);
 
-
   /* =========================================================
      SELECT GAME
   ========================================================= */
 
   function selectGame(gameId) {
-
     setSelectedGame(gameId);
 
     setStatus("Upcoming");
@@ -482,69 +386,52 @@ useEffect(() => {
     setTime("All");
     setMode("All");
     setMap("All");
-
   }
-
 
   /* =========================================================
      RESET FILTERS
   ========================================================= */
 
   function resetFilters() {
-
     setStatus("Upcoming");
     setDate("All");
     setSlot("All");
     setTime("All");
     setMode("All");
     setMap("All");
-
   }
-
 
   /* =========================================================
      RENDER
   ========================================================= */
 
   return (
-
     <main className="tournamentPage">
-
       {/* BACKGROUND */}
 
       <div className="tpGlow tpOrange" />
       <div className="tpGlow tpBlue" />
       <div className="tpGrid" />
 
-
       {/* =====================================================
           HEADER
       ===================================================== */}
 
       <header className="tpHeader">
-
         <button
           className="backButton"
           onClick={() => {
-
             if (selectedGame) {
-
               setSelectedGame(null);
-
             } else {
-
               window.location.href = "/";
-
             }
-
           }}
         >
           ←
         </button>
 
-
         <div className="tpTitle">
-
           <span>PLAY2PROVE</span>
 
           <strong>
@@ -552,40 +439,27 @@ useEffect(() => {
               ? selectedGameData.name
               : "TOURNAMENTS"}
           </strong>
-
         </div>
 
-
         <div className="tpRight">
-
           <button className="tpWallet">
-
             <small>WALLET</small>
-
             <strong>₹0</strong>
-
           </button>
-
 
           <button className="tpProfile">
             ◉
           </button>
-
         </div>
-
       </header>
-
 
       {/* =====================================================
           GAME SELECTION
       ===================================================== */}
 
       {!selectedGame ? (
-
         <section className="gameSelection">
-
           <div className="selectionIntro">
-
             <span>CHOOSE YOUR BATTLE</span>
 
             <h1>
@@ -596,72 +470,53 @@ useEffect(() => {
             <p>
               Choose a game to explore available tournaments.
             </p>
-
           </div>
-
 
           {/* LOADING */}
 
           {gamesLoading && (
-
             <div className="emptyState">
-
               <div className="loadingOrb">
                 ✦
               </div>
 
-              <h3>
-                LOADING GAMES...
-              </h3>
+              <h3>LOADING GAMES...</h3>
 
               <p>
                 Fetching the latest games.
               </p>
-
             </div>
-
           )}
-
 
           {/* ERROR */}
 
           {!gamesLoading && gamesError && (
-
             <div className="emptyState">
-
-              <div>
-                ⚠
-              </div>
+              <div>⚠</div>
 
               <h3>
                 GAMES COULD NOT LOAD
               </h3>
 
-              <p>
-                {gamesError}
-              </p>
+              <p>{gamesError}</p>
 
               <button
-                onClick={() => window.location.reload()}
+                onClick={() =>
+                  window.location.reload()
+                }
               >
                 RETRY
               </button>
-
             </div>
-
           )}
-
 
           {/* GAME CARDS */}
 
           {!gamesLoading &&
             !gamesError &&
             games.length > 0 && (
-
               <div className="gameCards">
-
                 {games.map((game) => (
-
                   <button
                     className="gameSelectCard"
                     key={game.id}
@@ -669,18 +524,13 @@ useEffect(() => {
                       selectGame(game.id)
                     }
                   >
-
                     {/* GAME NAME */}
 
                     <div className="gameCardName">
                       {game.name}
                     </div>
 
-
-                    {/* ======================================
-                        IMAGE AREA
-                        FIXED 16:9
-                    ====================================== */}
+                    {/* IMAGE AREA */}
 
                     <div
                       className="gameImage"
@@ -690,50 +540,41 @@ useEffect(() => {
                         overflow: "hidden",
                       }}
                     >
-
                       {game.image ? (
-
                         <img
-  src={game.image}
-  alt={game.name}
-  loading="eager"
-  decoding="async"
-  fetchPriority="high"
-  style={{
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
-    objectPosition: "center",
-    display: "block",
-  }}
-  onError={(e) => {
-    e.currentTarget.style.display = "none";
-  }}
-/>
-
+                          src={game.image}
+                          alt={game.name}
+                          loading="eager"
+                          decoding="async"
+                          fetchPriority="high"
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                            objectPosition: "center",
+                            display: "block",
+                          }}
+                          onError={(e) => {
+                            e.currentTarget.style.display =
+                              "none";
+                          }}
+                        />
                       ) : null}
 
-
                       <div className="imageFallback">
-
                         {game.name
                           .toLowerCase()
                           .includes("free")
                           ? "🔥"
                           : "🎮"}
-
                       </div>
 
-
                       <div className="imageGlow" />
-
                     </div>
-
 
                     {/* CARD BOTTOM */}
 
                     <div className="gameCardBottom">
-
                       <span>
                         📱 {game.device}
                       </span>
@@ -741,75 +582,61 @@ useEffect(() => {
                       <b>
                         ENTER ARENA →
                       </b>
-
                     </div>
 
-
-                    {/* ACTUAL SHEET STATUS */}
+                    {/* STATUS */}
 
                     <div className="gameStatusRow">
-
                       <span
-                        className={`gameStatus status-${game.status
-                          .toLowerCase()
-                          .replace(/\s+/g, "-")}`}
+                        className={`gameStatus ${
+                          game.status
+                            .toLowerCase() === "live"
+                            ? "statusLive"
+                            : game.status
+                                .toLowerCase() ===
+                              "deciding"
+                            ? "statusDeciding"
+                            : "statusUpcoming"
+                        }`}
                       >
-                        ● {game.status.toUpperCase()}
+                        ●{" "}
+                        {game.status.toUpperCase()}
                       </span>
-
                     </div>
-
                   </button>
-
                 ))}
-
               </div>
-
             )}
-
 
           {/* NO GAMES */}
 
           {!gamesLoading &&
             !gamesError &&
             games.length === 0 && (
-
               <div className="emptyState">
-
-                <div>
-                  🎮
-                </div>
+                <div>🎮</div>
 
                 <h3>
                   NO GAMES AVAILABLE
                 </h3>
 
                 <p>
-                  Add a published game in your Google Sheet.
+                  Add a published game in your
+                  Google Sheet.
                 </p>
-
               </div>
-
             )}
-
         </section>
-
       ) : (
-
-
         /* ===================================================
            SELECTED GAME TOURNAMENTS
         =================================================== */
 
         <section className="tournamentContent">
-
-
           {/* GAME BANNER */}
 
           <div className="gameBanner">
-
             <div>
-
               <span className="bannerEyebrow">
                 TOURNAMENT ARENA
               </span>
@@ -819,36 +646,29 @@ useEffect(() => {
               </h1>
 
               <p>
-                Find your match. Enter the arena. Prove yourself.
+                Find your match. Enter the arena.
+                Prove yourself.
               </p>
-
             </div>
 
-
             <div className="bannerGameIcon">
-
               {selectedGameData.name
                 .toLowerCase()
                 .includes("free")
                 ? "🔥"
                 : "🎮"}
-
             </div>
-
           </div>
-
 
           {/* STATUS */}
 
           <div className="statusTabs">
-
             {[
               "Upcoming",
               "Live",
               "Deciding",
               "Past",
             ].map((item) => (
-
               <button
                 key={item}
                 className={
@@ -860,56 +680,40 @@ useEffect(() => {
                   setStatus(item)
                 }
               >
-
                 {item === "Live" && "● "}
-
                 {item}
-
               </button>
-
             ))}
-
           </div>
-
 
           {/* FILTER PANEL */}
 
           <div className="filterPanel">
-
             <div className="filterTitle">
-
               <div>
-
                 <span>
                   FILTER MATCHES
                 </span>
 
                 <strong>
-                  Find your perfect tournament
+                  Find your perfect
+                  tournament
                 </strong>
-
               </div>
-
 
               <button
                 onClick={resetFilters}
               >
                 RESET
               </button>
-
             </div>
-
 
             {/* DATE */}
 
             <div className="filterGroup">
-
-              <label>
-                DATE
-              </label>
+              <label>DATE</label>
 
               <div className="filterScroll">
-
                 <button
                   className={
                     date === "All"
@@ -923,9 +727,7 @@ useEffect(() => {
                   ALL DATES
                 </button>
 
-
                 {dates.map((item) => (
-
                   <button
                     key={item}
                     className={
@@ -939,69 +741,48 @@ useEffect(() => {
                   >
                     {formatDate(item)}
                   </button>
-
                 ))}
-
               </div>
-
             </div>
-
 
             {/* TIME SLOT */}
 
             <div className="filterGroup">
-
-              <label>
-                TIME SLOT
-              </label>
+              <label>TIME SLOT</label>
 
               <div className="slotGrid">
-
                 {Object.entries(
                   timeSlots
-                ).map(
-                  ([key, value]) => (
+                ).map(([key, value]) => (
+                  <button
+                    key={key}
+                    className={
+                      slot === key
+                        ? "selected"
+                        : ""
+                    }
+                    onClick={() =>
+                      setSlot(key)
+                    }
+                  >
+                    <strong>
+                      {key}
+                    </strong>
 
-                    <button
-                      key={key}
-                      className={
-                        slot === key
-                          ? "selected"
-                          : ""
-                      }
-                      onClick={() =>
-                        setSlot(key)
-                      }
-                    >
-
-                      <strong>
-                        {key}
-                      </strong>
-
-                      <small>
-                        {value}
-                      </small>
-
-                    </button>
-
-                  )
-                )}
-
+                    <small>
+                      {value}
+                    </small>
+                  </button>
+                ))}
               </div>
-
             </div>
-
 
             {/* EXACT TIME */}
 
             <div className="filterGroup">
-
-              <label>
-                EXACT TIME
-              </label>
+              <label>EXACT TIME</label>
 
               <div className="filterScroll">
-
                 <button
                   className={
                     time === "All"
@@ -1015,10 +796,8 @@ useEffect(() => {
                   ALL TIMES
                 </button>
 
-
                 {availableTimes.map(
                   (item) => (
-
                     <button
                       key={item}
                       className={
@@ -1032,32 +811,23 @@ useEffect(() => {
                     >
                       {item}
                     </button>
-
                   )
                 )}
-
               </div>
-
             </div>
-
 
             {/* MODE */}
 
             <div className="filterGroup">
-
-              <label>
-                MODE
-              </label>
+              <label>MODE</label>
 
               <div className="smallFilterGrid">
-
                 {[
                   "All",
                   "Solo",
                   "Duo",
                   "Squad",
                 ].map((item) => (
-
                   <button
                     key={item}
                     className={
@@ -1071,24 +841,16 @@ useEffect(() => {
                   >
                     {item}
                   </button>
-
                 ))}
-
               </div>
-
             </div>
-
 
             {/* MAP */}
 
             <div className="filterGroup">
-
-              <label>
-                MAP
-              </label>
+              <label>MAP</label>
 
               <div className="smallFilterGrid">
-
                 <button
                   className={
                     map === "All"
@@ -1102,9 +864,7 @@ useEffect(() => {
                   ALL MAPS
                 </button>
 
-
                 {maps.map((item) => (
-
                   <button
                     key={item}
                     className={
@@ -1118,76 +878,51 @@ useEffect(() => {
                   >
                     {item}
                   </button>
-
                 ))}
-
               </div>
-
             </div>
-
           </div>
-
 
           {/* RESULTS HEADER */}
 
           <div className="resultsHeader">
-
             <div>
-
               <span>
                 AVAILABLE MATCHES
               </span>
 
               <strong>
-
-                {filteredTournaments.length}
-
-                {" "}
-
+                {filteredTournaments.length}{" "}
                 TOURNAMENT
-                {filteredTournaments.length !== 1
+                {filteredTournaments.length !==
+                1
                   ? "S"
                   : ""}
-
               </strong>
-
             </div>
-
 
             <span>
               {status.toUpperCase()}
             </span>
-
           </div>
-
 
           {/* TOURNAMENT RESULTS */}
 
           {filteredTournaments.length > 0 ? (
-
             <div className="tournamentGrid">
-
               {filteredTournaments.map(
                 (item) => (
-
                   <TournamentCard
                     key={item.id}
                     tournament={item}
                     game={selectedGameData}
                   />
-
                 )
               )}
-
             </div>
-
           ) : (
-
             <div className="emptyState">
-
-              <div>
-                ⌁
-              </div>
+              <div>⌁</div>
 
               <h3>
                 NO MATCHES FOUND
@@ -1195,7 +930,8 @@ useEffect(() => {
 
               <p>
                 Try changing your filters
-                to find available tournaments.
+                to find available
+                tournaments.
               </p>
 
               <button
@@ -1203,26 +939,17 @@ useEffect(() => {
               >
                 CLEAR FILTERS
               </button>
-
             </div>
-
           )}
-
         </section>
-
       )}
-
 
       {/* BOTTOM NEON */}
 
       <div className="tpNeonBottom" />
-
     </main>
-
   );
-
 }
-
 
 /* =========================================================
    TOURNAMENT CARD
@@ -1232,169 +959,120 @@ function TournamentCard({
   tournament,
   game,
 }) {
-
   const percentage =
     (tournament.joined /
       tournament.capacity) *
     100;
 
-
   const statusClass =
-    tournament.status.toLowerCase();
-
+    tournament.status.toLowerCase() ===
+    "live"
+      ? "live"
+      : tournament.status.toLowerCase() ===
+        "deciding"
+      ? "deciding"
+      : tournament.status.toLowerCase() ===
+        "past"
+      ? "past"
+      : "";
 
   return (
-
     <article
       className={`matchCard ${statusClass}`}
     >
-
       <div className="cardTop">
-
         <div>
-
           <span className="matchGame">
-            {game?.name || "TOURNAMENT"}
+            {game?.name ||
+              "TOURNAMENT"}
           </span>
 
           <h3>
             {tournament.title}
           </h3>
-
         </div>
 
-
         <span className="matchStatus">
-
-          {tournament.status === "Live" &&
-            "● "}
+          {tournament.status ===
+            "Live" && "● "}
 
           {tournament.status.toUpperCase()}
-
         </span>
-
       </div>
 
-
       <div className="matchDetails">
-
         <div>
-
-          <small>
-            DATE
-          </small>
+          <small>DATE</small>
 
           <strong>
             {formatDate(
               tournament.date
             )}
           </strong>
-
         </div>
 
-
         <div>
-
-          <small>
-            TIME
-          </small>
+          <small>TIME</small>
 
           <strong>
             {tournament.time}
           </strong>
-
         </div>
 
-
         <div>
-
-          <small>
-            MODE
-          </small>
+          <small>MODE</small>
 
           <strong>
             {tournament.mode}
           </strong>
-
         </div>
 
-
         <div>
-
-          <small>
-            MAP
-          </small>
+          <small>MAP</small>
 
           <strong>
             {tournament.map}
           </strong>
-
         </div>
-
       </div>
 
-
       <div className="rewardDetails">
-
         <div>
-
-          <small>
-            ENTRY
-          </small>
+          <small>ENTRY</small>
 
           <strong>
             ₹{tournament.entry}
           </strong>
-
         </div>
 
-
         <div>
-
-          <small>
-            PER KILL
-          </small>
+          <small>PER KILL</small>
 
           <strong>
             ₹{tournament.kill}
           </strong>
-
         </div>
 
-
         <div>
-
-          <small>
-            PRIZE POOL
-          </small>
+          <small>PRIZE POOL</small>
 
           <strong className="orangeText">
             ₹{tournament.prize}
           </strong>
-
         </div>
-
       </div>
 
-
       <div className="players">
-
         <div>
-
-          <span>
-            PLAYERS
-          </span>
+          <span>PLAYERS</span>
 
           <strong>
             {tournament.joined}/
             {tournament.capacity}
           </strong>
-
         </div>
 
-
         <div className="progressBar">
-
           <span
             style={{
               width: `${Math.min(
@@ -1403,51 +1081,38 @@ function TournamentCard({
               )}%`,
             }}
           />
-
         </div>
-
       </div>
 
-
-      {tournament.status === "Past" ? (
-
+      {tournament.status ===
+      "Past" ? (
         <button className="resultButton">
           VIEW RESULTS →
         </button>
-
-      ) : tournament.status === "Live" ? (
-
+      ) : tournament.status ===
+        "Live" ? (
         <button className="liveButton">
           VIEW LIVE MATCH →
         </button>
-
-      ) : tournament.status === "Deciding" ? (
-
+      ) : tournament.status ===
+        "Deciding" ? (
         <button className="decidingButton">
           VIEW RESULT STATUS →
         </button>
-
       ) : (
-
         <button className="joinButton">
           VIEW & JOIN →
         </button>
-
       )}
-
     </article>
-
   );
-
 }
-
 
 /* =========================================================
    DATE FORMAT
 ========================================================= */
 
 function formatDate(date) {
-
   const d =
     new Date(`${date}T00:00:00`);
 
@@ -1458,5 +1123,4 @@ function formatDate(date) {
       month: "short",
     }
   );
-
 }
