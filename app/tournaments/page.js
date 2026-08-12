@@ -148,110 +148,181 @@ export default function TournamentsPage() {
      FETCH GAMES FROM GOOGLE SHEETS
   ========================================================= */
 
-  useEffect(() => {
+useEffect(() => {
+  let cancelled = false;
 
-    let cancelled = false;
+  const CACHE_KEY = "play2prove_games_v1";
 
-    async function loadGames() {
+  function normalizeGames(data) {
+    if (!Array.isArray(data)) return [];
+
+    return data
+      .filter((item) => {
+        const publishValue = String(
+          item.publish ?? ""
+        )
+          .trim()
+          .toLowerCase();
+
+        return (
+          publishValue === "true" ||
+          publishValue === "yes" ||
+          publishValue === "1" ||
+          item.publish === true
+        );
+      })
+      .map((item, index) => {
+        const gameName = String(
+          item.gameName ?? ""
+        ).trim();
+
+        return {
+          id:
+            gameName
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, "-")
+              .replace(/^-|-$/g, "") ||
+            `game-${index + 1}`,
+
+          name: gameName || "GAME",
+
+          image: String(
+            item.image ?? ""
+          ).trim(),
+
+          status: String(
+            item.status ?? "Upcoming"
+          ).trim(),
+
+          device: "MOBILE + PC",
+        };
+      })
+      .filter((game) => game.name);
+  }
+
+  async function loadGames() {
+    try {
+      /* =====================================
+         1. SHOW CACHED DATA IMMEDIATELY
+      ===================================== */
+
+      try {
+        const cached =
+          localStorage.getItem(CACHE_KEY);
+
+        if (cached) {
+          const cachedGames =
+            JSON.parse(cached);
+
+          if (
+            Array.isArray(cachedGames) &&
+            cachedGames.length > 0 &&
+            !cancelled
+          ) {
+            setGames(cachedGames);
+            setGamesLoading(false);
+          }
+        }
+      } catch (cacheError) {
+        console.log(
+          "Cache read skipped"
+        );
+      }
+
+
+      /* =====================================
+         2. FETCH FRESH DATA IN BACKGROUND
+      ===================================== */
+
+      const response = await fetch(
+        `${GAMES_API}?t=${Date.now()}`,
+        {
+          method: "GET",
+          cache: "no-store",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          "Games API failed"
+        );
+      }
+
+      const data =
+        await response.json();
+
+      const freshGames =
+        normalizeGames(data);
+
+
+      /* =====================================
+         3. UPDATE SCREEN
+      ===================================== */
+
+      if (!cancelled) {
+
+        setGames(freshGames);
+
+        setGamesLoading(false);
+
+        setGamesError("");
+
+      }
+
+
+      /* =====================================
+         4. SAVE FOR NEXT VISIT
+      ===================================== */
 
       try {
 
-        setGamesLoading(true);
-        setGamesError("");
-
-        const response = await fetch(
-          `${GAMES_API}?t=${Date.now()}`,
-          {
-            method: "GET",
-            cache: "no-store",
-          }
+        localStorage.setItem(
+          CACHE_KEY,
+          JSON.stringify(freshGames)
         );
 
-        if (!response.ok) {
-          throw new Error("Unable to load games");
-        }
+      } catch (cacheError) {
 
-        const data = await response.json();
+        console.log(
+          "Cache save skipped"
+        );
 
-        if (!Array.isArray(data)) {
-          throw new Error("Invalid games data");
-        }
+      }
 
-        const cleanGames = data
-          .filter((item) => {
+    } catch (error) {
 
-            const publishValue =
-              String(item.publish ?? "")
-                .trim()
-                .toLowerCase();
+      console.error(
+        "Games API Error:",
+        error
+      );
 
-            return (
-              publishValue === "true" ||
-              publishValue === "yes" ||
-              publishValue === "1" ||
-              item.publish === true
-            );
 
-          })
-          .map((item, index) => {
+      /*
+        Agar API fail bhi ho jaye,
+        cached games already screen par
+        rahenge.
+      */
 
-            const gameName =
-              String(item.gameName ?? "")
-                .trim();
+      if (!cancelled) {
 
-            return {
-              id:
-                gameName
-                  .toLowerCase()
-                  .replace(/[^a-z0-9]+/g, "-")
-                  .replace(/^-|-$/g, "") ||
-                `game-${index + 1}`,
+        setGamesLoading(false);
 
-              name: gameName || "GAME",
-
-              image:
-                String(item.image ?? "").trim(),
-
-              status:
-                String(item.status ?? "Upcoming").trim(),
-
-              device: "MOBILE + PC",
-            };
-
-          })
-          .filter((game) => game.name);
-
-        if (!cancelled) {
-          setGames(cleanGames);
-        }
-
-      } catch (error) {
-
-        console.error("Games API Error:", error);
-
-        if (!cancelled) {
-          setGamesError(
-            "Unable to load games right now."
-          );
-        }
-
-      } finally {
-
-        if (!cancelled) {
-          setGamesLoading(false);
-        }
+        setGamesError("");
 
       }
 
     }
+  }
 
-    loadGames();
 
-    return () => {
-      cancelled = true;
-    };
+  loadGames();
 
-  }, []);
+
+  return () => {
+    cancelled = true;
+  };
+
+}, []);
 
 
   /* =========================================================
@@ -623,22 +694,22 @@ export default function TournamentsPage() {
                       {game.image ? (
 
                         <img
-                          src={game.image}
-                          alt={game.name}
-                          loading="lazy"
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                            display: "block",
-                          }}
-                          onError={(e) => {
-
-                            e.currentTarget.style.display =
-                              "none";
-
-                          }}
-                        />
+  src={game.image}
+  alt={game.name}
+  loading="eager"
+  decoding="async"
+  fetchPriority="high"
+  style={{
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    objectPosition: "center",
+    display: "block",
+  }}
+  onError={(e) => {
+    e.currentTarget.style.display = "none";
+  }}
+/>
 
                       ) : null}
 
