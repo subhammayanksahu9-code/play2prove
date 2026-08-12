@@ -570,6 +570,25 @@ export default function HomePage() {
             wins, streaks and tournament performance.
           </p>
 
+          <div className="skillCards">
+
+  <div className="skillCard">
+    <small>COMPETE</small>
+    <strong>Build Your Skill</strong>
+  </div>
+
+  <div className="skillCard">
+    <small>RANK</small>
+    <strong>Climb The Leaderboard</strong>
+  </div>
+
+  <div className="skillCard">
+    <small>REWARD</small>
+    <strong>Win. Prove. Earn.</strong>
+  </div>
+
+</div>
+
         </div>
 
 
@@ -864,4 +883,4 @@ function LeaderboardRow({
 
     </div>
   );
-}
+  }
