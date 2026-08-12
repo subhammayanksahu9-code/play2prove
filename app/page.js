@@ -1,1462 +1,886 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import "./tournaments.css";
+import { useEffect, useState } from "react";
 
-/* =========================================================
-   GOOGLE SHEETS / APPS SCRIPT API
-========================================================= */
+export default function HomePage() {
+  const [menuOpen, setMenuOpen] = useState(false);
 
-const GAMES_API =
-  "https://script.google.com/macros/s/AKfycbx3vZuDmwpqykeX45oWhNffRqySbFQZ6a5ZukM3KEhB6B5e8I6rzWBmg8tsm_zUNz0/exec";
-
-
-/* =========================================================
-   TEMP TOURNAMENT DATA
-   -----------------------------------------
-   Games will come from Google Sheet.
-   Tournament data will be connected separately.
-========================================================= */
-
-const tournaments = [
-  {
-    id: 1,
-    game: "free-fire",
-    title: "Bermuda Solo #01",
-    map: "Bermuda",
-    mode: "Solo",
-    date: "2026-08-12",
-    time: "06:00 PM",
-    slot: "Evening",
-    status: "Upcoming",
-    entry: 30,
-    kill: 5,
-    prize: 500,
-    joined: 37,
-    capacity: 48,
-  },
-  {
-    id: 2,
-    game: "free-fire",
-    title: "Bermuda Squad Clash",
-    map: "Bermuda",
-    mode: "Squad",
-    date: "2026-08-12",
-    time: "08:00 PM",
-    slot: "Night",
-    status: "Upcoming",
-    entry: 100,
-    kill: 10,
-    prize: 1500,
-    joined: 8,
-    capacity: 12,
-  },
-  {
-    id: 3,
-    game: "free-fire",
-    title: "Purgatory Solo #04",
-    map: "Purgatory",
-    mode: "Solo",
-    date: "2026-08-12",
-    time: "04:00 PM",
-    slot: "Evening",
-    status: "Live",
-    entry: 30,
-    kill: 5,
-    prize: 500,
-    joined: 48,
-    capacity: 48,
-  },
-  {
-    id: 4,
-    game: "free-fire",
-    title: "Kalahari Solo #02",
-    map: "Kalahari",
-    mode: "Solo",
-    date: "2026-08-11",
-    time: "09:00 PM",
-    slot: "Night",
-    status: "Deciding",
-    entry: 50,
-    kill: 5,
-    prize: 800,
-    joined: 48,
-    capacity: 48,
-  },
-  {
-    id: 5,
-    game: "free-fire",
-    title: "Bermuda Championship",
-    map: "Bermuda",
-    mode: "Squad",
-    date: "2026-08-10",
-    time: "07:00 PM",
-    slot: "Evening",
-    status: "Past",
-    entry: 100,
-    kill: 10,
-    prize: 1500,
-    joined: 12,
-    capacity: 12,
-  },
-];
-
-
-/* =========================================================
-   TIME SLOTS
-========================================================= */
-
-const timeSlots = {
-  All: "All Times",
-  Morning: "6:00 AM – 12:00 PM",
-  Afternoon: "12:00 PM – 4:00 PM",
-  Evening: "4:00 PM – 8:00 PM",
-  Night: "8:00 PM – 12:00 AM",
-};
-
-
-/* =========================================================
-   MAIN PAGE
-========================================================= */
-
-export default function TournamentsPage() {
-
-  /* -----------------------------
-     GAMES FROM GOOGLE SHEET
-  ----------------------------- */
-
-  const [games, setGames] = useState([]);
-  const [gamesLoading, setGamesLoading] = useState(true);
-  const [gamesError, setGamesError] = useState("");
-
-
-  /* -----------------------------
-     PAGE FILTER STATE
-  ----------------------------- */
-
-  const [selectedGame, setSelectedGame] = useState(null);
-
-  const [status, setStatus] = useState("Upcoming");
-  const [date, setDate] = useState("All");
-  const [slot, setSlot] = useState("All");
-  const [time, setTime] = useState("All");
-  const [mode, setMode] = useState("All");
-  const [map, setMap] = useState("All");
-
-
-  /* =========================================================
-     FETCH GAMES FROM GOOGLE SHEETS
-  ========================================================= */
-
-useEffect(() => {
-  let cancelled = false;
-
-  const CACHE_KEY = "play2prove_games_v1";
-
-  function normalizeGames(data) {
-    if (!Array.isArray(data)) return [];
-
-    return data
-      .filter((item) => {
-        const publishValue = String(
-          item.publish ?? ""
-        )
-          .trim()
-          .toLowerCase();
-
-        return (
-          publishValue === "true" ||
-          publishValue === "yes" ||
-          publishValue === "1" ||
-          item.publish === true
-        );
-      })
-      .map((item, index) => {
-        const gameName = String(
-          item.gameName ?? ""
-        ).trim();
-
-        return {
-          id:
-            gameName
-              .toLowerCase()
-              .replace(/[^a-z0-9]+/g, "-")
-              .replace(/^-|-$/g, "") ||
-            `game-${index + 1}`,
-
-          name: gameName || "GAME",
-
-          image: String(
-            item.image ?? ""
-          ).trim(),
-
-          status: String(
-            item.status ?? "Upcoming"
-          ).trim(),
-
-          device: "MOBILE + PC",
-        };
-      })
-      .filter((game) => game.name);
+  function go(path) {
+    window.location.href = path;
   }
 
-  async function loadGames() {
-    try {
-      /* =====================================
-         1. SHOW CACHED DATA IMMEDIATELY
-      ===================================== */
-
-      try {
-        const cached =
-          localStorage.getItem(CACHE_KEY);
-
-        if (cached) {
-          const cachedGames =
-            JSON.parse(cached);
-
-          if (
-            Array.isArray(cachedGames) &&
-            cachedGames.length > 0 &&
-            !cancelled
-          ) {
-            setGames(cachedGames);
-            setGamesLoading(false);
-          }
-        }
-      } catch (cacheError) {
-        console.log(
-          "Cache read skipped"
-        );
-      }
-
-
-      /* =====================================
-         2. FETCH FRESH DATA IN BACKGROUND
-      ===================================== */
-
-      const response = await fetch(
-        `${GAMES_API}?t=${Date.now()}`,
-        {
-          method: "GET",
-          cache: "no-store",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(
-          "Games API failed"
-        );
-      }
-
-      const data =
-        await response.json();
-
-      const freshGames =
-        normalizeGames(data);
-
-
-      /* =====================================
-         3. UPDATE SCREEN
-      ===================================== */
-
-      if (!cancelled) {
-
-        setGames(freshGames);
-
-        setGamesLoading(false);
-
-        setGamesError("");
-
-      }
-
-
-      /* =====================================
-         4. SAVE FOR NEXT VISIT
-      ===================================== */
-
-      try {
-
-        localStorage.setItem(
-          CACHE_KEY,
-          JSON.stringify(freshGames)
-        );
-
-      } catch (cacheError) {
-
-        console.log(
-          "Cache save skipped"
-        );
-
-      }
-
-    } catch (error) {
-
-      console.error(
-        "Games API Error:",
-        error
-      );
-
-
-      /*
-        Agar API fail bhi ho jaye,
-        cached games already screen par
-        rahenge.
-      */
-
-      if (!cancelled) {
-
-        setGamesLoading(false);
-
-        setGamesError("");
-
-      }
-
-    }
-  }
-
-
-  loadGames();
-
-
-  return () => {
-    cancelled = true;
-  };
-
-}, []);
-
-
-  /* =========================================================
-     SELECTED GAME
-  ========================================================= */
-
-  const selectedGameData = games.find(
-    (game) => game.id === selectedGame
-  );
-
-
-  /* =========================================================
-     AVAILABLE DATES
-  ========================================================= */
-
-  const dates = useMemo(() => {
-
-    if (!selectedGame) return [];
-
-    return [
-      ...new Set(
-        tournaments
-          .filter(
-            (t) => t.game === selectedGame
-          )
-          .map((t) => t.date)
-      ),
-    ];
-
-  }, [selectedGame]);
-
-
-  /* =========================================================
-     AVAILABLE TIMES
-  ========================================================= */
-
-  const availableTimes = useMemo(() => {
-
-    if (!selectedGame) return [];
-
-    return [
-      ...new Set(
-        tournaments
-          .filter(
-            (t) => t.game === selectedGame
-          )
-          .map((t) => t.time)
-      ),
-    ];
-
-  }, [selectedGame]);
-
-
-  /* =========================================================
-     AVAILABLE MAPS
-  ========================================================= */
-
-  const maps = useMemo(() => {
-
-    if (!selectedGame) return [];
-
-    return [
-      ...new Set(
-        tournaments
-          .filter(
-            (t) => t.game === selectedGame
-          )
-          .map((t) => t.map)
-      ),
-    ];
-
-  }, [selectedGame]);
-
-
-  /* =========================================================
-     FILTER TOURNAMENTS
-  ========================================================= */
-
-  const filteredTournaments = useMemo(() => {
-
-    if (!selectedGame) return [];
-
-    return tournaments.filter((t) => {
-
-      if (t.game !== selectedGame) {
-        return false;
-      }
-
-      if (
-        status !== "All" &&
-        t.status !== status
-      ) {
-        return false;
-      }
-
-      if (
-        date !== "All" &&
-        t.date !== date
-      ) {
-        return false;
-      }
-
-      if (
-        slot !== "All" &&
-        t.slot !== slot
-      ) {
-        return false;
-      }
-
-      if (
-        time !== "All" &&
-        t.time !== time
-      ) {
-        return false;
-      }
-
-      if (
-        mode !== "All" &&
-        t.mode !== mode
-      ) {
-        return false;
-      }
-
-      if (
-        map !== "All" &&
-        t.map !== map
-      ) {
-        return false;
-      }
-
-      return true;
-
+  function scrollTo(id) {
+    document.getElementById(id)?.scrollIntoView({
+      behavior: "smooth",
     });
 
-  }, [
-    selectedGame,
-    status,
-    date,
-    slot,
-    time,
-    mode,
-    map,
-  ]);
-
-
-  /* =========================================================
-     SELECT GAME
-  ========================================================= */
-
-  function selectGame(gameId) {
-
-    setSelectedGame(gameId);
-
-    setStatus("Upcoming");
-    setDate("All");
-    setSlot("All");
-    setTime("All");
-    setMode("All");
-    setMap("All");
-
+    setMenuOpen(false);
   }
-
-
-  /* =========================================================
-     RESET FILTERS
-  ========================================================= */
-
-  function resetFilters() {
-
-    setStatus("Upcoming");
-    setDate("All");
-    setSlot("All");
-    setTime("All");
-    setMode("All");
-    setMap("All");
-
-  }
-
-
-  /* =========================================================
-     RENDER
-  ========================================================= */
 
   return (
+    <main className="p2pHome">
 
-    <main className="tournamentPage">
+      {/* =====================================================
+          GLOBAL NEON ENVIRONMENT
+      ===================================================== */}
 
-      {/* BACKGROUND */}
+      <div className="neonEnvironment">
+        <div className="neonBlob blobOrange"></div>
+        <div className="neonBlob blobPurple"></div>
+        <div className="neonBlob blobBlue"></div>
 
-      <div className="tpGlow tpOrange" />
-      <div className="tpGlow tpBlue" />
-      <div className="tpGrid" />
+        <div className="movingBeam beamOne"></div>
+        <div className="movingBeam beamTwo"></div>
+        <div className="movingBeam beamThree"></div>
+
+        <div className="neonParticles"></div>
+        <div className="neonGrid"></div>
+        <div className="screenVignette"></div>
+      </div>
 
 
       {/* =====================================================
-          HEADER
+          NAVBAR
       ===================================================== */}
 
-      <header className="tpHeader">
+      <header className="p2pNavbar">
+
+        <div
+          className="p2pBrand"
+          onClick={() => scrollTo("home")}
+        >
+          <div className="p2pLogo">
+            P2P
+          </div>
+
+          <div className="brandText">
+            <strong>Play2Prove</strong>
+            <span>COMPETE • PROVE • WIN</span>
+          </div>
+        </div>
+
+
+        <nav className={`p2pNav ${menuOpen ? "open" : ""}`}>
+
+          <button onClick={() => scrollTo("home")}>
+            Home
+          </button>
+
+          <button onClick={() => scrollTo("tournaments")}>
+            Tournaments
+          </button>
+
+          <button onClick={() => scrollTo("games")}>
+            Games
+          </button>
+
+          <button onClick={() => scrollTo("how")}>
+            How It Works
+          </button>
+
+          <button onClick={() => scrollTo("leaderboard")}>
+            Leaderboard
+          </button>
+
+        </nav>
+
+
+        <div className="navActions">
+
+          <button
+            className="navLogin"
+            onClick={() => go("/login")}
+          >
+            Login
+          </button>
+
+          <button
+            className="navSignup"
+            onClick={() => go("/signup")}
+          >
+            Join Now
+          </button>
+
+        </div>
+
 
         <button
-          className="backButton"
-          onClick={() => {
-
-            if (selectedGame) {
-
-              setSelectedGame(null);
-
-            } else {
-
-              window.location.href = "/";
-
-            }
-
-          }}
+          className="mobileMenu"
+          onClick={() => setMenuOpen(!menuOpen)}
         >
-          ←
+          ☰
         </button>
-
-
-        <div className="tpTitle">
-
-          <span>PLAY2PROVE</span>
-
-          <strong>
-            {selectedGameData
-              ? selectedGameData.name
-              : "TOURNAMENTS"}
-          </strong>
-
-        </div>
-
-
-        <div className="tpRight">
-
-          <button className="tpWallet">
-
-            <small>WALLET</small>
-
-            <strong>₹0</strong>
-
-          </button>
-
-
-          <button className="tpProfile">
-            ◉
-          </button>
-
-        </div>
 
       </header>
 
 
       {/* =====================================================
-          GAME SELECTION
+          TOP NEON RAIL
       ===================================================== */}
 
-      {!selectedGame ? (
+      <div className="globalRail">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
 
-        <section className="gameSelection">
 
-          <div className="selectionIntro">
+      {/* =====================================================
+          HERO
+      ===================================================== */}
 
-            <span>CHOOSE YOUR BATTLE</span>
+      <section
+        id="home"
+        className="p2pHero"
+      >
 
-            <h1>
-              SELECT
-              <em> GAME</em>
-            </h1>
+        <div className="heroLeft">
 
-            <p>
-              Choose a game to explore available tournaments.
-            </p>
+          <div className="livePill">
+            <span className="livePulse"></span>
+            LIVE COMPETITIVE GAMING NETWORK
+          </div>
+
+
+          <h1>
+            PLAY.
+            <br />
+
+            <span>COMPETE.</span>
+            <br />
+
+            <em>PROVE.</em>
+          </h1>
+
+
+          <p className="heroDescription">
+            Enter tournaments, compete against real players,
+            climb the leaderboard and prove what you're made of.
+          </p>
+
+
+          <div className="heroButtons">
+
+            <button
+              className="heroPrimary"
+              onClick={() => go("/tournaments")}
+            >
+              FIND TOURNAMENT
+              <span>→</span>
+            </button>
+
+
+            <button
+              className="heroSecondary"
+              onClick={() => go("/matches")}
+            >
+              EXPLORE MATCHES
+            </button>
 
           </div>
 
 
-          {/* LOADING */}
-
-          {gamesLoading && (
-
-            <div className="emptyState">
-
-              <div className="loadingOrb">
-                ✦
-              </div>
-
-              <h3>
-                LOADING GAMES...
-              </h3>
-
-              <p>
-                Fetching the latest games.
-              </p>
-
-            </div>
-
-          )}
-
-
-          {/* ERROR */}
-
-          {!gamesLoading && gamesError && (
-
-            <div className="emptyState">
-
-              <div>
-                ⚠
-              </div>
-
-              <h3>
-                GAMES COULD NOT LOAD
-              </h3>
-
-              <p>
-                {gamesError}
-              </p>
-
-              <button
-                onClick={() => window.location.reload()}
-              >
-                RETRY
-              </button>
-
-            </div>
-
-          )}
-
-
-          {/* GAME CARDS */}
-
-          {!gamesLoading &&
-            !gamesError &&
-            games.length > 0 && (
-
-              <div className="gameCards">
-
-                {games.map((game) => (
-
-                  <button
-                    className="gameSelectCard"
-                    key={game.id}
-                    onClick={() =>
-                      selectGame(game.id)
-                    }
-                  >
-
-                    {/* GAME NAME */}
-
-                    <div className="gameCardName">
-                      {game.name}
-                    </div>
-
-
-                    {/* ======================================
-                        IMAGE AREA
-                        FIXED 16:9
-                    ====================================== */}
-
-                    <div
-                      className="gameImage"
-                      style={{
-                        aspectRatio: "16 / 9",
-                        width: "100%",
-                        overflow: "hidden",
-                      }}
-                    >
-
-                      {game.image ? (
-
-                        <img
-  src={game.image}
-  alt={game.name}
-  loading="eager"
-  decoding="async"
-  fetchPriority="high"
-  style={{
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
-    objectPosition: "center",
-    display: "block",
-  }}
-  onError={(e) => {
-    e.currentTarget.style.display = "none";
-  }}
-/>
-
-                      ) : null}
-
-
-                      <div className="imageFallback">
-
-                        {game.name
-                          .toLowerCase()
-                          .includes("free")
-                          ? "🔥"
-                          : "🎮"}
-
-                      </div>
-
-
-                      <div className="imageGlow" />
-
-                    </div>
-
-
-                    {/* CARD BOTTOM */}
-
-                    <div className="gameCardBottom">
-
-                      <span>
-                        📱 {game.device}
-                      </span>
-
-                      <b>
-                        ENTER ARENA →
-                      </b>
-
-                    </div>
-
-
-                    {/* ACTUAL SHEET STATUS */}
-
-                    <div className="gameStatusRow">
-
-                      <span
-                        className={`gameStatus status-${game.status
-                          .toLowerCase()
-                          .replace(/\s+/g, "-")}`}
-                      >
-                        ● {game.status.toUpperCase()}
-                      </span>
-
-                    </div>
-
-                  </button>
-
-                ))}
-
-              </div>
-
-            )}
-
-
-          {/* NO GAMES */}
-
-          {!gamesLoading &&
-            !gamesError &&
-            games.length === 0 && (
-
-              <div className="emptyState">
-
-                <div>
-                  🎮
-                </div>
-
-                <h3>
-                  NO GAMES AVAILABLE
-                </h3>
-
-                <p>
-                  Add a published game in your Google Sheet.
-                </p>
-
-              </div>
-
-            )}
-
-        </section>
-
-      ) : (
-
-
-        /* ===================================================
-           SELECTED GAME TOURNAMENTS
-        =================================================== */
-
-        <section className="tournamentContent">
-
-
-          {/* GAME BANNER */}
-
-          <div className="gameBanner">
+          <div className="heroStats">
 
             <div>
-
-              <span className="bannerEyebrow">
-                TOURNAMENT ARENA
-              </span>
-
-              <h1>
-                {selectedGameData.name}
-              </h1>
-
-              <p>
-                Find your match. Enter the arena. Prove yourself.
-              </p>
-
+              <strong>10K+</strong>
+              <span>PLAYERS</span>
             </div>
 
+            <div>
+              <strong>500+</strong>
+              <span>TOURNAMENTS</span>
+            </div>
 
-            <div className="bannerGameIcon">
-
-              {selectedGameData.name
-                .toLowerCase()
-                .includes("free")
-                ? "🔥"
-                : "🎮"}
-
+            <div>
+              <strong>₹XXL+</strong>
+              <span>PRIZES</span>
             </div>
 
           </div>
 
+        </div>
 
-          {/* STATUS */}
 
-          <div className="statusTabs">
+        {/* RIGHT SIDE — PURE CSS GAMING COMMAND CENTER */}
 
-            {[
-              "Upcoming",
-              "Live",
-              "Deciding",
-              "Past",
-            ].map((item) => (
+        <div className="heroCommand">
 
-              <button
-                key={item}
-                className={
-                  status === item
-                    ? "active"
-                    : ""
-                }
-                onClick={() =>
-                  setStatus(item)
-                }
-              >
+          <div className="commandGlow"></div>
 
-                {item === "Live" && "● "}
+          <div className="commandHeader">
+            <span>PLAY2PROVE</span>
 
-                {item}
-
-              </button>
-
-            ))}
-
+            <div>
+              <i></i>
+              SYSTEM ONLINE
+            </div>
           </div>
 
 
-          {/* FILTER PANEL */}
+          <div className="commandScreen">
 
-          <div className="filterPanel">
+            <div className="screenTop">
+              <span>LIVE ARENA</span>
+              <strong>03</strong>
+            </div>
 
-            <div className="filterTitle">
+
+            <div className="arenaCore">
+
+              <div className="coreRing ringOne"></div>
+              <div className="coreRing ringTwo"></div>
+              <div className="coreRing ringThree"></div>
+
+              <div className="coreCenter">
+                <span>P2P</span>
+                <small>ARENA</small>
+              </div>
+
+            </div>
+
+
+            <div className="matchMini">
 
               <div>
+                <small>GAME</small>
+                <strong>FREE FIRE</strong>
+              </div>
 
-                <span>
-                  FILTER MATCHES
-                </span>
-
-                <strong>
-                  Find your perfect tournament
+              <div>
+                <small>STATUS</small>
+                <strong className="green">
+                  OPEN
                 </strong>
-
               </div>
-
-
-              <button
-                onClick={resetFilters}
-              >
-                RESET
-              </button>
-
-            </div>
-
-
-            {/* DATE */}
-
-            <div className="filterGroup">
-
-              <label>
-                DATE
-              </label>
-
-              <div className="filterScroll">
-
-                <button
-                  className={
-                    date === "All"
-                      ? "selected"
-                      : ""
-                  }
-                  onClick={() =>
-                    setDate("All")
-                  }
-                >
-                  ALL DATES
-                </button>
-
-
-                {dates.map((item) => (
-
-                  <button
-                    key={item}
-                    className={
-                      date === item
-                        ? "selected"
-                        : ""
-                    }
-                    onClick={() =>
-                      setDate(item)
-                    }
-                  >
-                    {formatDate(item)}
-                  </button>
-
-                ))}
-
-              </div>
-
-            </div>
-
-
-            {/* TIME SLOT */}
-
-            <div className="filterGroup">
-
-              <label>
-                TIME SLOT
-              </label>
-
-              <div className="slotGrid">
-
-                {Object.entries(
-                  timeSlots
-                ).map(
-                  ([key, value]) => (
-
-                    <button
-                      key={key}
-                      className={
-                        slot === key
-                          ? "selected"
-                          : ""
-                      }
-                      onClick={() =>
-                        setSlot(key)
-                      }
-                    >
-
-                      <strong>
-                        {key}
-                      </strong>
-
-                      <small>
-                        {value}
-                      </small>
-
-                    </button>
-
-                  )
-                )}
-
-              </div>
-
-            </div>
-
-
-            {/* EXACT TIME */}
-
-            <div className="filterGroup">
-
-              <label>
-                EXACT TIME
-              </label>
-
-              <div className="filterScroll">
-
-                <button
-                  className={
-                    time === "All"
-                      ? "selected"
-                      : ""
-                  }
-                  onClick={() =>
-                    setTime("All")
-                  }
-                >
-                  ALL TIMES
-                </button>
-
-
-                {availableTimes.map(
-                  (item) => (
-
-                    <button
-                      key={item}
-                      className={
-                        time === item
-                          ? "selected"
-                          : ""
-                      }
-                      onClick={() =>
-                        setTime(item)
-                      }
-                    >
-                      {item}
-                    </button>
-
-                  )
-                )}
-
-              </div>
-
-            </div>
-
-
-            {/* MODE */}
-
-            <div className="filterGroup">
-
-              <label>
-                MODE
-              </label>
-
-              <div className="smallFilterGrid">
-
-                {[
-                  "All",
-                  "Solo",
-                  "Duo",
-                  "Squad",
-                ].map((item) => (
-
-                  <button
-                    key={item}
-                    className={
-                      mode === item
-                        ? "selected"
-                        : ""
-                    }
-                    onClick={() =>
-                      setMode(item)
-                    }
-                  >
-                    {item}
-                  </button>
-
-                ))}
-
-              </div>
-
-            </div>
-
-
-            {/* MAP */}
-
-            <div className="filterGroup">
-
-              <label>
-                MAP
-              </label>
-
-              <div className="smallFilterGrid">
-
-                <button
-                  className={
-                    map === "All"
-                      ? "selected"
-                      : ""
-                  }
-                  onClick={() =>
-                    setMap("All")
-                  }
-                >
-                  ALL MAPS
-                </button>
-
-
-                {maps.map((item) => (
-
-                  <button
-                    key={item}
-                    className={
-                      map === item
-                        ? "selected"
-                        : ""
-                    }
-                    onClick={() =>
-                      setMap(item)
-                    }
-                  >
-                    {item}
-                  </button>
-
-                ))}
-
-              </div>
-
-            </div>
-
-          </div>
-
-
-          {/* RESULTS HEADER */}
-
-          <div className="resultsHeader">
-
-            <div>
-
-              <span>
-                AVAILABLE MATCHES
-              </span>
-
-              <strong>
-
-                {filteredTournaments.length}
-
-                {" "}
-
-                TOURNAMENT
-                {filteredTournaments.length !== 1
-                  ? "S"
-                  : ""}
-
-              </strong>
-
-            </div>
-
-
-            <span>
-              {status.toUpperCase()}
-            </span>
-
-          </div>
-
-
-          {/* TOURNAMENT RESULTS */}
-
-          {filteredTournaments.length > 0 ? (
-
-            <div className="tournamentGrid">
-
-              {filteredTournaments.map(
-                (item) => (
-
-                  <TournamentCard
-                    key={item.id}
-                    tournament={item}
-                    game={selectedGameData}
-                  />
-
-                )
-              )}
-
-            </div>
-
-          ) : (
-
-            <div className="emptyState">
 
               <div>
-                ⌁
+                <small>PRIZE</small>
+                <strong>₹ —</strong>
               </div>
-
-              <h3>
-                NO MATCHES FOUND
-              </h3>
-
-              <p>
-                Try changing your filters
-                to find available tournaments.
-              </p>
-
-              <button
-                onClick={resetFilters}
-              >
-                CLEAR FILTERS
-              </button>
 
             </div>
 
-          )}
-
-        </section>
-
-      )}
+          </div>
 
 
-      {/* BOTTOM NEON */}
+          <div className="commandFooter">
 
-      <div className="tpNeonBottom" />
+            <span>PLAYER NETWORK</span>
 
-    </main>
+            <div className="networkDots">
+              <i></i>
+              <i></i>
+              <i></i>
+              <i></i>
+              <i></i>
+            </div>
 
-  );
+            <strong>ONLINE</strong>
 
-}
-
-
-/* =========================================================
-   TOURNAMENT CARD
-========================================================= */
-
-function TournamentCard({
-  tournament,
-  game,
-}) {
-
-  const percentage =
-    (tournament.joined /
-      tournament.capacity) *
-    100;
-
-
-  const statusClass =
-    tournament.status.toLowerCase();
-
-
-  return (
-
-    <article
-      className={`matchCard ${statusClass}`}
-    >
-
-      <div className="cardTop">
-
-        <div>
-
-          <span className="matchGame">
-            {game?.name || "TOURNAMENT"}
-          </span>
-
-          <h3>
-            {tournament.title}
-          </h3>
+          </div>
 
         </div>
 
-
-        <span className="matchStatus">
-
-          {tournament.status === "Live" &&
-            "● "}
-
-          {tournament.status.toUpperCase()}
-
-        </span>
-
-      </div>
+      </section>
 
 
-      <div className="matchDetails">
+      {/* =====================================================
+          LIVE STRIP
+      ===================================================== */}
+
+      <section className="liveStrip">
 
         <div>
-
-          <small>
-            DATE
-          </small>
-
-          <strong>
-            {formatDate(
-              tournament.date
-            )}
-          </strong>
-
+          <span className="stripDot"></span>
+          LIVE NOW
         </div>
 
+        <strong>
+          Competitive gaming starts here.
+        </strong>
 
-        <div>
+        <button onClick={() => go("/tournaments")}>
+          VIEW TOURNAMENTS →
+        </button>
 
-          <small>
-            TIME
-          </small>
-
-          <strong>
-            {tournament.time}
-          </strong>
-
-        </div>
+      </section>
 
 
-        <div>
+      {/* =====================================================
+          PLATFORM NUMBERS
+      ===================================================== */}
 
-          <small>
-            MODE
-          </small>
+      <section className="platformStats">
 
-          <strong>
-            {tournament.mode}
-          </strong>
+        <Stat
+          number="10K+"
+          label="REGISTERED PLAYERS"
+        />
 
-        </div>
+        <Stat
+          number="500+"
+          label="TOURNAMENTS"
+        />
 
+        <Stat
+          number="50K+"
+          label="MATCHES"
+        />
 
-        <div>
+        <Stat
+          number="₹XXL+"
+          label="PRIZE DISTRIBUTION"
+        />
 
-          <small>
-            MAP
-          </small>
-
-          <strong>
-            {tournament.map}
-          </strong>
-
-        </div>
-
-      </div>
-
-
-      <div className="rewardDetails">
-
-        <div>
-
-          <small>
-            ENTRY
-          </small>
-
-          <strong>
-            ₹{tournament.entry}
-          </strong>
-
-        </div>
+      </section>
 
 
-        <div>
+      {/* =====================================================
+          TOURNAMENTS
+      ===================================================== */}
 
-          <small>
-            PER KILL
-          </small>
+      <section
+        id="tournaments"
+        className="contentSection"
+      >
 
-          <strong>
-            ₹{tournament.kill}
-          </strong>
-
-        </div>
-
-
-        <div>
-
-          <small>
-            PRIZE POOL
-          </small>
-
-          <strong className="orangeText">
-            ₹{tournament.prize}
-          </strong>
-
-        </div>
-
-      </div>
+        <SectionTitle
+          eyebrow="COMPETE NOW"
+          title="Featured Tournaments"
+          text="Choose your battle. Enter the arena."
+        />
 
 
-      <div className="players">
+        <div className="tournamentGrid">
 
-        <div>
+          <TournamentCard
+            game="FREE FIRE"
+            title="Daily Battle Arena"
+            status="OPEN"
+            entry="₹ —"
+            prize="₹ —"
+            slots="—"
+          />
 
-          <span>
-            PLAYERS
-          </span>
+          <TournamentCard
+            game="BGMI"
+            title="Squad Challenge"
+            status="OPEN"
+            entry="₹ —"
+            prize="₹ —"
+            slots="—"
+          />
 
-          <strong>
-            {tournament.joined}/
-            {tournament.capacity}
-          </strong>
-
-        </div>
-
-
-        <div className="progressBar">
-
-          <span
-            style={{
-              width: `${Math.min(
-                percentage,
-                100
-              )}%`,
-            }}
+          <TournamentCard
+            game="VALORANT"
+            title="Ranked Arena"
+            status="COMING SOON"
+            entry="₹ —"
+            prize="₹ —"
+            slots="—"
           />
 
         </div>
 
+
+        <div className="centerButton">
+
+          <button
+            className="outlineButton"
+            onClick={() => go("/tournaments")}
+          >
+            EXPLORE ALL TOURNAMENTS →
+          </button>
+
+        </div>
+
+      </section>
+
+
+      {/* =====================================================
+          GAMES
+      ===================================================== */}
+
+      <section
+        id="games"
+        className="contentSection"
+      >
+
+        <SectionTitle
+          eyebrow="YOUR BATTLEFIELD"
+          title="Choose Your Game"
+          text="More games. More competition. More ways to prove yourself."
+        />
+
+
+        <div className="gamesGrid">
+
+          <GameCard
+            icon="🔥"
+            game="FREE FIRE"
+            type="BATTLE ROYALE"
+            color="orange"
+          />
+
+          <GameCard
+            icon="🎯"
+            game="BGMI"
+            type="BATTLE ROYALE"
+            color="blue"
+          />
+
+          <GameCard
+            icon="⚡"
+            game="VALORANT"
+            type="TACTICAL FPS"
+            color="purple"
+          />
+
+          <GameCard
+            icon="＋"
+            game="MORE GAMES"
+            type="COMING SOON"
+            color="cyan"
+          />
+
+        </div>
+
+      </section>
+
+
+      {/* =====================================================
+          HOW IT WORKS
+      ===================================================== */}
+
+      <section
+        id="how"
+        className="contentSection"
+      >
+
+        <SectionTitle
+          eyebrow="SIMPLE PROCESS"
+          title="How Play2Prove Works"
+          text="Four steps between you and the battlefield."
+        />
+
+
+        <div className="stepsGrid">
+
+          <Step
+            number="01"
+            title="JOIN"
+            text="Choose a tournament that matches your game and skill."
+          />
+
+          <Step
+            number="02"
+            title="PLAY"
+            text="Enter the match and compete against other players."
+          />
+
+          <Step
+            number="03"
+            title="PROVE"
+            text="Your performance determines your position."
+          />
+
+          <Step
+            number="04"
+            title="EARN"
+            text="Win rewards and build your competitive profile."
+          />
+
+        </div>
+
+      </section>
+
+
+      {/* =====================================================
+          LEADERBOARD
+      ===================================================== */}
+
+      <section
+        id="leaderboard"
+        className="contentSection"
+      >
+
+        <SectionTitle
+          eyebrow="TOP PLAYERS"
+          title="Leaderboard"
+          text="The arena remembers who performs."
+        />
+
+
+        <div className="leaderboard">
+
+          <LeaderboardRow
+            rank="01"
+            player="PLAYER ONE"
+            wins="—"
+            earnings="₹ —"
+          />
+
+          <LeaderboardRow
+            rank="02"
+            player="PLAYER TWO"
+            wins="—"
+            earnings="₹ —"
+          />
+
+          <LeaderboardRow
+            rank="03"
+            player="PLAYER THREE"
+            wins="—"
+            earnings="₹ —"
+          />
+
+          <LeaderboardRow
+            rank="04"
+            player="PLAYER FOUR"
+            wins="—"
+            earnings="₹ —"
+          />
+
+        </div>
+
+      </section>
+
+
+      {/* =====================================================
+          REWARDS
+      ===================================================== */}
+
+      <section className="rewardSection">
+
+        <div>
+
+          <span className="sectionEyebrow">
+            PLAY MORE. PROVE MORE.
+          </span>
+
+          <h2>
+            Your skill should
+            <br />
+            <span>mean something.</span>
+          </h2>
+
+          <p>
+            Build your competitive identity through matches,
+            wins, streaks and tournament performance.
+          </p>
+
+          <div className="skillCards">
+
+  <div className="skillCard">
+    <small>COMPETE</small>
+    <strong>Build Your Skill</strong>
+  </div>
+
+  <div className="skillCard">
+    <small>RANK</small>
+    <strong>Climb The Leaderboard</strong>
+  </div>
+
+  <div className="skillCard">
+    <small>REWARD</small>
+    <strong>Win. Prove. Earn.</strong>
+  </div>
+
+</div>
+
+        </div>
+
+
+        <div className="rewardVisual">
+
+          <div className="rewardOrb">
+            P2P
+          </div>
+
+          <span>SKILL</span>
+          <span>RANK</span>
+          <span>REWARD</span>
+
+        </div>
+
+      </section>
+
+
+      {/* =====================================================
+          FINAL CTA
+      ===================================================== */}
+
+      <section className="finalCTA">
+
+        <div className="ctaLines"></div>
+
+        <span>
+          THE ARENA IS WAITING
+        </span>
+
+        <h2>
+          READY TO
+          <br />
+          <em>PROVE YOURSELF?</em>
+        </h2>
+
+        <p>
+          Create your account and enter your first tournament.
+        </p>
+
+
+        <div className="ctaButtons">
+
+          <button
+            className="heroPrimary"
+            onClick={() => go("/signup")}
+          >
+            CREATE ACCOUNT →
+          </button>
+
+          <button
+            className="heroSecondary"
+            onClick={() => go("/tournaments")}
+          >
+            VIEW TOURNAMENTS
+          </button>
+
+        </div>
+
+      </section>
+
+
+      {/* =====================================================
+          FOOTER
+      ===================================================== */}
+
+      <footer className="p2pFooter">
+
+        <div className="footerBrand">
+
+          <div className="p2pLogo">
+            P2P
+          </div>
+
+          <div>
+            <strong>Play2Prove</strong>
+            <span>
+              Competitive Gaming Platform
+            </span>
+          </div>
+
+        </div>
+
+
+        <div className="footerLinks">
+
+          <button onClick={() => go("/tournaments")}>
+            Tournaments
+          </button>
+
+          <button onClick={() => go("/matches")}>
+            Matches
+          </button>
+
+          <button onClick={() => go("/wallet")}>
+            Wallet
+          </button>
+
+          <button onClick={() => go("/profile")}>
+            Profile
+          </button>
+
+        </div>
+
+
+        <div className="footerBottom">
+          © 2026 Play2Prove. Built for competitors.
+        </div>
+
+      </footer>
+
+    </main>
+  );
+}
+
+
+/* ============================================================
+   COMPONENTS
+============================================================ */
+
+function Stat({ number, label }) {
+  return (
+    <div className="platformStat">
+      <strong>{number}</strong>
+      <span>{label}</span>
+    </div>
+  );
+}
+
+
+function SectionTitle({ eyebrow, title, text }) {
+  return (
+    <div className="sectionTitle">
+
+      <span>{eyebrow}</span>
+
+      <h2>{title}</h2>
+
+      <p>{text}</p>
+
+    </div>
+  );
+}
+
+
+function TournamentCard({
+  game,
+  title,
+  status,
+  entry,
+  prize,
+  slots,
+}) {
+  return (
+    <article className="newTournamentCard">
+
+      <div className="tournamentCardTop">
+
+        <span>{game}</span>
+
+        <small
+          className={
+            status === "OPEN"
+              ? "statusOpen"
+              : "statusSoon"
+          }
+        >
+          {status}
+        </small>
+
       </div>
 
 
-      {tournament.status === "Past" ? (
+      <h3>{title}</h3>
 
-        <button className="resultButton">
-          VIEW RESULTS →
-        </button>
 
-      ) : tournament.status === "Live" ? (
+      <div className="tournamentData">
 
-        <button className="liveButton">
-          VIEW LIVE MATCH →
-        </button>
+        <div>
+          <small>ENTRY</small>
+          <strong>{entry}</strong>
+        </div>
 
-      ) : tournament.status === "Deciding" ? (
+        <div>
+          <small>PRIZE POOL</small>
+          <strong>{prize}</strong>
+        </div>
 
-        <button className="decidingButton">
-          VIEW RESULT STATUS →
-        </button>
+        <div>
+          <small>SLOTS</small>
+          <strong>{slots}</strong>
+        </div>
 
-      ) : (
+      </div>
 
-        <button className="joinButton">
-          VIEW & JOIN →
-        </button>
 
-      )}
+      <button
+        onClick={() => {
+          window.location.href = "/tournaments";
+        }}
+      >
+        {status === "OPEN"
+          ? "JOIN TOURNAMENT"
+          : "VIEW DETAILS"}
+        <span>→</span>
+      </button>
 
     </article>
-
   );
-
 }
 
 
-/* =========================================================
-   DATE FORMAT
-========================================================= */
+function GameCard({
+  icon,
+  game,
+  type,
+  color,
+}) {
+  return (
+    <article className={`newGameCard ${color}`}>
 
-function formatDate(date) {
+      <div className="gameGlowNew"></div>
 
-  const d =
-    new Date(`${date}T00:00:00`);
+      <div className="gameIconNew">
+        {icon}
+      </div>
 
-  return d.toLocaleDateString(
-    "en-IN",
-    {
-      day: "2-digit",
-      month: "short",
-    }
+      <div>
+
+        <span>{type}</span>
+
+        <h3>{game}</h3>
+
+      </div>
+
+      <strong className="gameArrowNew">
+        →
+      </strong>
+
+    </article>
   );
-
 }
+
+
+function Step({
+  number,
+  title,
+  text,
+}) {
+  return (
+    <article className="newStep">
+
+      <strong>{number}</strong>
+
+      <div>
+
+        <span>{title}</span>
+
+        <p>{text}</p>
+
+      </div>
+
+    </article>
+  );
+}
+
+
+function LeaderboardRow({
+  rank,
+  player,
+  wins,
+  earnings,
+}) {
+  return (
+    <div className="leaderboardRow">
+
+      <strong className="rank">
+        {rank}
+      </strong>
+
+      <span className="playerName">
+        {player}
+      </span>
+
+      <span>
+        {wins}
+      </span>
+
+      <strong className="earnings">
+        {earnings}
+      </strong>
+
+    </div>
+  );
+  }
