@@ -1,112 +1,166 @@
+/* =========================================================
+   PLAY2PROVE — TOURNAMENTS PAGE
+   Stable responsive CSS
+   ========================================================= */
+
 * {
   box-sizing: border-box;
 }
 
+html,
 body {
   margin: 0;
+  padding: 0;
   background: #03050a;
-  color: #fff;
+  color: #ffffff;
   font-family: Arial, Helvetica, sans-serif;
 }
 
-button {
+button,
+input,
+select {
   font-family: inherit;
 }
 
+button {
+  cursor: pointer;
+}
+
+/* =========================================================
+   MAIN PAGE
+   ========================================================= */
+
 .tournamentPage {
-  min-height: 100vh;
   position: relative;
+  min-height: 100vh;
   overflow-x: hidden;
-  padding-bottom: 80px;
+  padding-bottom: 90px;
 
   background:
     radial-gradient(
-      circle at 10% 10%,
-      rgba(255, 67, 0, .10),
-      transparent 30%
+      circle at 8% 12%,
+      rgba(255, 70, 0, 0.12),
+      transparent 28%
     ),
     radial-gradient(
-      circle at 90% 35%,
-      rgba(91, 43, 255, .12),
+      circle at 92% 35%,
+      rgba(92, 55, 255, 0.14),
       transparent 32%
     ),
     #03050a;
 }
 
+/* Background grid */
+
 .tpGrid {
   position: fixed;
   inset: 0;
+  z-index: 0;
+
   pointer-events: none;
-  opacity: .08;
+
+  opacity: 0.09;
 
   background-image:
     linear-gradient(
-      rgba(255,255,255,.08) 1px,
+      rgba(255, 255, 255, 0.07) 1px,
       transparent 1px
     ),
     linear-gradient(
       90deg,
-      rgba(255,255,255,.08) 1px,
+      rgba(255, 255, 255, 0.07) 1px,
       transparent 1px
     );
 
   background-size: 45px 45px;
 }
 
+/* Ambient glows */
+
 .tpGlow {
   position: fixed;
-  width: 350px;
-  height: 350px;
+
+  width: 360px;
+  height: 360px;
+
   border-radius: 50%;
-  filter: blur(110px);
+
+  filter: blur(120px);
+
+  opacity: 0.16;
+
   pointer-events: none;
-  opacity: .13;
+
+  z-index: 0;
 }
 
 .tpOrange {
-  background: #ff4b00;
   left: -220px;
-  top: 25%;
+  top: 22%;
+
+  background: #ff4b00;
 }
 
 .tpBlue {
-  background: #673cff;
   right: -220px;
-  top: 50%;
+  top: 48%;
+
+  background: #643cff;
 }
 
-/* HEADER */
+/* =========================================================
+   HEADER
+   ========================================================= */
 
 .tpHeader {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
   height: 66px;
+
   padding: 0 4vw;
 
   display: flex;
   align-items: center;
 
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  background: rgba(3, 5, 10, 0.92);
 
-  background: rgba(3,5,10,.90);
   border-bottom: 1px solid #202636;
 
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 
 .backButton {
   width: 40px;
   height: 40px;
 
+  display: grid;
+  place-items: center;
+
   border: 1px solid #30384b;
   border-radius: 10px;
 
   background: #080c14;
-  color: #fff;
+
+  color: #ffffff;
 
   font-size: 20px;
 
-  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.backButton:hover {
+  border-color: #ff5800;
+
+  box-shadow:
+    0 0 18px rgba(255, 80, 0, 0.2);
+
+  transform: translateY(-1px);
 }
 
 .tpTitle {
@@ -120,13 +174,18 @@ button {
 
 .tpTitle span {
   color: #ff5800;
+
   font-size: 6px;
+  font-weight: 900;
+
   letter-spacing: 2px;
 }
 
 .tpTitle strong {
   margin-top: 3px;
+
   font-size: 13px;
+  font-weight: 900;
 }
 
 .tpRight {
@@ -134,11 +193,12 @@ button {
 
   display: flex;
   align-items: center;
+
   gap: 8px;
 }
 
 .tpWallet {
-  min-width: 72px;
+  min-width: 76px;
   height: 39px;
 
   display: flex;
@@ -146,20 +206,32 @@ button {
   align-items: center;
   justify-content: center;
 
-  border: 1px solid rgba(255,78,0,.55);
+  border: 1px solid rgba(255, 78, 0, 0.55);
   border-radius: 9px;
 
-  background: rgba(255,65,0,.05);
-  color: #fff;
+  background: rgba(255, 65, 0, 0.06);
+
+  color: #ffffff;
+
+  box-shadow:
+    inset 0 0 15px rgba(255, 70, 0, 0.03),
+    0 0 18px rgba(255, 70, 0, 0.05);
 }
 
 .tpWallet small {
   color: #737b8d;
+
   font-size: 6px;
+  font-weight: 800;
+
+  letter-spacing: 1px;
 }
 
 .tpWallet strong {
   margin-top: 2px;
+
+  color: #ffffff;
+
   font-size: 10px;
 }
 
@@ -167,25 +239,45 @@ button {
   width: 39px;
   height: 39px;
 
-  border-radius: 50%;
+  display: grid;
+  place-items: center;
 
   border: 1px solid #643bba;
-  background: rgba(100,55,190,.12);
+  border-radius: 50%;
+
+  background: rgba(100, 55, 190, 0.12);
 
   color: #bd9aff;
 
-  cursor: pointer;
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
-/* GAME SELECTION */
+.tpProfile:hover {
+  box-shadow:
+    0 0 20px rgba(120, 70, 255, 0.3);
+
+  transform: scale(1.04);
+}
+
+/* =========================================================
+   COMMON CONTAINERS
+   ========================================================= */
 
 .gameSelection,
 .tournamentContent {
-  width: min(1180px, 92vw);
-  margin: 0 auto;
   position: relative;
   z-index: 2;
+
+  width: min(1180px, 92vw);
+
+  margin: 0 auto;
 }
+
+/* =========================================================
+   GAME SELECTION
+   ========================================================= */
 
 .gameSelection {
   padding: 80px 0;
@@ -193,38 +285,59 @@ button {
 
 .selectionIntro span {
   color: #ff5800;
+
   font-size: 8px;
   font-weight: 900;
+
   letter-spacing: 2px;
 }
 
 .selectionIntro h1 {
   margin: 10px 0;
+
+  color: #ffffff;
+
   font-size: clamp(48px, 8vw, 90px);
-  line-height: .85;
+  line-height: 0.88;
+
   letter-spacing: -4px;
 }
 
 .selectionIntro h1 em {
   color: #ff4d0a;
+
   font-style: normal;
-  text-shadow: 0 0 30px rgba(255,70,0,.3);
+
+  text-shadow:
+    0 0 25px rgba(255, 70, 0, 0.35);
 }
 
 .selectionIntro p {
+  max-width: 650px;
+
   color: #737c8f;
+
   font-size: 11px;
+  line-height: 1.6;
 }
+
+/* =========================================================
+   GAME CARDS
+   ========================================================= */
 
 .gameCards {
   margin-top: 45px;
 
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
   gap: 18px;
 }
 
 .gameSelectCard {
+  width: 100%;
+
   padding: 0;
 
   overflow: hidden;
@@ -233,57 +346,86 @@ button {
   border-radius: 18px;
 
   background: #080c14;
-  color: #fff;
+
+  color: #ffffff;
 
   text-align: left;
 
-  cursor: pointer;
-
-  transition: .3s ease;
+  transition:
+    transform 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .gameSelectCard:hover {
-  transform: translateY(-7px);
+  transform: translateY(-6px);
+
   border-color: #ff5600;
 
   box-shadow:
-    0 15px 50px rgba(0,0,0,.55),
-    0 0 30px rgba(255,65,0,.12);
+    0 18px 50px rgba(0, 0, 0, 0.55),
+    0 0 30px rgba(255, 65, 0, 0.12);
 }
+
+/* Game name */
 
 .gameCardName {
   padding: 18px 20px;
+
+  border-bottom: 1px solid #202938;
 
   font-size: 14px;
   font-weight: 900;
 
   letter-spacing: 1px;
-
-  border-bottom: 1px solid #202938;
 }
 
+/* =========================================================
+   GAME IMAGE
+   Default aspect ratio = 16:9
+   ========================================================= */
+
 .gameImage {
-  height: 290px;
   position: relative;
+
+  width: 100%;
+
+  aspect-ratio: 16 / 9;
+
+  min-height: 0;
+
   overflow: hidden;
 
   background:
     radial-gradient(
       circle at center,
-      rgba(255,68,0,.20),
-      transparent 50%
+      rgba(255, 68, 0, 0.2),
+      transparent 52%
     ),
     #05080e;
 }
 
 .gameImage img {
+  position: relative;
+  z-index: 2;
+
+  display: block;
+
   width: 100%;
   height: 100%;
 
   object-fit: cover;
+  object-position: center;
 
-  position: relative;
-  z-index: 2;
+  image-rendering: auto;
+
+  transition:
+    transform 0.5s ease,
+    filter 0.5s ease;
+}
+
+.gameSelectCard:hover .gameImage img {
+  transform: scale(1.035);
 }
 
 .imageFallback {
@@ -296,32 +438,45 @@ button {
   font-size: 75px;
 
   background:
+    radial-gradient(
+      circle at center,
+      rgba(255, 65, 0, 0.18),
+      transparent 55%
+    ),
     linear-gradient(
       135deg,
-      rgba(255,65,0,.14),
-      rgba(60,30,180,.12)
+      rgba(255, 65, 0, 0.12),
+      rgba(60, 30, 180, 0.12)
     );
 }
 
 .imageGlow {
   position: absolute;
+
   width: 180px;
   height: 180px;
 
   left: 50%;
   top: 50%;
 
-  transform: translate(-50%,-50%);
+  transform: translate(-50%, -50%);
 
   border-radius: 50%;
 
   background: #ff4d00;
+
   filter: blur(90px);
 
-  opacity: .17;
+  opacity: 0.17;
+
+  pointer-events: none;
 }
 
+/* Card lower info */
+
 .gameCardBottom {
+  min-height: 47px;
+
   padding: 14px 18px;
 
   display: flex;
@@ -333,25 +488,36 @@ button {
 
 .gameCardBottom span {
   color: #788195;
+
   font-size: 7px;
+  font-weight: 800;
 }
 
 .gameCardBottom b {
   color: #ff5a00;
+
   font-size: 7px;
+  font-weight: 900;
 }
 
+/* Status */
+
 .gameStatusRow {
+  min-height: 43px;
+
   padding: 12px 18px;
 
   display: flex;
   flex-wrap: wrap;
+
   gap: 12px;
 }
 
 .gameStatusRow span {
   font-size: 6px;
   font-weight: 900;
+
+  letter-spacing: 0.5px;
 }
 
 .statusUpcoming {
@@ -366,17 +532,22 @@ button {
   color: #b16cff;
 }
 
-/* GAME BANNER */
+/* =========================================================
+   TOURNAMENT CONTENT
+   ========================================================= */
 
 .tournamentContent {
   padding: 30px 0 100px;
 }
 
-.gameBanner {
-  min-height: 220px;
+/* =========================================================
+   GAME BANNER
+   ========================================================= */
 
+.gameBanner {
   position: relative;
-  overflow: hidden;
+
+  min-height: 220px;
 
   padding: 35px;
 
@@ -384,51 +555,94 @@ button {
   align-items: center;
   justify-content: space-between;
 
+  overflow: hidden;
+
   border: 1px solid #292f41;
   border-radius: 18px;
 
   background:
     radial-gradient(
       circle at 80% 50%,
-      rgba(255,70,0,.20),
+      rgba(255, 70, 0, 0.2),
       transparent 40%
     ),
     #080c14;
 }
 
+.gameBanner::after {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 80, 0, 0.04),
+      transparent
+    );
+}
+
 .bannerEyebrow {
+  position: relative;
+  z-index: 2;
+
   color: #ff5a00;
+
   font-size: 7px;
+  font-weight: 900;
+
   letter-spacing: 2px;
 }
 
 .gameBanner h1 {
+  position: relative;
+  z-index: 2;
+
   margin: 9px 0;
 
   font-size: clamp(40px, 7vw, 70px);
-  line-height: .9;
+  line-height: 0.9;
 
   letter-spacing: -3px;
 }
 
 .gameBanner p {
+  position: relative;
+  z-index: 2;
+
+  max-width: 600px;
+
   color: #727b8d;
+
   font-size: 9px;
+  line-height: 1.5;
 }
 
 .bannerGameIcon {
+  position: relative;
+  z-index: 2;
+
+  flex-shrink: 0;
+
   font-size: 100px;
 
   filter:
-    drop-shadow(0 0 30px rgba(255,70,0,.35));
+    drop-shadow(0 0 30px rgba(255, 70, 0, 0.35));
 }
 
-/* STATUS */
+/* =========================================================
+   STATUS TABS
+   ========================================================= */
 
 .statusTabs {
   margin-top: 20px;
 
   display: flex;
+
   gap: 7px;
 
   overflow-x: auto;
@@ -441,6 +655,8 @@ button {
 }
 
 .statusTabs button {
+  flex-shrink: 0;
+
   height: 39px;
 
   padding: 0 18px;
@@ -451,31 +667,43 @@ button {
   border-radius: 8px;
 
   background: #080c14;
+
   color: #6d7689;
 
   font-size: 8px;
   font-weight: 900;
 
-  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background 0.2s ease;
+}
+
+.statusTabs button:hover {
+  border-color: #454f63;
+
+  color: #ffffff;
 }
 
 .statusTabs button.active {
-  color: #fff;
+  color: #ffffff;
 
   border-color: #ff5600;
 
   background:
     linear-gradient(
       90deg,
-      rgba(255,65,0,.17),
-      rgba(255,65,0,.04)
+      rgba(255, 65, 0, 0.17),
+      rgba(255, 65, 0, 0.04)
     );
 
   box-shadow:
-    0 0 20px rgba(255,65,0,.12);
+    0 0 20px rgba(255, 65, 0, 0.12);
 }
 
-/* FILTER */
+/* =========================================================
+   FILTER PANEL
+   ========================================================= */
 
 .filterPanel {
   margin-top: 18px;
@@ -485,13 +713,18 @@ button {
   border: 1px solid #242d3e;
   border-radius: 15px;
 
-  background: rgba(7,10,17,.92);
+  background: rgba(7, 10, 17, 0.92);
+
+  box-shadow:
+    inset 0 0 30px rgba(255, 255, 255, 0.01);
 }
 
 .filterTitle {
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  gap: 20px;
 }
 
 .filterTitle span,
@@ -501,6 +734,8 @@ button {
   color: #ff5800;
 
   font-size: 6px;
+  font-weight: 900;
+
   letter-spacing: 1.5px;
 }
 
@@ -514,11 +749,13 @@ button {
 
 .filterTitle button {
   border: 0;
+
   background: transparent;
+
   color: #ff5800;
+
   font-size: 7px;
   font-weight: 900;
-  cursor: pointer;
 }
 
 .filterGroup {
@@ -540,6 +777,7 @@ button {
 
 .filterScroll {
   display: flex;
+
   gap: 7px;
 
   overflow-x: auto;
@@ -563,12 +801,18 @@ button {
   border-radius: 7px;
 
   background: #0a0e16;
+
   color: #747d90;
 
   font-size: 7px;
   font-weight: 900;
+}
 
-  cursor: pointer;
+.filterScroll button:hover,
+.smallFilterGrid button:hover {
+  border-color: #49546b;
+
+  color: #ffffff;
 }
 
 .filterScroll button.selected,
@@ -576,19 +820,22 @@ button {
 .slotGrid button.selected {
   border-color: #ff5800;
 
-  color: #fff;
+  color: #ffffff;
 
-  background: rgba(255,70,0,.10);
+  background: rgba(255, 70, 0, 0.1);
 
   box-shadow:
-    0 0 15px rgba(255,65,0,.10);
+    0 0 15px rgba(255, 65, 0, 0.1);
 }
+
+/* =========================================================
+   TIME SLOTS
+   ========================================================= */
 
 .slotGrid {
   display: grid;
 
-  grid-template-columns:
-    repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 
   gap: 7px;
 }
@@ -607,9 +854,8 @@ button {
   border-radius: 8px;
 
   background: #0a0e16;
-  color: #fff;
 
-  cursor: pointer;
+  color: #ffffff;
 }
 
 .slotGrid strong {
@@ -626,18 +872,24 @@ button {
 
 .smallFilterGrid {
   display: flex;
+
   flex-wrap: wrap;
+
   gap: 7px;
 }
 
-/* RESULTS */
+/* =========================================================
+   RESULTS HEADER
+   ========================================================= */
 
 .resultsHeader {
   margin: 28px 0 13px;
 
   display: flex;
   justify-content: space-between;
-  align-items: end;
+  align-items: flex-end;
+
+  gap: 15px;
 }
 
 .resultsHeader strong {
@@ -650,32 +902,42 @@ button {
 
 .resultsHeader > span {
   color: #717a8d;
+
+  font-size: 7px;
 }
 
-/* MATCH CARDS */
+/* =========================================================
+   TOURNAMENT GRID
+   ========================================================= */
 
 .tournamentGrid {
   display: grid;
 
-  grid-template-columns:
-    repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 
   gap: 14px;
 }
 
-.matchCard {
-  padding: 19px;
+/* =========================================================
+   MATCH CARD
+   ========================================================= */
 
+.matchCard {
   position: relative;
 
   overflow: hidden;
+
+  padding: 19px;
 
   border: 1px solid #252e3e;
   border-radius: 14px;
 
   background: #080c14;
 
-  transition: .25s ease;
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .matchCard:hover {
@@ -684,27 +946,28 @@ button {
   border-color: #39445a;
 
   box-shadow:
-    0 15px 40px rgba(0,0,0,.35);
+    0 15px 40px rgba(0, 0, 0, 0.35);
 }
 
 .matchCard.live {
-  border-color: rgba(0,229,140,.45);
+  border-color: rgba(0, 229, 140, 0.45);
 
   box-shadow:
-    0 0 25px rgba(0,229,140,.08);
+    0 0 25px rgba(0, 229, 140, 0.08);
 }
 
 .matchCard.deciding {
-  border-color: rgba(171,103,255,.45);
+  border-color: rgba(171, 103, 255, 0.45);
 }
 
 .matchCard.past {
-  opacity: .82;
+  opacity: 0.82;
 }
 
 .cardTop {
   display: flex;
   justify-content: space-between;
+
   gap: 10px;
 }
 
@@ -721,9 +984,12 @@ button {
   margin: 6px 0 0;
 
   font-size: 16px;
+  line-height: 1.25;
 }
 
 .matchStatus {
+  flex-shrink: 0;
+
   height: fit-content;
 
   padding: 5px 7px;
@@ -739,33 +1005,40 @@ button {
 
 .live .matchStatus {
   color: #00e58c;
+
   border-color: #00a96a;
 }
 
 .deciding .matchStatus {
   color: #b57aff;
+
   border-color: #713bb2;
 }
+
+/* =========================================================
+   MATCH DETAILS
+   ========================================================= */
 
 .matchDetails {
   margin-top: 17px;
 
   display: grid;
 
-  grid-template-columns:
-    repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 
   gap: 6px;
 }
 
 .matchDetails div,
 .rewardDetails div {
+  min-width: 0;
+
   padding: 9px 7px;
 
   border: 1px solid #1e2634;
   border-radius: 7px;
 
-  background: rgba(255,255,255,.012);
+  background: rgba(255, 255, 255, 0.012);
 }
 
 .matchDetails small,
@@ -783,7 +1056,15 @@ button {
 
   margin-top: 5px;
 
+  color: #ffffff;
+
   font-size: 8px;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
 }
 
 .rewardDetails {
@@ -791,15 +1072,18 @@ button {
 
   display: grid;
 
-  grid-template-columns:
-    repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 
   gap: 6px;
 }
 
 .orangeText {
-  color: #ff5800;
+  color: #ff5800 !important;
 }
+
+/* =========================================================
+   PLAYERS
+   ========================================================= */
 
 .players {
   margin-top: 15px;
@@ -815,7 +1099,7 @@ button {
 }
 
 .players strong {
-  color: #fff;
+  color: #ffffff;
 }
 
 .progressBar {
@@ -846,40 +1130,53 @@ button {
     0 0 12px #ff5000;
 }
 
+/* =========================================================
+   ACTION BUTTONS
+   ========================================================= */
+
 .joinButton,
 .liveButton,
 .decidingButton,
 .resultButton {
   width: 100%;
-
   height: 40px;
 
   margin-top: 14px;
 
   border: 0;
-
   border-radius: 7px;
 
-  color: white;
+  color: #ffffff;
 
   font-size: 8px;
   font-weight: 900;
 
-  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease;
+}
+
+.joinButton:hover,
+.liveButton:hover,
+.decidingButton:hover,
+.resultButton:hover {
+  filter: brightness(1.12);
+
+  transform: translateY(-1px);
 }
 
 .joinButton {
   background: #ff5108;
 
   box-shadow:
-    0 0 18px rgba(255,70,0,.22);
+    0 0 18px rgba(255, 70, 0, 0.22);
 }
 
 .liveButton {
   background: #00a96a;
 
   box-shadow:
-    0 0 18px rgba(0,229,140,.18);
+    0 0 18px rgba(0, 229, 140, 0.18);
 }
 
 .decidingButton {
@@ -890,7 +1187,9 @@ button {
   background: #202838;
 }
 
-/* EMPTY */
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
 
 .emptyState {
   padding: 70px 20px;
@@ -905,7 +1204,11 @@ button {
 
 .emptyState > div {
   color: #ff5800;
+
   font-size: 35px;
+
+  text-shadow:
+    0 0 20px rgba(255, 70, 0, 0.35);
 }
 
 .emptyState h3 {
@@ -938,7 +1241,9 @@ button {
   font-weight: 900;
 }
 
-/* BOTTOM NEON */
+/* =========================================================
+   BOTTOM NEON LINE
+   ========================================================= */
 
 .tpNeonBottom {
   position: fixed;
@@ -950,6 +1255,8 @@ button {
   height: 2px;
 
   z-index: 90;
+
+  pointer-events: none;
 
   background:
     linear-gradient(
@@ -966,12 +1273,32 @@ button {
     0 0 20px #ff5000;
 }
 
-/* MOBILE */
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .gameCards {
+    grid-template-columns: 1fr;
+  }
+
+  .tournamentGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .gameImage {
+    aspect-ratio: 16 / 9;
+  }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
 
 @media (max-width: 700px) {
-
   .tpHeader {
     height: 60px;
+
     padding: 0 10px;
   }
 
@@ -981,6 +1308,10 @@ button {
 
   .tpTitle strong {
     font-size: 11px;
+  }
+
+  .tpTitle span {
+    font-size: 5px;
   }
 
   .gameSelection,
@@ -994,19 +1325,27 @@ button {
 
   .selectionIntro h1 {
     font-size: 55px;
+
+    letter-spacing: -3px;
   }
 
   .gameCards {
     grid-template-columns: 1fr;
+
     gap: 13px;
+
+    margin-top: 30px;
   }
 
   .gameImage {
-    height: 230px;
+    aspect-ratio: 16 / 9;
+
+    width: 100%;
   }
 
   .gameBanner {
     min-height: 180px;
+
     padding: 22px;
   }
 
@@ -1027,8 +1366,7 @@ button {
   }
 
   .slotGrid {
-    grid-template-columns:
-      repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .tournamentGrid {
@@ -1036,13 +1374,11 @@ button {
   }
 
   .matchDetails {
-    grid-template-columns:
-      repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .rewardDetails {
-    grid-template-columns:
-      repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .rewardDetails div {
@@ -1057,12 +1393,31 @@ button {
     width: 36px;
     height: 36px;
   }
+
+  .gameCardName {
+    padding: 15px 16px;
+  }
+
+  .gameCardBottom {
+    padding: 12px 16px;
+  }
+
+  .gameStatusRow {
+    padding: 10px 16px;
+  }
 }
 
-@media (max-width: 380px) {
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
 
+@media (max-width: 380px) {
   .tpTitle span {
     display: none;
+  }
+
+  .tpTitle strong {
+    font-size: 10px;
   }
 
   .gameBanner {
@@ -1079,5 +1434,10 @@ button {
 
   .matchCard {
     padding: 14px;
+  }
+
+  .matchDetails strong,
+  .rewardDetails strong {
+    font-size: 7px;
   }
 }
