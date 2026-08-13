@@ -887,15 +887,6 @@ function TournamentCard({ tournament }) {
     tournament?.prize ?? 0
   );
 
-  const joined = Number(
-    tournament?.joined ?? 0
-  );
-
-  const capacity = Number(
-    tournament?.capacity ?? 0
-  );
-
-
   return (
     <article className="newTournamentCard">
 
@@ -984,17 +975,6 @@ function TournamentCard({ tournament }) {
         </div>
 
       </div>
-
-<div className="homeTournamentBottom">
-
-  <span>
-    {capacity > 0
-      ? `${joined}/${capacity}`
-      : "—"}
-  </span>
-
-</div>
-
 
       <button
         onClick={() => {
