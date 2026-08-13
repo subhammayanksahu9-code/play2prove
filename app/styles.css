@@ -1489,6 +1489,55 @@ a:focus-visible {
   transition: 0.35s;
 }
 
+/* ============================================================
+   MORE GAMES CARD
+   ============================================================ */
+
+.moreGamesCard {
+  cursor: pointer;
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.moreGamesCard:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 90, 20, 0.45);
+  box-shadow: 0 12px 35px rgba(255, 70, 10, 0.12);
+}
+
+.moreGamesIcon {
+  font-size: 48px;
+  line-height: 1;
+
+  margin-bottom: auto;
+
+  font-weight: 300;
+  color: #ffffff;
+}
+
+.moreGamesCard .gameCardInfo {
+  margin-top: auto;
+}
+
+.moreGamesCard .gameCardInfo span {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.moreGamesCard .gameArrowNew {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+}
+
 .newGameCard:hover {
   transform:
     translateY(-8px)
