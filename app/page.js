@@ -1,10 +1,141 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export default function HomePage() {
   const [menuOpen, setMenuOpen] = useState(false);
 
+const [homeTournaments, setHomeTournaments] = useState([]);
+const [homeTournamentLoading, setHomeTournamentLoading] = useState(true);
+
+useEffect(() => {
+  let cancelled = false;
+
+  async function loadHomeTournaments() {
+    try {
+      const response = await fetch("/api/tournaments", {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
+        cache: "default",
+      });
+
+      if (!response.ok) {
+        throw new Error(`API ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      const tournaments = Array.isArray(data?.tournaments)
+        ? data.tournaments
+        : [];
+
+      if (!cancelled) {
+        setHomeTournaments(tournaments);
+      }
+    } catch (error) {
+      console.error(
+        "PLAY2PROVE HOME TOURNAMENT API:",
+        error
+      );
+
+      if (!cancelled) {
+        setHomeTournaments([]);
+      }
+    } finally {
+      if (!cancelled) {
+        setHomeTournamentLoading(false);
+      }
+    }
+  }
+
+  loadHomeTournaments();
+
+  return () => {
+    cancelled = true;
+  };
+}, []);
+
+
+/* =====================================================
+   HOME FEATURED TOURNAMENT FILTER
+===================================================== */
+
+const featuredTournaments = useMemo(() => {
+
+  const upcoming = homeTournaments.filter((item) => {
+
+    const status = String(
+      item?.status ?? ""
+    ).trim().toLowerCase();
+
+    const publish = item?.publish;
+
+    const isPublished =
+      publish === undefined ||
+      publish === true ||
+      String(publish).trim().toLowerCase() === "true" ||
+      String(publish).trim().toLowerCase() === "yes" ||
+      String(publish).trim() === "1";
+
+    return (
+      isPublished &&
+      status === "upcoming" &&
+      String(item?.game ?? "").trim()
+    );
+  });
+
+
+  /* FIRST: ONE FROM EACH GAME */
+
+  const selected = [];
+  const usedGames = new Set();
+
+  for (const tournament of upcoming) {
+
+    const game = String(
+      tournament?.game ?? ""
+    )
+      .trim()
+      .toLowerCase();
+
+    if (!game) continue;
+
+    if (!usedGames.has(game)) {
+
+      selected.push(tournament);
+      usedGames.add(game);
+
+    }
+
+    if (selected.length === 3) {
+      break;
+    }
+  }
+
+
+  /* IF LESS THAN 3 GAMES,
+     FILL REMAINING CARDS */
+
+  if (selected.length < 3) {
+
+    for (const tournament of upcoming) {
+
+      if (selected.length === 3) {
+        break;
+      }
+
+      if (!selected.includes(tournament)) {
+        selected.push(tournament);
+      }
+    }
+  }
+
+  return selected.slice(0, 3);
+
+}, [homeTournaments]);
+  
   function go(path) {
     window.location.href = path;
   }
@@ -354,34 +485,30 @@ export default function HomePage() {
 
         <div className="tournamentGrid">
 
-          <TournamentCard
-            game="FREE FIRE"
-            title="Daily Battle Arena"
-            status="OPEN"
-            entry="₹ —"
-            prize="₹ —"
-            slots="—"
-          />
+  {homeTournamentLoading ? (
 
-          <TournamentCard
-            game="BGMI"
-            title="Squad Challenge"
-            status="OPEN"
-            entry="₹ —"
-            prize="₹ —"
-            slots="—"
-          />
+    <div className="tournamentMessage">
+      LOADING TOURNAMENTS...
+    </div>
 
-          <TournamentCard
-            game="VALORANT"
-            title="Ranked Arena"
-            status="COMING SOON"
-            entry="₹ —"
-            prize="₹ —"
-            slots="—"
-          />
+  ) : featuredTournaments.length > 0 ? (
 
-        </div>
+    featuredTournaments.map((tournament) => (
+      <TournamentCard
+        key={tournament.id}
+        tournament={tournament}
+      />
+    ))
+
+  ) : (
+
+    <div className="tournamentMessage">
+      NO UPCOMING TOURNAMENTS
+    </div>
+
+  )}
+
+</div>
 
 
         <div className="centerButton">
@@ -734,53 +861,146 @@ function SectionTitle({ eyebrow, title, text }) {
 }
 
 
-function TournamentCard({
-  game,
-  title,
-  status,
-  entry,
-  prize,
-  slots,
-}) {
+function TournamentCard({ tournament }) {
+
+  const game = String(
+    tournament?.game ?? "GAME"
+  ).trim();
+
+  const title = String(
+    tournament?.title ?? "Tournament"
+  ).trim();
+
+  const status = String(
+    tournament?.status ?? "Upcoming"
+  ).trim();
+
+  const image = String(
+    tournament?.image ?? ""
+  ).trim();
+
+  const entry = Number(
+    tournament?.entry ?? 0
+  );
+
+  const kill = Number(
+    tournament?.kill ?? 0
+  );
+
+  const prize = Number(
+    tournament?.prize ?? 0
+  );
+
+  const joined = Number(
+    tournament?.joined ?? 0
+  );
+
+  const capacity = Number(
+    tournament?.capacity ?? 0
+  );
+
+
   return (
     <article className="newTournamentCard">
 
+      {image && (
+        <div className="homeTournamentImage">
+          <img
+            src={image}
+            alt={title}
+            loading="lazy"
+          />
+        </div>
+      )}
+
+
       <div className="tournamentCardTop">
 
-        <span>{game}</span>
+        <span>
+          {game.toUpperCase()}
+        </span>
 
         <small
           className={
-            status === "OPEN"
+            status.toLowerCase() === "open"
               ? "statusOpen"
               : "statusSoon"
           }
         >
-          {status}
+          {status.toUpperCase()}
         </small>
 
       </div>
 
 
-      <h3>{title}</h3>
+      <h3>
+        {title}
+      </h3>
 
 
       <div className="tournamentData">
 
         <div>
+          <small>DATE</small>
+          <strong>
+            {tournament?.date || "—"}
+          </strong>
+        </div>
+
+        <div>
+          <small>TIME</small>
+          <strong>
+            {tournament?.time || "—"}
+          </strong>
+        </div>
+
+        <div>
+          <small>MODE</small>
+          <strong>
+            {tournament?.mode || "—"}
+          </strong>
+        </div>
+
+      </div>
+
+
+      <div className="tournamentData">
+
+        <div>
+          <small>MAP</small>
+          <strong>
+            {tournament?.map || "—"}
+          </strong>
+        </div>
+
+        <div>
           <small>ENTRY</small>
-          <strong>{entry}</strong>
+          <strong>
+            ₹{entry}
+          </strong>
         </div>
 
         <div>
           <small>PRIZE POOL</small>
-          <strong>{prize}</strong>
+          <strong>
+            ₹{prize}
+          </strong>
         </div>
 
-        <div>
-          <small>SLOTS</small>
-          <strong>{slots}</strong>
-        </div>
+      </div>
+
+
+      <div className="homeTournamentBottom">
+
+        <span>
+          PER KILL ₹{kill}
+        </span>
+
+        <span>
+          {capacity > 0
+            ? `${joined}/${capacity}`
+            : "—"}
+        </span>
 
       </div>
 
@@ -790,9 +1010,7 @@ function TournamentCard({
           window.location.href = "/tournaments";
         }}
       >
-        {status === "OPEN"
-          ? "JOIN TOURNAMENT"
-          : "VIEW DETAILS"}
+        VIEW & JOIN
         <span>→</span>
       </button>
 
