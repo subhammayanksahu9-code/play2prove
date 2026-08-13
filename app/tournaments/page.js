@@ -14,99 +14,16 @@ const GAMES_API =
    TEMP TOURNAMENT DATA
 ========================================================= */
 
-const tournaments = [
-  {
-    id: 1,
-    game: "free-fire",
-    title: "Bermuda Solo #01",
-    map: "Bermuda",
-    mode: "Solo",
-    date: "2026-08-12",
-    time: "06:00 PM",
-    slot: "Evening",
-    status: "Upcoming",
-    entry: 30,
-    kill: 5,
-    prize: 500,
-    joined: 37,
-    capacity: 48,
-  },
-  {
-    id: 2,
-    game: "free-fire",
-    title: "Bermuda Squad Clash",
-    map: "Bermuda",
-    mode: "Squad",
-    date: "2026-08-12",
-    time: "08:00 PM",
-    slot: "Night",
-    status: "Upcoming",
-    entry: 100,
-    kill: 10,
-    prize: 1500,
-    joined: 8,
-    capacity: 12,
-  },
-  {
-    id: 3,
-    game: "free-fire",
-    title: "Purgatory Solo #04",
-    map: "Purgatory",
-    mode: "Solo",
-    date: "2026-08-12",
-    time: "04:00 PM",
-    slot: "Evening",
-    status: "Live",
-    entry: 30,
-    kill: 5,
-    prize: 500,
-    joined: 48,
-    capacity: 48,
-  },
-  {
-    id: 4,
-    game: "free-fire",
-    title: "Kalahari Solo #02",
-    map: "Kalahari",
-    mode: "Solo",
-    date: "2026-08-11",
-    time: "09:00 PM",
-    slot: "Night",
-    status: "Deciding",
-    entry: 50,
-    kill: 5,
-    prize: 800,
-    joined: 48,
-    capacity: 48,
-  },
-  {
-    id: 5,
-    game: "free-fire",
-    title: "Bermuda Championship",
-    map: "Bermuda",
-    mode: "Squad",
-    date: "2026-08-10",
-    time: "07:00 PM",
-    slot: "Evening",
-    status: "Past",
-    entry: 100,
-    kill: 10,
-    prize: 1500,
-    joined: 12,
-    capacity: 12,
-  },
-];
-
 /* =========================================================
    TIME SLOTS
 ========================================================= */
 
 const timeSlots = {
   All: "All Times",
-  Morning: "6:00 AM – 12:00 PM",
-  Afternoon: "12:00 PM – 4:00 PM",
-  Evening: "4:00 PM – 8:00 PM",
-  Night: "8:00 PM – 12:00 AM",
+  Morning: "06:00 AM – 12:00 PM",
+  Afternoon: "12:00 PM – 04:00 PM",
+  Evening: "04:00 PM – 07:00 PM",
+  Night: "07:00 PM – 06:00 AM",
 };
 
 /* =========================================================
@@ -119,7 +36,9 @@ export default function TournamentsPage() {
   ----------------------------- */
 
   const [games, setGames] = useState([]);
+  const [tournaments, setTournaments] = useState([]);
   const [gamesLoading, setGamesLoading] = useState(true);
+  const [tournamentsLoading, setTournamentsLoading] = useState(false);
   const [gamesError, setGamesError] = useState("");
 
   /* -----------------------------
@@ -141,132 +60,111 @@ export default function TournamentsPage() {
 
   useEffect(() => {
     let cancelled = false;
+    const CACHE_KEY = "play2prove_tournament_api_v2";
+    const CACHE_MAX_AGE = 60 * 1000;
 
-    const CACHE_KEY = "play2prove_games_v1";
+    const slugify = (value) =>
+      String(value ?? "")
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "");
 
-    function normalizeGames(data) {
-      if (!Array.isArray(data)) return [];
+    const isPublished = (value) => {
+      const v = String(value ?? "").trim().toLowerCase();
+      return value === true || ["true", "yes", "1", "published"].includes(v);
+    };
 
-      return data
-        .filter((item) => {
-          const publishValue = String(item.publish ?? "")
-            .trim()
-            .toLowerCase();
+    const normalizeGames = (data) => {
+      const rows = Array.isArray(data) ? data : Array.isArray(data?.games) ? data.games : [];
+      return rows.filter((item) => isPublished(item.publish)).map((item, index) => {
+        const name = String(item.gameName ?? item.game ?? "").trim();
+        return {
+          id: slugify(name) || `game-${index + 1}`,
+          name: name || "GAME",
+          image: String(item.image ?? item.imageUrl ?? "").trim(),
+          status: String(item.status ?? "Upcoming").trim(),
+          device: String(item.device ?? "MOBILE + PC").trim(),
+        };
+      }).filter((game) => game.name);
+    };
 
-          return (
-            publishValue === "true" ||
-            publishValue === "yes" ||
-            publishValue === "1" ||
-            item.publish === true
-          );
-        })
-        .map((item, index) => {
-          const gameName = String(item.gameName ?? "").trim();
+    const normalizeTournaments = (data) => {
+      const rows = Array.isArray(data) ? data : Array.isArray(data?.tournaments) ? data.tournaments : [];
+      return rows.filter((item) => item.publish === undefined || isPublished(item.publish)).map((item, index) => {
+        const gameName = String(item.game ?? item.gameName ?? "").trim();
+        const joined = Number(item.joined ?? item.playersJoined ?? item.players ?? 0) || 0;
+        const capacity = Number(item.capacity ?? item.maxPlayers ?? item.slots ?? 0) || 0;
+        return {
+          id: item.id || `${slugify(gameName)}-${item.date || "date"}-${item.time || index}`,
+          game: slugify(gameName),
+          title: String(item.tournamentName ?? item.title ?? item.name ?? "Tournament").trim(),
+          map: String(item.map ?? "").trim(),
+          mode: String(item.mode ?? "").trim(),
+          date: String(item.date ?? "").trim(),
+          time: String(item.time ?? "").trim(),
+          slot: String(item.slot ?? "").trim(),
+          status: String(item.status ?? "Upcoming").trim(),
+          entry: Number(item.entryFee ?? item.entry ?? 0) || 0,
+          kill: Number(item.perKill ?? item.kill ?? 0) || 0,
+          prize: Number(item.prizePool ?? item.prize ?? 0) || 0,
+          joined,
+          capacity,
+          image: String(item.image ?? item.imageUrl ?? "").trim(),
+          mapImage: String(item.mapImage ?? "").trim(),
+        };
+      });
+    };
 
-          return {
-            id:
-              gameName
-                .toLowerCase()
-                .replace(/[^a-z0-9]+/g, "-")
-                .replace(/^-|-$/g, "") ||
-              `game-${index + 1}`,
+    const applyData = (data) => {
+      const nextGames = normalizeGames(data);
+      const nextTournaments = normalizeTournaments(data);
+      if (!cancelled) {
+        setGames(nextGames);
+        setTournaments(nextTournaments);
+        setGamesLoading(false);
+        setTournamentsLoading(false);
+        setGamesError("");
+      }
+      return { nextGames, nextTournaments };
+    };
 
-            name: gameName || "GAME",
-
-            image: String(item.image ?? "").trim(),
-
-            status: String(item.status ?? "Upcoming").trim(),
-
-            device: "MOBILE + PC",
-          };
-        })
-        .filter((game) => game.name);
-    }
-
-    async function loadGames() {
+    async function loadData() {
       try {
-        /* =====================================
-           1. SHOW CACHED DATA IMMEDIATELY
-        ===================================== */
-
         try {
-          const cached = localStorage.getItem(CACHE_KEY);
-
-          if (cached) {
-            const cachedGames = JSON.parse(cached);
-
-            if (
-              Array.isArray(cachedGames) &&
-              cachedGames.length > 0 &&
-              !cancelled
-            ) {
-              setGames(cachedGames);
-              setGamesLoading(false);
-            }
+          const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || "null");
+          if (cached?.data && Date.now() - Number(cached.savedAt || 0) < CACHE_MAX_AGE) {
+            applyData(cached.data);
           }
-        } catch (cacheError) {
-          console.log("Cache read skipped");
-        }
+        } catch (_) {}
 
-        /* =====================================
-           2. FETCH FRESH DATA
-        ===================================== */
-
-        const response = await fetch(`${GAMES_API}?t=${Date.now()}`, {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 8000);
+        const response = await fetch(GAMES_API, {
           method: "GET",
-          cache: "no-store",
+          cache: "default",
+          signal: controller.signal,
+          headers: { Accept: "application/json" },
         });
-
-        if (!response.ok) {
-          throw new Error("Games API failed");
-        }
-
+        clearTimeout(timer);
+        if (!response.ok) throw new Error(`API ${response.status}`);
         const data = await response.json();
-
-        const freshGames = normalizeGames(data);
-
-        /* =====================================
-           3. UPDATE SCREEN
-        ===================================== */
-
-        if (!cancelled) {
-          setGames(freshGames);
-          setGamesLoading(false);
-          setGamesError("");
-        }
-
-        /* =====================================
-           4. SAVE CACHE
-        ===================================== */
-
+        applyData(data);
         try {
-          localStorage.setItem(
-            CACHE_KEY,
-            JSON.stringify(freshGames)
-          );
-        } catch (cacheError) {
-          console.log("Cache save skipped");
-        }
+          localStorage.setItem(CACHE_KEY, JSON.stringify({ savedAt: Date.now(), data }));
+        } catch (_) {}
       } catch (error) {
-        console.error("Games API Error:", error);
-
+        console.error("Tournament API Error:", error);
         if (!cancelled) {
           setGamesLoading(false);
-
-          /*
-            API fail hone par cached data
-            already screen par rahega.
-          */
-          setGamesError("");
+          setTournamentsLoading(false);
+          setGamesError(games.length ? "" : "Unable to load games right now.");
         }
       }
     }
 
-    loadGames();
-
-    return () => {
-      cancelled = true;
-    };
+    loadData();
+    return () => { cancelled = true; };
   }, []);
 
   /* =========================================================
@@ -379,7 +277,6 @@ export default function TournamentsPage() {
 
   function selectGame(gameId) {
     setSelectedGame(gameId);
-
     setStatus("Upcoming");
     setDate("All");
     setSlot("All");
@@ -516,7 +413,7 @@ export default function TournamentsPage() {
             !gamesError &&
             games.length > 0 && (
               <div className="gameCards">
-                {games.map((game) => (
+                {games.map((game, gameIndex) => (
                   <button
                     className="gameSelectCard"
                     key={game.id}
@@ -544,9 +441,9 @@ export default function TournamentsPage() {
                         <img
                           src={game.image}
                           alt={game.name}
-                          loading="eager"
+                          loading={gameIndex < 2 ? "eager" : "lazy"}
                           decoding="async"
-                          fetchPriority="high"
+                          fetchPriority={gameIndex === 0 ? "high" : "auto"}
                           style={{
                             width: "100%",
                             height: "100%",
@@ -908,7 +805,13 @@ export default function TournamentsPage() {
 
           {/* TOURNAMENT RESULTS */}
 
-          {filteredTournaments.length > 0 ? (
+          {tournamentsLoading ? (
+            <div className="tournamentLoading">
+              <div className="loadingSpinner" />
+              <strong>SYNCING ARENA</strong>
+              <span>Fetching the latest tournament slots…</span>
+            </div>
+          ) : filteredTournaments.length > 0 ? (
             <div className="tournamentGrid">
               {filteredTournaments.map(
                 (item) => (
@@ -959,10 +862,9 @@ function TournamentCard({
   tournament,
   game,
 }) {
-  const percentage =
-    (tournament.joined /
-      tournament.capacity) *
-    100;
+  const percentage = tournament.capacity > 0
+    ? (tournament.joined / tournament.capacity) * 100
+    : 0;
 
   const statusClass =
     tournament.status.toLowerCase() ===
@@ -980,6 +882,19 @@ function TournamentCard({
     <article
       className={`matchCard ${statusClass}`}
     >
+      {tournament.image && (
+        <div className="matchImageWrap">
+          <img
+            src={tournament.image}
+            alt={tournament.title}
+            loading="lazy"
+            decoding="async"
+            onError={(e) => { e.currentTarget.parentElement.style.display = "none"; }}
+          />
+          <div className="matchImageShade" />
+        </div>
+      )}
+
       <div className="cardTop">
         <div>
           <span className="matchGame">
