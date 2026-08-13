@@ -969,14 +969,14 @@ const prize = String(
         <div>
           <small>ENTRY</small>
           <strong>
-            ₹{entry}
+            {entry}
           </strong>
         </div>
 
         <div>
           <small>PRIZE POOL</small>
           <strong>
-            ₹{prize}
+            {prize}
           </strong>
         </div>
 
