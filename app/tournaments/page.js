@@ -4,21 +4,21 @@ import { useEffect, useMemo, useState } from "react";
 import "./tournaments.css";
 
 /* =========================================================
-   GOOGLE SHEETS / APPS SCRIPT API
+   PLAY2PROVE — TOURNAMENT PAGE
+   FAST + FILTERABLE + GOOGLE SHEET API
 ========================================================= */
 
-const GAMES_API =
+const API_URL =
   "https://script.google.com/macros/s/AKfycbx3vZuDmwpqykeX45oWhNffRqySbFQZ6a5ZukM3KEhB6B5e8I6rzWBmg8tsm_zUNz0/exec";
 
-/* =========================================================
-   TEMP TOURNAMENT DATA
-========================================================= */
+const CACHE_KEY = "play2prove_tournaments_v4";
+const CACHE_MAX_AGE = 30 * 1000;
 
 /* =========================================================
    TIME SLOTS
 ========================================================= */
 
-const timeSlots = {
+const TIME_SLOTS = {
   All: "All Times",
   Morning: "06:00 AM – 12:00 PM",
   Afternoon: "12:00 PM – 04:00 PM",
@@ -27,25 +27,130 @@ const timeSlots = {
 };
 
 /* =========================================================
-   MAIN PAGE
+   HELPERS
+========================================================= */
+
+function slugify(value) {
+  return String(value ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function isTrue(value) {
+  const v = String(value ?? "")
+    .trim()
+    .toLowerCase();
+
+  return (
+    value === true ||
+    v === "true" ||
+    v === "yes" ||
+    v === "1" ||
+    v === "published"
+  );
+}
+
+function clean(value) {
+  return String(value ?? "").trim();
+}
+
+function normalizeStatus(value) {
+  const v = clean(value).toLowerCase();
+
+  if (v === "live") return "Live";
+  if (v === "past") return "Past";
+  if (v === "deciding") return "Deciding";
+  return "Upcoming";
+}
+
+function numberValue(value) {
+  const cleaned = String(value ?? "")
+    .replace(/[₹,\s]/g, "")
+    .trim();
+
+  const n = Number(cleaned);
+
+  return Number.isFinite(n) ? n : 0;
+}
+
+/* =========================================================
+   DATE NORMALIZATION
+========================================================= */
+
+function normalizeDate(value) {
+  return clean(value).replace(/\s+/g, " ");
+}
+
+function formatDate(value, year = "") {
+  const raw = normalizeDate(value);
+
+  if (!raw) return "—";
+
+  /* Already good */
+  if (
+    /^\d{1,2}\s+[A-Za-z]{3,9}(?:\s+\d{4})?$/.test(
+      raw
+    )
+  ) {
+    return raw;
+  }
+
+  /* dd/mm/yyyy */
+  const slash = raw.match(
+    /^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/
+  );
+
+  if (slash) {
+    const day = Number(slash[1]);
+    const month = Number(slash[2]) - 1;
+    const yr = Number(slash[3]);
+
+    const d = new Date(yr, month, day);
+
+    if (!Number.isNaN(d.getTime())) {
+      return d.toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+      });
+    }
+  }
+
+  /* Google Sheet date */
+  const candidate = year
+    ? `${raw} ${year}`
+    : raw;
+
+  const d = new Date(candidate);
+
+  if (Number.isNaN(d.getTime())) {
+    return raw;
+  }
+
+  return d.toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+  });
+}
+
+/* =========================================================
+   MAIN COMPONENT
 ========================================================= */
 
 export default function TournamentsPage() {
-  /* -----------------------------
-     GAMES FROM GOOGLE SHEET
-  ----------------------------- */
-
   const [games, setGames] = useState([]);
   const [tournaments, setTournaments] = useState([]);
-  const [gamesLoading, setGamesLoading] = useState(true);
-  const [tournamentsLoading, setTournamentsLoading] = useState(false);
-  const [gamesError, setGamesError] = useState("");
 
-  /* -----------------------------
-     PAGE FILTER STATE
-  ----------------------------- */
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const [selectedGame, setSelectedGame] = useState(null);
+  const [selectedGame, setSelectedGame] =
+    useState(null);
+
+  /* =======================================================
+     FILTER STATE
+  ======================================================= */
 
   const [status, setStatus] = useState("All");
   const [date, setDate] = useState("All");
@@ -54,219 +159,511 @@ export default function TournamentsPage() {
   const [map, setMap] = useState("All");
   const [search, setSearch] = useState("");
 
-  /* =========================================================
-     FETCH GAMES FROM GOOGLE SHEETS
-  ========================================================= */
+  /* =======================================================
+     FETCH ALL DATA — ONE REQUEST
+  ======================================================= */
 
   useEffect(() => {
     let cancelled = false;
-    const CACHE_KEY = "play2prove_tournament_api_v2";
-    const CACHE_MAX_AGE = 60 * 1000;
 
-    const slugify = (value) =>
-      String(value ?? "")
-        .trim()
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-|-$/g, "");
+    function normalizeGame(row, index) {
+      const name = clean(
+        row?.gameName ??
+          row?.game ??
+          row?.name
+      );
 
-    const isPublished = (value) => {
-      const v = String(value ?? "").trim().toLowerCase();
-      return value === true || ["true", "yes", "1", "published"].includes(v);
-    };
+      return {
+        id:
+          slugify(name) ||
+          `game-${index + 1}`,
 
-    const normalizeGames = (data) => {
-      const rows = Array.isArray(data) ? data : Array.isArray(data?.games) ? data.games : [];
-      return rows.filter((item) => isPublished(item.publish)).map((item, index) => {
-        const name = String(item.gameName ?? item.game ?? "").trim();
-        return {
-          id: slugify(name) || `game-${index + 1}`,
-          name: name || "GAME",
-          image: String(item.image ?? item.imageUrl ?? "").trim(),
-          status: String(item.status ?? "Upcoming").trim(),
-          device: String(item.device ?? "MOBILE + PC").trim(),
-        };
-      }).filter((game) => game.name);
-    };
+        name: name || "GAME",
 
-    const normalizeTournaments = (data) => {
-      const rows = Array.isArray(data) ? data : Array.isArray(data?.tournaments) ? data.tournaments : [];
-      return rows.filter((item) => item.publish === undefined || isPublished(item.publish)).map((item, index) => {
-        const gameName = String(item.game ?? item.gameName ?? "").trim();
-        const joined = Number(item.joined ?? item.playersJoined ?? item.players ?? 0) || 0;
-        const capacity = Number(item.capacity ?? item.maxPlayers ?? item.slots ?? 0) || 0;
-        return {
-          id: item.id || `${slugify(gameName)}-${item.date || "date"}-${item.time || index}`,
-          game: slugify(gameName),
-          title: String(item.tournamentName ?? item.title ?? item.name ?? "Tournament").trim(),
-          map: String(item.map ?? "").trim(),
-          mode: String(item.mode ?? "").trim(),
-          date: String(item.date ?? "").trim(),
-          year: String(item.year ?? "").trim(),
-          time: String(item.time ?? "").trim(),
-          slot: String(item.slot ?? "").trim(),
-          status: String(item.status ?? "Upcoming").trim(),
-          entry: Number(item.entryFee ?? item.entry ?? 0) || 0,
-          kill: Number(item.perKill ?? item.kill ?? 0) || 0,
-          prize: Number(item.prizePool ?? item.prize ?? 0) || 0,
-          joined,
-          capacity,
-          image: String(item.image ?? item.imageUrl ?? "").trim(),
-          mapImage: String(item.mapImage ?? "").trim(),
-        };
-      });
-    };
+        image: clean(
+          row?.image ??
+            row?.imageUrl ??
+            row?.["Image URL"]
+        ),
 
-    const applyData = (data) => {
-      const nextGames = normalizeGames(data);
-      const nextTournaments = normalizeTournaments(data);
+        status: normalizeStatus(
+          row?.status
+        ),
+
+        publish: isTrue(
+          row?.publish
+        ),
+
+        device:
+          clean(row?.device) ||
+          "MOBILE + PC",
+      };
+    }
+
+    function normalizeTournament(row, index) {
+      const gameName = clean(
+        row?.game ??
+          row?.gameName
+      );
+
+      const tournamentImage = clean(
+        row?.image ??
+          row?.imageUrl ??
+          row?.["Image URL"]
+      );
+
+      return {
+        id:
+          clean(row?.id) ||
+          `${slugify(gameName)}-${slugify(
+            row?.date
+          )}-${slugify(row?.time)}-${index}`,
+
+        game:
+          slugify(gameName),
+
+        title:
+          clean(
+            row?.tournamentName ??
+              row?.title ??
+              row?.name
+          ) || "Tournament",
+
+        date: normalizeDate(
+          row?.date
+        ),
+
+        year: clean(
+          row?.year
+        ),
+
+        time: clean(
+          row?.time
+        ),
+
+        slot:
+          clean(row?.slot) ||
+          getSlotFromTime(row?.time),
+
+        mode: clean(
+          row?.mode
+        ),
+
+        map: clean(
+          row?.map
+        ),
+
+        image:
+          tournamentImage,
+
+        entry: numberValue(
+          row?.entryFee ??
+            row?.entry
+        ),
+
+        kill: numberValue(
+          row?.perKill ??
+            row?.kill
+        ),
+
+        prize: numberValue(
+          row?.prizePool ??
+            row?.prize
+        ),
+
+        status: normalizeStatus(
+          row?.status
+        ),
+
+        publish:
+          row?.publish === undefined
+            ? true
+            : isTrue(row?.publish),
+
+        joined: numberValue(
+          row?.joined ??
+            row?.playersJoined
+        ),
+
+        capacity: numberValue(
+          row?.capacity ??
+            row?.maxPlayers ??
+            row?.slots
+        ),
+      };
+    }
+
+    function applyData(data) {
+      const gameRows = Array.isArray(
+        data
+      )
+        ? data
+        : Array.isArray(data?.games)
+        ? data.games
+        : [];
+
+      const tournamentRows =
+        Array.isArray(
+          data?.tournaments
+        )
+          ? data.tournaments
+          : [];
+
+      const nextGames =
+        gameRows
+          .map(normalizeGame)
+          .filter(
+            (game) =>
+              game.name &&
+              game.publish
+          );
+
+      const nextTournaments =
+        tournamentRows
+          .map(normalizeTournament)
+          .filter(
+            (item) =>
+              item.game &&
+              item.publish
+          );
+
       if (!cancelled) {
         setGames(nextGames);
-        setTournaments(nextTournaments);
-        setGamesLoading(false);
-        setTournamentsLoading(false);
-        setGamesError("");
+        setTournaments(
+          nextTournaments
+        );
+        setLoading(false);
+        setError("");
       }
-      return { nextGames, nextTournaments };
-    };
 
-    async function loadData() {
+      return {
+        nextGames,
+        nextTournaments,
+      };
+    }
+
+    async function fetchData() {
       try {
+        /* ===============================================
+           INSTANT CACHE
+        =============================================== */
+
+        let hasCache = false;
+
         try {
-          const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || "null");
-          if (cached?.data && Date.now() - Number(cached.savedAt || 0) < CACHE_MAX_AGE) {
-            applyData(cached.data);
+          const saved =
+            JSON.parse(
+              localStorage.getItem(
+                CACHE_KEY
+              ) || "null"
+            );
+
+          if (
+            saved?.data &&
+            Date.now() -
+              Number(
+                saved.savedAt || 0
+              ) <
+              CACHE_MAX_AGE
+          ) {
+            applyData(
+              saved.data
+            );
+
+            hasCache = true;
           }
         } catch (_) {}
 
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 8000);
-        const response = await fetch(GAMES_API, {
-          method: "GET",
-          cache: "default",
-          signal: controller.signal,
-          headers: { Accept: "application/json" },
-        });
-        clearTimeout(timer);
-        if (!response.ok) throw new Error(`API ${response.status}`);
-        const data = await response.json();
+        /* ===============================================
+           BACKGROUND API REFRESH
+        =============================================== */
+
+        const controller =
+          new AbortController();
+
+        const timeout = setTimeout(
+          () =>
+            controller.abort(),
+          9000
+        );
+
+        const response =
+          await fetch(API_URL, {
+            method: "GET",
+            signal:
+              controller.signal,
+
+            headers: {
+              Accept:
+                "application/json",
+            },
+
+            cache: "no-store",
+          });
+
+        clearTimeout(timeout);
+
+        if (!response.ok) {
+          throw new Error(
+            `API ${response.status}`
+          );
+        }
+
+        const data =
+          await response.json();
+
         applyData(data);
+
         try {
-          localStorage.setItem(CACHE_KEY, JSON.stringify({ savedAt: Date.now(), data }));
+          localStorage.setItem(
+            CACHE_KEY,
+            JSON.stringify({
+              savedAt:
+                Date.now(),
+              data,
+            })
+          );
         } catch (_) {}
-      } catch (error) {
-        console.error("Tournament API Error:", error);
+      } catch (err) {
+        console.error(
+          "PLAY2PROVE API ERROR:",
+          err
+        );
+
         if (!cancelled) {
-          setGamesLoading(false);
-          setTournamentsLoading(false);
-          setGamesError(games.length ? "" : "Unable to load games right now.");
+          setLoading(false);
+
+          if (
+            games.length === 0
+          ) {
+            setError(
+              "Unable to load games right now."
+            );
+          }
         }
       }
     }
 
-    loadData();
-    return () => { cancelled = true; };
+    fetchData();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  /* =========================================================
+  /* =======================================================
      SELECTED GAME
-  ========================================================= */
+  ======================================================= */
 
-  const selectedGameData = games.find(
-    (game) => game.id === selectedGame
-  );
+  const selectedGameData =
+    games.find(
+      (game) =>
+        game.id ===
+        selectedGame
+    );
 
-  /* =========================================================
-     AVAILABLE DATES
-  ========================================================= */
+  /* =======================================================
+     GAME TOURNAMENTS
+  ======================================================= */
+
+  const gameTournaments =
+    useMemo(() => {
+      if (!selectedGame)
+        return [];
+
+      return tournaments.filter(
+        (item) =>
+          item.game ===
+          selectedGame
+      );
+    }, [
+      tournaments,
+      selectedGame,
+    ]);
+
+  /* =======================================================
+     DYNAMIC DATES
+  ======================================================= */
 
   const dates = useMemo(() => {
-    if (!selectedGame) return [];
-
     return [
       ...new Set(
-        tournaments
-          .filter((t) => t.game === selectedGame)
-          .map((t) => t.date)
+        gameTournaments
+          .map(
+            (item) =>
+              item.date
+          )
+          .filter(Boolean)
       ),
     ];
-  }, [selectedGame]);
+  }, [
+    gameTournaments,
+  ]);
 
-  /* =========================================================
-     AVAILABLE MAPS
-  ========================================================= */
+  /* =======================================================
+     DYNAMIC MODES
+  ======================================================= */
+
+  const modes = useMemo(() => {
+    return [
+      ...new Set(
+        gameTournaments
+          .map(
+            (item) =>
+              item.mode
+          )
+          .filter(Boolean)
+      ),
+    ];
+  }, [
+    gameTournaments,
+  ]);
+
+  /* =======================================================
+     DYNAMIC MAPS
+  ======================================================= */
 
   const maps = useMemo(() => {
-    if (!selectedGame) return [];
-
     return [
       ...new Set(
-        tournaments
-          .filter((t) => t.game === selectedGame)
-          .map((t) => t.map)
+        gameTournaments
+          .map(
+            (item) =>
+              item.map
+          )
+          .filter(Boolean)
       ),
     ];
-  }, [selectedGame]);
+  }, [
+    gameTournaments,
+  ]);
 
-  /* =========================================================
-     FILTER TOURNAMENTS
-  ========================================================= */
+  /* =======================================================
+     FILTER RESULTS
+  ======================================================= */
 
-  const filteredTournaments = useMemo(() => {
-    if (!selectedGame) return [];
+  const filteredTournaments =
+    useMemo(() => {
+      if (!selectedGame)
+        return [];
 
-    const query = search.trim().toLowerCase();
+      const query =
+        search
+          .trim()
+          .toLowerCase();
 
-    return tournaments.filter((t) => {
-      if (t.game !== selectedGame) return false;
+      return gameTournaments.filter(
+        (item) => {
+          /* STATUS */
 
-      // Status filter: ALL / UPCOMING / LIVE / PAST.
-      // DECIDING remains a real tournament status, but has no
-      // separate filter button as requested.
-      if (status !== "All" && t.status.toLowerCase() !== status.toLowerCase()) {
-        return false;
-      }
+          if (
+            status !== "All" &&
+            item.status.toLowerCase() !==
+              status.toLowerCase()
+          ) {
+            return false;
+          }
 
-      if (date !== "All" && t.date !== date) return false;
-      if (slot !== "All" && t.slot.toLowerCase() !== slot.toLowerCase()) return false;
-      if (mode !== "All" && t.mode.toLowerCase() !== mode.toLowerCase()) return false;
-      if (map !== "All" && t.map.toLowerCase() !== map.toLowerCase()) return false;
+          /* DATE */
 
-      if (query) {
-        const haystack = [
-          t.title,
-          t.map,
-          t.mode,
-          t.date,
-          t.time,
-          t.slot,
-          t.status,
-        ].join(" ").toLowerCase();
+          if (
+            date !== "All" &&
+            item.date !== date
+          ) {
+            return false;
+          }
 
-        if (!haystack.includes(query)) return false;
-      }
+          /* SLOT */
 
-      return true;
-    });
-  }, [selectedGame, tournaments, status, date, slot, mode, map, search]);
+          if (
+            slot !== "All" &&
+            item.slot.toLowerCase() !==
+              slot.toLowerCase()
+          ) {
+            return false;
+          }
 
-  /* =========================================================
+          /* MODE */
+
+          if (
+            mode !== "All" &&
+            item.mode.toLowerCase() !==
+              mode.toLowerCase()
+          ) {
+            return false;
+          }
+
+          /* MAP */
+
+          if (
+            map !== "All" &&
+            item.map.toLowerCase() !==
+              map.toLowerCase()
+          ) {
+            return false;
+          }
+
+          /* SEARCH */
+
+          if (query) {
+            const searchable = [
+              item.title,
+              item.map,
+              item.mode,
+              item.date,
+              item.time,
+              item.slot,
+              item.status,
+            ]
+              .join(" ")
+              .toLowerCase();
+
+            if (
+              !searchable.includes(
+                query
+              )
+            ) {
+              return false;
+            }
+          }
+
+          return true;
+        }
+      );
+    }, [
+      selectedGame,
+      gameTournaments,
+      status,
+      date,
+      slot,
+      mode,
+      map,
+      search,
+    ]);
+
+  /* =======================================================
      SELECT GAME
-  ========================================================= */
+  ======================================================= */
 
-  function selectGame(gameId) {
-    setSelectedGame(gameId);
+  function selectGame(id) {
+    setSelectedGame(id);
+
     setStatus("All");
     setDate("All");
     setSlot("All");
     setMode("All");
     setMap("All");
     setSearch("");
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   }
 
-  /* =========================================================
-     RESET FILTERS
-  ========================================================= */
+  /* =======================================================
+     RESET
+  ======================================================= */
 
   function resetFilters() {
     setStatus("All");
@@ -277,38 +674,52 @@ export default function TournamentsPage() {
     setSearch("");
   }
 
-  /* =========================================================
+  /* =======================================================
+     BACK
+  ======================================================= */
+
+  function goBack() {
+    if (selectedGame) {
+      setSelectedGame(null);
+      resetFilters();
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    } else {
+      window.location.href = "/";
+    }
+  }
+
+  /* =======================================================
      RENDER
-  ========================================================= */
+  ======================================================= */
 
   return (
     <main className="tournamentPage">
-      {/* BACKGROUND */}
 
       <div className="tpGlow tpOrange" />
       <div className="tpGlow tpBlue" />
       <div className="tpGrid" />
 
-      {/* =====================================================
+      {/* ===================================================
           HEADER
-      ===================================================== */}
+      =================================================== */}
 
       <header className="tpHeader">
+
         <button
           className="backButton"
-          onClick={() => {
-            if (selectedGame) {
-              setSelectedGame(null);
-            } else {
-              window.location.href = "/";
-            }
-          }}
+          onClick={goBack}
         >
           ←
         </button>
 
         <div className="tpTitle">
-          <span>PLAY2PROVE</span>
+          <span>
+            PLAY2PROVE
+          </span>
 
           <strong>
             {selectedGameData
@@ -318,25 +729,36 @@ export default function TournamentsPage() {
         </div>
 
         <div className="tpRight">
+
           <button className="tpWallet">
-            <small>WALLET</small>
-            <strong>₹0</strong>
+            <small>
+              WALLET
+            </small>
+
+            <strong>
+              ₹0
+            </strong>
           </button>
 
           <button className="tpProfile">
             ◉
           </button>
+
         </div>
       </header>
 
-      {/* =====================================================
-          GAME SELECTION
-      ===================================================== */}
+      {/* ===================================================
+          GAME SELECT
+      =================================================== */}
 
       {!selectedGame ? (
         <section className="gameSelection">
+
           <div className="selectionIntro">
-            <span>CHOOSE YOUR BATTLE</span>
+
+            <span>
+              CHOOSE YOUR BATTLE
+            </span>
 
             <h1>
               SELECT
@@ -344,187 +766,237 @@ export default function TournamentsPage() {
             </h1>
 
             <p>
-              Choose a game to explore available tournaments.
+              Choose a game to
+              explore available
+              tournaments.
             </p>
+
           </div>
 
           {/* LOADING */}
 
-          {gamesLoading && (
-            <div className="emptyState">
-              <div className="loadingOrb">
-                ✦
-              </div>
+          {loading && (
+            <div className="tournamentLoading">
 
-              <h3>LOADING GAMES...</h3>
+              <div className="loadingSpinner" />
 
-              <p>
-                Fetching the latest games.
-              </p>
+              <strong>
+                LOADING GAMES
+              </strong>
+
+              <span>
+                Syncing the arena...
+              </span>
+
             </div>
           )}
 
           {/* ERROR */}
 
-          {!gamesLoading && gamesError && (
-            <div className="emptyState">
-              <div>⚠</div>
+          {!loading &&
+            error && (
+              <div className="emptyState">
 
-              <h3>
-                GAMES COULD NOT LOAD
-              </h3>
+                <div>
+                  ⚠
+                </div>
 
-              <p>{gamesError}</p>
+                <h3>
+                  GAMES COULD NOT LOAD
+                </h3>
 
-              <button
-                onClick={() =>
-                  window.location.reload()
-                }
-              >
-                RETRY
-              </button>
-            </div>
-          )}
+                <p>
+                  {error}
+                </p>
 
-          {/* GAME CARDS */}
+                <button
+                  onClick={() =>
+                    window.location.reload()
+                  }
+                >
+                  RETRY
+                </button>
 
-          {!gamesLoading &&
-            !gamesError &&
-            games.length > 0 && (
-              <div className="gameCards">
-                {games.map((game, gameIndex) => (
-                  <button
-                    className="gameSelectCard"
-                    key={game.id}
-                    onClick={() =>
-                      selectGame(game.id)
-                    }
-                  >
-                    {/* GAME NAME */}
-
-                    <div className="gameCardName">
-                      {game.name}
-                    </div>
-
-                    {/* IMAGE AREA */}
-
-                    <div
-                      className="gameImage"
-                      style={{
-                        aspectRatio: "16 / 9",
-                        width: "100%",
-                        overflow: "hidden",
-                      }}
-                    >
-                      {game.image ? (
-                        <img
-                          src={game.image}
-                          alt={game.name}
-                          loading={gameIndex < 2 ? "eager" : "lazy"}
-                          decoding="async"
-                          fetchPriority={gameIndex === 0 ? "high" : "auto"}
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                            objectPosition: "center",
-                            display: "block",
-                          }}
-                          onError={(e) => {
-                            e.currentTarget.style.display =
-                              "none";
-                          }}
-                        />
-                      ) : null}
-
-                      <div className="imageFallback">
-                        {game.name
-                          .toLowerCase()
-                          .includes("free")
-                          ? "🔥"
-                          : "🎮"}
-                      </div>
-
-                      <div className="imageGlow" />
-                    </div>
-
-                    {/* CARD BOTTOM */}
-
-                    <div className="gameCardBottom">
-                      <span>
-                        📱 {game.device}
-                      </span>
-
-                      <b>
-                        ENTER ARENA →
-                      </b>
-                    </div>
-
-                    {/* STATUS */}
-
-                    <div className="gameStatusRow">
-                      <span
-                        className={`gameStatus ${
-                          game.status
-                            .toLowerCase() === "live"
-                            ? "statusLive"
-                            : game.status
-                                .toLowerCase() ===
-                              "deciding"
-                            ? "statusDeciding"
-                            : "statusUpcoming"
-                        }`}
-                      >
-                        ●{" "}
-                        {game.status.toUpperCase()}
-                      </span>
-                    </div>
-                  </button>
-                ))}
               </div>
             )}
 
-          {/* NO GAMES */}
+          {/* GAME CARDS */}
 
-          {!gamesLoading &&
-            !gamesError &&
-            games.length === 0 && (
+          {!loading &&
+            !error &&
+            games.length > 0 && (
+
+              <div className="gameCards">
+
+                {games.map(
+                  (
+                    game,
+                    index
+                  ) => (
+
+                    <button
+                      key={
+                        game.id
+                      }
+                      className="gameSelectCard"
+                      onClick={() =>
+                        selectGame(
+                          game.id
+                        )
+                      }
+                    >
+
+                      <div className="gameCardName">
+                        {game.name}
+                      </div>
+
+                      <div className="gameImage">
+
+                        {game.image ? (
+                          <img
+                            src={
+                              game.image
+                            }
+                            alt={
+                              game.name
+                            }
+                            loading={
+                              index <
+                              2
+                                ? "eager"
+                                : "lazy"
+                            }
+                            fetchPriority={
+                              index ===
+                              0
+                                ? "high"
+                                : "auto"
+                            }
+                            decoding="async"
+                            onError={(
+                              e
+                            ) => {
+                              e.currentTarget.style.display =
+                                "none";
+                            }}
+                          />
+                        ) : null}
+
+                        <div className="imageFallback">
+                          {game.name
+                            .toLowerCase()
+                            .includes(
+                              "free"
+                            )
+                            ? "🔥"
+                            : "🎮"}
+                        </div>
+
+                        <div className="imageGlow" />
+
+                      </div>
+
+                      <div className="gameCardBottom">
+
+                        <span>
+                          📱{" "}
+                          {
+                            game.device
+                          }
+                        </span>
+
+                        <b>
+                          ENTER ARENA →
+                        </b>
+
+                      </div>
+
+                      <div className="gameStatusRow">
+
+                        <span
+                          className={
+                            game.status
+                              .toLowerCase() ===
+                            "live"
+                              ? "statusLive"
+                              : game.status
+                                  .toLowerCase() ===
+                                "deciding"
+                              ? "statusDeciding"
+                              : "statusUpcoming"
+                          }
+                        >
+                          ●{" "}
+                          {game.status.toUpperCase()}
+                        </span>
+
+                      </div>
+
+                    </button>
+
+                  )
+                )}
+
+              </div>
+            )}
+
+          {/* NO GAME */}
+
+          {!loading &&
+            !error &&
+            games.length ===
+              0 && (
+
               <div className="emptyState">
-                <div>🎮</div>
+
+                <div>
+                  🎮
+                </div>
 
                 <h3>
                   NO GAMES AVAILABLE
                 </h3>
 
                 <p>
-                  Add a published game in your
-                  Google Sheet.
+                  Add a published
+                  game in Google
+                  Sheets.
                 </p>
+
               </div>
             )}
+
         </section>
       ) : (
-        /* ===================================================
-           SELECTED GAME TOURNAMENTS
-        =================================================== */
+
+        /* =================================================
+           TOURNAMENT AREA
+        ================================================= */
 
         <section className="tournamentContent">
+
           {/* GAME BANNER */}
 
           <div className="gameBanner">
+
             <div>
+
               <span className="bannerEyebrow">
                 TOURNAMENT ARENA
               </span>
 
               <h1>
-                {selectedGameData.name}
+                {
+                  selectedGameData.name
+                }
               </h1>
 
               <p>
-                Find your match. Enter the arena.
+                Find your match.
+                Enter the arena.
                 Prove yourself.
               </p>
+
             </div>
 
             <div className="bannerGameIcon">
@@ -534,39 +1006,59 @@ export default function TournamentsPage() {
                 ? "🔥"
                 : "🎮"}
             </div>
+
           </div>
 
-          {/* STATUS */}
+          {/* =================================================
+              STATUS
+              ONLY ALL / UPCOMING / LIVE / PAST
+          ================================================= */}
 
           <div className="statusTabs">
+
             {[
               "All",
               "Upcoming",
               "Live",
               "Past",
-            ].map((item) => (
-              <button
-                key={item}
-                className={
-                  status === item
-                    ? "active"
-                    : ""
-                }
-                onClick={() =>
-                  setStatus(item)
-                }
-              >
-                {item === "Live" && "● "}
-                {item}
-              </button>
-            ))}
+            ].map(
+              (item) => (
+
+                <button
+                  key={item}
+                  className={
+                    status === item
+                      ? "active"
+                      : ""
+                  }
+                  onClick={() =>
+                    setStatus(
+                      item
+                    )
+                  }
+                >
+                  {item ===
+                    "Live" &&
+                    "● "}
+
+                  {item}
+                </button>
+
+              )
+            )}
+
           </div>
 
-          {/* FILTER PANEL */}
+          {/* =================================================
+              FILTER PANEL
+          ================================================= */}
 
           <div className="filterPanel">
+
             <div className="filterTitle">
+
               <div>
+
                 <span>
                   FILTER MATCHES
                 </span>
@@ -575,289 +1067,508 @@ export default function TournamentsPage() {
                   Find your perfect
                   tournament
                 </strong>
+
               </div>
 
-              <button
-                onClick={resetFilters}
-              >
-                RESET
-              </button>
             </div>
 
-            {/* STICKY ACTIVE FILTER / SEARCH BAR */}
+            {/* =================================================
+                STICKY ACTIVE FILTER BAR
+                SEARCH + RESET
+            ================================================= */}
+
             <div className="activeFilterBar">
+
               <div className="activeFilterChips">
-                <span className="activeFilterLabel">ACTIVE</span>
+
+                <span className="activeFilterLabel">
+                  ACTIVE
+                </span>
+
                 {[
-                  ["Status", status],
-                  ["Date", date],
-                  ["Slot", slot],
-                  ["Mode", mode],
-                  ["Map", map],
+                  [
+                    "Status",
+                    status,
+                  ],
+                  [
+                    "Date",
+                    date,
+                  ],
+                  [
+                    "Slot",
+                    slot,
+                  ],
+                  [
+                    "Mode",
+                    mode,
+                  ],
+                  [
+                    "Map",
+                    map,
+                  ],
                 ]
-                  .filter(([, value]) => value !== "All")
-                  .map(([label, value]) => (
-                    <button
-                      type="button"
-                      className="activeFilterChip"
-                      key={`${label}-${value}`}
-                      onClick={() => {
-                        if (label === "Status") setStatus("All");
-                        if (label === "Date") setDate("All");
-                        if (label === "Slot") setSlot("All");
-                        if (label === "Mode") setMode("All");
-                        if (label === "Map") setMap("All");
-                      }}
-                    >
-                      {label}: {value} ×
-                    </button>
-                  ))}
-                {![status, date, slot, mode, map].some((v) => v !== "All") && (
-                  <span className="noActiveFilters">All filters</span>
+                  .filter(
+                    ([, value]) =>
+                      value !==
+                      "All"
+                  )
+                  .map(
+                    ([
+                      label,
+                      value,
+                    ]) => (
+
+                      <button
+                        key={`${label}-${value}`}
+                        type="button"
+                        className="activeFilterChip"
+                        onClick={() => {
+
+                          if (
+                            label ===
+                            "Status"
+                          )
+                            setStatus(
+                              "All"
+                            );
+
+                          if (
+                            label ===
+                            "Date"
+                          )
+                            setDate(
+                              "All"
+                            );
+
+                          if (
+                            label ===
+                            "Slot"
+                          )
+                            setSlot(
+                              "All"
+                            );
+
+                          if (
+                            label ===
+                            "Mode"
+                          )
+                            setMode(
+                              "All"
+                            );
+
+                          if (
+                            label ===
+                            "Map"
+                          )
+                            setMap(
+                              "All"
+                            );
+
+                        }}
+                      >
+                        {label}:{" "}
+                        {value} ×
+                      </button>
+
+                    )
+                  )}
+
+                {[
+                  status,
+                  date,
+                  slot,
+                  mode,
+                  map,
+                ].every(
+                  (v) =>
+                    v ===
+                    "All"
+                ) && (
+                  <span className="noActiveFilters">
+                    All filters
+                  </span>
                 )}
+
               </div>
 
+              {/* SEARCH + RESET */}
+
               <div className="filterActions">
+
                 <div className="filterSearch">
-                  <span>⌕</span>
+
+                  <span>
+                    ⌕
+                  </span>
+
                   <input
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
+                    value={
+                      search
+                    }
+                    onChange={(
+                      e
+                    ) =>
+                      setSearch(
+                        e.target
+                          .value
+                      )
+                    }
                     placeholder="Search tournament..."
                     aria-label="Search tournament"
                   />
+
                   {search && (
                     <button
                       type="button"
                       className="searchClear"
-                      onClick={() => setSearch("")}
-                      aria-label="Clear search"
+                      onClick={() =>
+                        setSearch(
+                          ""
+                        )
+                      }
                     >
                       ×
                     </button>
                   )}
+
                 </div>
 
                 <button
                   type="button"
                   className="compactReset"
-                  onClick={resetFilters}
+                  onClick={
+                    resetFilters
+                  }
                 >
                   RESET
                 </button>
+
               </div>
+
             </div>
 
-            {/* DATE */}
+            {/* =================================================
+                DATE
+            ================================================= */}
 
             <div className="filterGroup">
-              <label>DATE</label>
+
+              <label>
+                DATE
+              </label>
 
               <div className="filterScroll">
+
                 <button
                   className={
-                    date === "All"
+                    date ===
+                    "All"
                       ? "selected"
                       : ""
                   }
                   onClick={() =>
-                    setDate("All")
+                    setDate(
+                      "All"
+                    )
                   }
                 >
                   ALL DATES
                 </button>
 
-                {dates.map((item) => (
-                  <button
-                    key={item}
-                    className={
-                      date === item
-                        ? "selected"
-                        : ""
-                    }
-                    onClick={() =>
-                      setDate(item)
-                    }
-                  >
-                    {formatDate(item)}
-                  </button>
-                ))}
+                {dates.map(
+                  (item) => (
+
+                    <button
+                      key={item}
+                      className={
+                        date ===
+                        item
+                          ? "selected"
+                          : ""
+                      }
+                      onClick={() =>
+                        setDate(
+                          item
+                        )
+                      }
+                    >
+                      {formatDate(
+                        item
+                      )}
+                    </button>
+
+                  )
+                )}
+
               </div>
+
             </div>
 
-            {/* TIME SLOT */}
+            {/* =================================================
+                TIME SLOT
+                NO EXACT TIME
+            ================================================= */}
 
             <div className="filterGroup">
-              <label>TIME SLOT</label>
+
+              <label>
+                TIME SLOT
+              </label>
 
               <div className="slotGrid">
+
                 {Object.entries(
-                  timeSlots
-                ).map(([key, value]) => (
-                  <button
-                    key={key}
-                    className={
-                      slot === key
-                        ? "selected"
-                        : ""
-                    }
-                    onClick={() =>
-                      setSlot(key)
-                    }
-                  >
-                    <strong>
-                      {key}
-                    </strong>
+                  TIME_SLOTS
+                ).map(
+                  ([
+                    key,
+                    label,
+                  ]) => (
 
-                    <small>
-                      {value}
-                    </small>
-                  </button>
-                ))}
+                    <button
+                      key={key}
+                      className={
+                        slot ===
+                        key
+                          ? "selected"
+                          : ""
+                      }
+                      onClick={() =>
+                        setSlot(
+                          key
+                        )
+                      }
+                    >
+
+                      <strong>
+                        {key}
+                      </strong>
+
+                      <small>
+                        {label}
+                      </small>
+
+                    </button>
+
+                  )
+                )}
+
               </div>
+
             </div>
 
-            {/* MODE */}
+            {/* =================================================
+                MODE
+                DYNAMIC FROM SHEET
+            ================================================= */}
 
             <div className="filterGroup">
-              <label>MODE</label>
+
+              <label>
+                MODE
+              </label>
 
               <div className="smallFilterGrid">
-                {[
-                  "All",
-                  "Solo",
-                  "Duo",
-                  "Squad",
-                ].map((item) => (
-                  <button
-                    key={item}
-                    className={
-                      mode === item
-                        ? "selected"
-                        : ""
-                    }
-                    onClick={() =>
-                      setMode(item)
-                    }
-                  >
-                    {item}
-                  </button>
-                ))}
-              </div>
-            </div>
 
-            {/* MAP */}
-
-            <div className="filterGroup">
-              <label>MAP</label>
-
-              <div className="smallFilterGrid">
                 <button
                   className={
-                    map === "All"
+                    mode ===
+                    "All"
                       ? "selected"
                       : ""
                   }
                   onClick={() =>
-                    setMap("All")
+                    setMode(
+                      "All"
+                    )
+                  }
+                >
+                  ALL
+                </button>
+
+                {modes.map(
+                  (item) => (
+
+                    <button
+                      key={item}
+                      className={
+                        mode ===
+                        item
+                          ? "selected"
+                          : ""
+                      }
+                      onClick={() =>
+                        setMode(
+                          item
+                        )
+                      }
+                    >
+                      {item}
+                    </button>
+
+                  )
+                )}
+
+              </div>
+
+            </div>
+
+            {/* =================================================
+                MAP
+                DYNAMIC FROM SHEET
+            ================================================= */}
+
+            <div className="filterGroup">
+
+              <label>
+                MAP
+              </label>
+
+              <div className="smallFilterGrid">
+
+                <button
+                  className={
+                    map ===
+                    "All"
+                      ? "selected"
+                      : ""
+                  }
+                  onClick={() =>
+                    setMap(
+                      "All"
+                    )
                   }
                 >
                   ALL MAPS
                 </button>
 
-                {maps.map((item) => (
-                  <button
-                    key={item}
-                    className={
-                      map === item
-                        ? "selected"
-                        : ""
-                    }
-                    onClick={() =>
-                      setMap(item)
-                    }
-                  >
-                    {item}
-                  </button>
-                ))}
+                {maps.map(
+                  (item) => (
+
+                    <button
+                      key={item}
+                      className={
+                        map ===
+                        item
+                          ? "selected"
+                          : ""
+                      }
+                      onClick={() =>
+                        setMap(
+                          item
+                        )
+                      }
+                    >
+                      {item}
+                    </button>
+
+                  )
+                )}
+
               </div>
+
             </div>
+
           </div>
 
-          {/* RESULTS HEADER */}
+          {/* =================================================
+              RESULTS
+          ================================================= */}
 
           <div className="resultsHeader">
+
             <div>
+
               <span>
                 AVAILABLE MATCHES
               </span>
 
               <strong>
-                {filteredTournaments.length}{" "}
+                {
+                  filteredTournaments.length
+                }{" "}
                 TOURNAMENT
                 {filteredTournaments.length !==
-                1
-                  ? "S"
-                  : ""}
+                  1 &&
+                  "S"}
               </strong>
+
             </div>
 
             <span>
               {search
                 ? `SEARCH: ${search}`
-                : status === "All"
+                : status ===
+                  "All"
                 ? "ALL MATCHES"
                 : status.toUpperCase()}
             </span>
+
           </div>
 
-          {/* TOURNAMENT RESULTS */}
+          {/* =================================================
+              CARDS
+          ================================================= */}
 
-          {tournamentsLoading ? (
-            <div className="tournamentLoading">
-              <div className="loadingSpinner" />
-              <strong>SYNCING ARENA</strong>
-              <span>Fetching the latest tournament slots…</span>
-            </div>
-          ) : filteredTournaments.length > 0 ? (
+          {filteredTournaments.length >
+          0 ? (
+
             <div className="tournamentGrid">
+
               {filteredTournaments.map(
                 (item) => (
+
                   <TournamentCard
-                    key={item.id}
-                    tournament={item}
-                    game={selectedGameData}
+                    key={
+                      item.id
+                    }
+                    tournament={
+                      item
+                    }
+                    game={
+                      selectedGameData
+                    }
                   />
+
                 )
               )}
+
             </div>
+
           ) : (
+
             <div className="emptyState">
-              <div>⌁</div>
+
+              <div>
+                ⌁
+              </div>
 
               <h3>
                 NO MATCHES FOUND
               </h3>
 
               <p>
-                Try changing your filters
-                to find available
-                tournaments.
+                Try changing
+                your filters.
               </p>
 
               <button
-                onClick={resetFilters}
+                onClick={
+                  resetFilters
+                }
               >
                 CLEAR FILTERS
               </button>
+
             </div>
+
           )}
+
         </section>
       )}
 
-      {/* BOTTOM NEON */}
-
       <div className="tpNeonBottom" />
+
     </main>
   );
 }
@@ -870,78 +1581,145 @@ function TournamentCard({
   tournament,
   game,
 }) {
-  const percentage = tournament.capacity > 0
-    ? (tournament.joined / tournament.capacity) * 100
-    : 0;
+  const status =
+    normalizeStatus(
+      tournament.status
+    );
+
+  const percentage =
+    tournament.capacity >
+    0
+      ? Math.min(
+          (tournament.joined /
+            tournament.capacity) *
+            100,
+          100
+        )
+      : 0;
 
   const statusClass =
-    tournament.status.toLowerCase() ===
-    "live"
+    status === "Live"
       ? "live"
-      : tournament.status.toLowerCase() ===
-        "deciding"
+      : status ===
+        "Deciding"
       ? "deciding"
-      : tournament.status.toLowerCase() ===
-        "past"
+      : status ===
+        "Past"
       ? "past"
       : "";
+
+  /* Tournament image first.
+     Game image fallback second. */
+
+  const image =
+    tournament.image ||
+    game?.image ||
+    "";
 
   return (
     <article
       className={`matchCard ${statusClass}`}
     >
+
+      {/* =================================================
+          16:9 IMAGE
+      ================================================= */}
+
       <div className="matchImageWrap">
-        {(tournament.image || game?.image) ? (
+
+        {image ? (
+
           <img
-            src={tournament.image || game.image}
-            alt={tournament.title}
+            src={image}
+            alt={
+              tournament.title
+            }
             loading="lazy"
             decoding="async"
+            fetchPriority="low"
             onError={(e) => {
-              const img = e.currentTarget;
-              if (img.dataset.fallbackApplied) {
-                img.style.display = "none";
-                return;
-              }
-              img.dataset.fallbackApplied = "1";
-              if (game?.image && img.src !== game.image) {
-                img.src = game.image;
+
+              const img =
+                e.currentTarget;
+
+              if (
+                game?.image &&
+                img.src !==
+                  game.image
+              ) {
+                img.src =
+                  game.image;
               } else {
-                img.style.display = "none";
+                img.style.display =
+                  "none";
               }
+
             }}
           />
+
         ) : (
+
           <div className="matchImageFallback">
-            {game?.name?.toLowerCase().includes("free") ? "🔥" : "🎮"}
+
+            {game?.name
+              ?.toLowerCase()
+              .includes(
+                "free"
+              )
+              ? "🔥"
+              : "🎮"}
+
           </div>
+
         )}
+
         <div className="matchImageShade" />
+
       </div>
 
+      {/* =================================================
+          CARD HEADER
+      ================================================= */}
+
       <div className="cardTop">
+
         <div>
+
           <span className="matchGame">
             {game?.name ||
               "TOURNAMENT"}
           </span>
 
           <h3>
-            {tournament.title}
+            {
+              tournament.title
+            }
           </h3>
+
         </div>
 
         <span className="matchStatus">
-          {tournament.status ===
-            "Live" && "● "}
 
-          {tournament.status.toUpperCase()}
+          {status ===
+            "Live" &&
+            "● "}
+
+          {status.toUpperCase()}
+
         </span>
+
       </div>
 
+      {/* =================================================
+          DETAILS
+      ================================================= */}
+
       <div className="matchDetails">
+
         <div>
-          <small>DATE</small>
+          <small>
+            DATE
+          </small>
 
           <strong>
             {formatDate(
@@ -952,126 +1730,253 @@ function TournamentCard({
         </div>
 
         <div>
-          <small>TIME</small>
+          <small>
+            TIME
+          </small>
 
           <strong>
-            {tournament.time}
+            {tournament.time ||
+              "—"}
           </strong>
         </div>
 
         <div>
-          <small>MODE</small>
+          <small>
+            MODE
+          </small>
 
           <strong>
-            {tournament.mode}
+            {tournament.mode ||
+              "—"}
           </strong>
         </div>
 
         <div>
-          <small>MAP</small>
+          <small>
+            MAP
+          </small>
 
           <strong>
-            {tournament.map}
+            {tournament.map ||
+              "—"}
           </strong>
         </div>
+
       </div>
+
+      {/* =================================================
+          MONEY
+      ================================================= */}
 
       <div className="rewardDetails">
+
         <div>
-          <small>ENTRY</small>
+          <small>
+            ENTRY
+          </small>
 
           <strong>
-            ₹{tournament.entry}
+            ₹
+            {tournament.entry}
           </strong>
         </div>
 
         <div>
-          <small>PER KILL</small>
+          <small>
+            PER KILL
+          </small>
 
           <strong>
-            ₹{tournament.kill}
+            ₹
+            {tournament.kill}
           </strong>
         </div>
 
         <div>
-          <small>PRIZE POOL</small>
+          <small>
+            PRIZE POOL
+          </small>
 
           <strong className="orangeText">
-            ₹{tournament.prize}
-          </strong>
-        </div>
-      </div>
-
-      <div className="players">
-        <div>
-          <span>PLAYERS</span>
-
-          <strong>
-            {tournament.joined}/
-            {tournament.capacity}
+            ₹
+            {tournament.prize}
           </strong>
         </div>
 
-        <div className="progressBar">
-          <span
-            style={{
-              width: `${Math.min(
-                percentage,
-                100
-              )}%`,
-            }}
-          />
-        </div>
       </div>
 
-      {tournament.status ===
+      {/* =================================================
+          PLAYERS
+      ================================================= */}
+
+      {tournament.capacity >
+        0 && (
+
+        <div className="players">
+
+          <div>
+
+            <span>
+              PLAYERS
+            </span>
+
+            <strong>
+              {
+                tournament.joined
+              }
+              /
+              {
+                tournament.capacity
+              }
+            </strong>
+
+          </div>
+
+          <div className="progressBar">
+
+            <span
+              style={{
+                width: `${percentage}%`,
+              }}
+            />
+
+          </div>
+
+        </div>
+
+      )}
+
+      {/* =================================================
+          ACTION
+      ================================================= */}
+
+      {status ===
       "Past" ? (
+
         <button className="resultButton">
           VIEW RESULTS →
         </button>
-      ) : tournament.status ===
+
+      ) : status ===
         "Live" ? (
+
         <button className="liveButton">
           VIEW LIVE MATCH →
         </button>
-      ) : tournament.status ===
+
+      ) : status ===
         "Deciding" ? (
+
         <button className="decidingButton">
           VIEW RESULT STATUS →
         </button>
+
       ) : (
+
         <button className="joinButton">
           VIEW & JOIN →
         </button>
+
       )}
+
     </article>
   );
 }
 
 /* =========================================================
-   DATE FORMAT
+   AUTOMATIC SLOT FALLBACK
 ========================================================= */
 
-function formatDate(date, year = "") {
-  const raw = String(date ?? "").trim();
+function getSlotFromTime(
+  value
+) {
+  const text = clean(
+    value
+  ).toUpperCase();
 
-  if (!raw) return "—";
+  if (!text)
+    return "";
 
-  // Already display-friendly: "13 Aug", "13 Aug 2026"
-  if (/^\d{1,2}\s+[A-Za-z]{3,9}(?:\s+\d{4})?$/.test(raw)) {
-    return raw;
+  let hour = 0;
+  let minute = 0;
+
+  const match12 =
+    text.match(
+      /^(\d{1,2})(?::(\d{1,2}))?\s*(AM|PM)$/
+    );
+
+  if (match12) {
+    hour =
+      Number(
+        match12[1]
+      );
+
+    minute =
+      Number(
+        match12[2] ||
+          0
+      );
+
+    const period =
+      match12[3];
+
+    if (
+      period === "AM" &&
+      hour === 12
+    ) {
+      hour = 0;
+    }
+
+    if (
+      period === "PM" &&
+      hour !== 12
+    ) {
+      hour += 12;
+    }
+  } else {
+    const match24 =
+      text.match(
+        /^(\d{1,2}):(\d{1,2})$/
+      );
+
+    if (!match24)
+      return "";
+
+    hour =
+      Number(
+        match24[1]
+      );
+
+    minute =
+      Number(
+        match24[2]
+      );
   }
 
-  // Try normal parsing only when it is safe.
-  const candidate = year ? `${raw} ${year}` : raw;
-  const d = new Date(candidate);
+  const total =
+    hour * 60 +
+    minute;
 
-  if (Number.isNaN(d.getTime())) {
-    return raw;
+  if (
+    total >= 360 &&
+    total < 720
+  ) {
+    return "Morning";
   }
 
-  return d.toLocaleDateString("en-IN", {
-    day: "2-digit",
-    month: "short",
-  });
+  if (
+    total >= 720 &&
+    total < 960
+  ) {
+    return "Afternoon";
+  }
+
+  if (
+    total >= 960 &&
+    total < 1140
+  ) {
+    return "Evening";
+  }
+
+  return "Night";
 }
