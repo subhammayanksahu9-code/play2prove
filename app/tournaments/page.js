@@ -11,8 +11,8 @@ import "./tournaments.css";
 const API_URL =
   "https://script.google.com/macros/s/AKfycbw9k1jNIE-971OTPZQO6bf_0tX5bcYPHZc5nE_bCqcdbRzeGcQa9zOxmaT7Di3Q5QhS/exec";
 
-const CACHE_KEY = "play2prove_tournaments_v4";
-const CACHE_MAX_AGE = 30 * 1000;
+const CACHE_KEY = "play2prove_tournaments_v5";
+const CACHE_MAX_AGE = 5 * 60 * 1000;
 
 /* =========================================================
    TIME SLOTS
@@ -343,109 +343,158 @@ export default function TournamentsPage() {
     }
 
     async function fetchData() {
-      try {
-        /* ===============================================
-           INSTANT CACHE
-        =============================================== */
+  let hasUsableCache = false;
 
-        let hasCache = false;
+  /* ===============================================
+     1. INSTANT CACHE
+     Previous successful data immediately show
+  =============================================== */
 
-        try {
-          const saved =
-            JSON.parse(
-              localStorage.getItem(
-                CACHE_KEY
-              ) || "null"
-            );
+  try {
+    const saved = JSON.parse(
+      localStorage.getItem(CACHE_KEY) || "null"
+    );
 
-          if (
-            saved?.data &&
-            Date.now() -
-              Number(
-                saved.savedAt || 0
-              ) <
-              CACHE_MAX_AGE
-          ) {
-            applyData(
-              saved.data
-            );
+    if (saved?.data) {
+      const age =
+        Date.now() - Number(saved.savedAt || 0);
 
-            hasCache = true;
-          }
-        } catch (_) {}
+      // Show old successful data immediately.
+      // Customer does not have to wait for API.
+      applyData(saved.data);
 
-        /* ===============================================
-           BACKGROUND API REFRESH
-        =============================================== */
+      hasUsableCache = true;
 
-        const controller =
-          new AbortController();
+      if (age >= 0 && age < CACHE_MAX_AGE) {
+        setLoading(false);
+      }
+    }
+  } catch (cacheError) {
+    console.warn(
+      "PLAY2PROVE CACHE READ:",
+      cacheError
+    );
+  }
 
-        const timeout = setTimeout(
-          () =>
-            controller.abort(),
-          9000
+  if (cancelled) return;
+
+
+  /* ===============================================
+     2. BACKGROUND API REFRESH
+  =============================================== */
+
+  const controller = new AbortController();
+
+  // Maximum API wait = 5 seconds
+  const timeout = setTimeout(() => {
+    controller.abort();
+  }, 5000);
+
+
+  try {
+    const response = await fetch(API_URL, {
+      method: "GET",
+
+      signal: controller.signal,
+
+      headers: {
+        Accept: "application/json",
+      },
+
+      // Browser can reuse successful response
+      cache: "default",
+
+      redirect: "follow",
+    });
+
+
+    if (!response.ok) {
+      throw new Error(
+        `API ${response.status}`
+      );
+    }
+
+
+    const data = await response.json();
+
+
+    if (
+      !data ||
+      data.success === false
+    ) {
+      throw new Error(
+        "Invalid API response"
+      );
+    }
+
+
+    if (cancelled) return;
+
+
+    /* ===============================================
+       UPDATE PAGE WITH NEW DATA
+    =============================================== */
+
+    applyData(data);
+
+
+    /* ===============================================
+       SAVE NEW DATA TO LOCAL CACHE
+    =============================================== */
+
+    try {
+      localStorage.setItem(
+        CACHE_KEY,
+        JSON.stringify({
+          savedAt: Date.now(),
+          data,
+        })
+      );
+    } catch (cacheError) {
+      console.warn(
+        "PLAY2PROVE CACHE WRITE:",
+        cacheError
+      );
+    }
+
+
+  } catch (err) {
+
+    console.warn(
+      "PLAY2PROVE BACKGROUND API:",
+      err
+    );
+
+
+    if (!cancelled) {
+
+      setLoading(false);
+
+
+      /*
+       IMPORTANT:
+
+       Agar old data already hai,
+       to ERROR SCREEN mat dikhao.
+      */
+
+      if (!hasUsableCache) {
+        setError(
+          "Unable to load games right now."
         );
-
-        const response =
-          await fetch(API_URL, {
-            method: "GET",
-            signal:
-              controller.signal,
-
-            headers: {
-              Accept:
-                "application/json",
-            },
-
-            cache: "no-store",
-          });
-
-        clearTimeout(timeout);
-
-        if (!response.ok) {
-          throw new Error(
-            `API ${response.status}`
-          );
-        }
-
-        const data =
-          await response.json();
-
-        applyData(data);
-
-        try {
-          localStorage.setItem(
-            CACHE_KEY,
-            JSON.stringify({
-              savedAt:
-                Date.now(),
-              data,
-            })
-          );
-        } catch (_) {}
-      } catch (err) {
-        console.error(
-          "PLAY2PROVE API ERROR:",
-          err
-        );
-
-        if (!cancelled) {
-          setLoading(false);
-
-          if (
-            games.length === 0
-          ) {
-            setError(
-              "Unable to load games right now."
-            );
-          }
-        }
       }
     }
 
-    fetchData();
 
+  } finally {
+
+    clearTimeout(timeout);
+
+  }
+}
+
+
+fetchData();
     return () => {
       cancelled = true;
     };
