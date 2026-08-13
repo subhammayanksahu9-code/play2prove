@@ -9,7 +9,7 @@ import "./tournaments.css";
 ========================================================= */
 
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbx3vZuDmwpqykeX45oWhNffRqySbFQZ6a5ZukM3KEhB6B5e8I6rzWBmg8tsm_zUNz0/exec";
+  "https://script.google.com/macros/s/AKfycbw9k1jNIE-971OTPZQO6bf_0tX5bcYPHZc5nE_bCqcdbRzeGcQa9zOxmaT7Di3Q5QhS/exec";
 
 const CACHE_KEY = "play2prove_tournaments_v4";
 const CACHE_MAX_AGE = 30 * 1000;
