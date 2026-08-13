@@ -8,8 +8,7 @@ import "./tournaments.css";
    FAST + FILTERABLE + GOOGLE SHEET API
 ========================================================= */
 
-const API_URL =
-  "https://script.google.com/macros/s/AKfycbw9k1jNIE-971OTPZQO6bf_0tX5bcYPHZc5nE_bCqcdbRzeGcQa9zOxmaT7Di3Q5QhS/exec";
+const API_URL = "/api/tournaments";
 
 const CACHE_KEY = "play2prove_tournaments_v5";
 const CACHE_MAX_AGE = 5 * 60 * 1000;
