@@ -3738,22 +3738,31 @@ a:focus-visible {
   }
 }
 /* ============================================================
-   HOME TOURNAMENT CARD — IMAGE
+   TOURNAMENT IMAGE — CENTER FRAMED STYLE
    ============================================================ */
 
 .homeTournamentImage {
-  width: calc(100% + 48px);
+  width: 100%;
   height: 170px;
 
-  margin: -24px -24px 20px;
+  margin: 0 0 20px;
 
   overflow: hidden;
 
-  border-radius: 15px 15px 0 0;
+  border-radius: 11px;
+
+  border: 1px solid rgba(255, 255, 255, 0.10);
 
   background: #05070d;
 
   position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.25);
 }
 
 .homeTournamentImage img {
@@ -3763,22 +3772,13 @@ a:focus-visible {
   display: block;
 
   object-fit: cover;
-  object-position: center;
+  object-position: center center;
 
   transition: transform 0.35s ease;
 }
 
 .newTournamentCard:hover .homeTournamentImage img {
-  transform: scale(1.03);
-}
-
-
-/* ============================================================
-   HOME TOURNAMENT CARD — KEEP IMAGE + CONTENT CLEAN
-   ============================================================ */
-
-.newTournamentCard {
-  overflow: hidden;
+  transform: scale(1.035);
 }
 
 
@@ -3787,23 +3787,20 @@ a:focus-visible {
    ============================================================ */
 
 @media (max-width: 800px) {
-
   .homeTournamentImage {
-    width: calc(100% + 48px);
+    width: 100%;
     height: 155px;
 
-    margin: -24px -24px 20px;
+    margin: 0 0 20px;
 
-    border-radius: 15px 15px 0 0;
+    border-radius: 10px;
   }
-
 }
 
-
 @media (max-width: 480px) {
-
   .homeTournamentImage {
     height: 145px;
   }
-
 }
+
+
