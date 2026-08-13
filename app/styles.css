@@ -3472,7 +3472,7 @@ a:focus-visible {
 
 .rewardVisual span:nth-of-type(2) {
   left: 50%;
-  top: 5px;
+  top: -8px;
 
   transform: translateX(-50%);
 }
