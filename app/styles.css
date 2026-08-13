@@ -3326,25 +3326,6 @@ a:focus-visible {
     border-color 0.25s ease,
     box-shadow 0.25s ease;
 }
-
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 12px;
-
-  background:
-    linear-gradient(
-      145deg,
-      rgba(255,255,255,0.045),
-      rgba(255,255,255,0.015)
-    );
-
-  backdrop-filter: blur(10px);
-
-  transition:
-    transform 0.25s ease,
-    border-color 0.25s ease,
-    box-shadow 0.25s ease;
-}
-
 .skillCard:hover {
   transform: translateY(-5px);
 
