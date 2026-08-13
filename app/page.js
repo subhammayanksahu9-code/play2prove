@@ -883,10 +883,6 @@ function TournamentCard({ tournament }) {
     tournament?.entry ?? 0
   );
 
-  const kill = Number(
-    tournament?.kill ?? 0
-  );
-
   const prize = Number(
     tournament?.prize ?? 0
   );
@@ -989,20 +985,15 @@ function TournamentCard({ tournament }) {
 
       </div>
 
+<div className="homeTournamentBottom">
 
-      <div className="homeTournamentBottom">
+  <span>
+    {capacity > 0
+      ? `${joined}/${capacity}`
+      : "—"}
+  </span>
 
-        <span>
-          PER KILL ₹{kill}
-        </span>
-
-        <span>
-          {capacity > 0
-            ? `${joined}/${capacity}`
-            : "—"}
-        </span>
-
-      </div>
+</div>
 
 
       <button
