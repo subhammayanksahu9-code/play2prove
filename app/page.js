@@ -881,17 +881,17 @@ function TournamentCard({ tournament }) {
   ""
 ).trim();
 
-const entry = Number(
+const entry = String(
   tournament?.entryFee ??
   tournament?.entry ??
-  0
-);
+  "₹0"
+).trim();
 
-const prize = Number(
+const prize = String(
   tournament?.prizePool ??
   tournament?.prize ??
-  0
-);
+  "₹0"
+).trim();
 
   return (
     <article className="newTournamentCard">
