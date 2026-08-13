@@ -3742,3 +3742,73 @@ a:focus-visible {
     height: 50px;
   }
 }
+/* ============================================================
+   HOME TOURNAMENT CARD — IMAGE
+   ============================================================ */
+
+.homeTournamentImage {
+  width: calc(100% + 48px);
+  height: 170px;
+
+  margin: -24px -24px 20px;
+
+  overflow: hidden;
+
+  border-radius: 15px 15px 0 0;
+
+  background: #05070d;
+
+  position: relative;
+}
+
+.homeTournamentImage img {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+  object-position: center;
+
+  transition: transform 0.35s ease;
+}
+
+.newTournamentCard:hover .homeTournamentImage img {
+  transform: scale(1.03);
+}
+
+
+/* ============================================================
+   HOME TOURNAMENT CARD — KEEP IMAGE + CONTENT CLEAN
+   ============================================================ */
+
+.newTournamentCard {
+  overflow: hidden;
+}
+
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+
+@media (max-width: 800px) {
+
+  .homeTournamentImage {
+    width: calc(100% + 48px);
+    height: 155px;
+
+    margin: -24px -24px 20px;
+
+    border-radius: 15px 15px 0 0;
+  }
+
+}
+
+
+@media (max-width: 480px) {
+
+  .homeTournamentImage {
+    height: 145px;
+  }
+
+}
