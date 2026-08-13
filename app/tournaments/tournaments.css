@@ -1,7 +1,7 @@
 /* =========================================================
-   PLAY2PROVE — TOURNAMENTS
-   Compact filters • Sticky selected filters • Neon arena
-========================================================= */
+   PLAY2PROVE — TOURNAMENTS PAGE
+   Stable responsive CSS
+   ========================================================= */
 
 * {
   box-sizing: border-box;
@@ -12,274 +12,416 @@ body {
   margin: 0;
   padding: 0;
   background: #03050a;
-  color: #fff;
+  color: #ffffff;
   font-family: Arial, Helvetica, sans-serif;
 }
 
 button,
-input {
-  font: inherit;
+input,
+select {
+  font-family: inherit;
 }
 
 button {
   cursor: pointer;
 }
 
+/* =========================================================
+   MAIN PAGE
+   ========================================================= */
+
 .tournamentPage {
   position: relative;
   min-height: 100vh;
-  overflow-x: clip;
-  padding-bottom: 80px;
+  overflow-x: hidden;
+  padding-bottom: 90px;
+
   background:
-    radial-gradient(circle at 8% 8%, rgba(255, 70, 0, .12), transparent 27%),
-    radial-gradient(circle at 92% 48%, rgba(83, 45, 255, .14), transparent 31%),
+    radial-gradient(
+      circle at 8% 12%,
+      rgba(255, 70, 0, 0.12),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 92% 35%,
+      rgba(92, 55, 255, 0.14),
+      transparent 32%
+    ),
     #03050a;
 }
+
+/* Background grid */
 
 .tpGrid {
   position: fixed;
   inset: 0;
   z-index: 0;
+
   pointer-events: none;
-  opacity: .11;
+
+  opacity: 0.09;
+
   background-image:
-    linear-gradient(rgba(255,255,255,.055) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.055) 1px, transparent 1px);
-  background-size: 42px 42px;
+    linear-gradient(
+      rgba(255, 255, 255, 0.07) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.07) 1px,
+      transparent 1px
+    );
+
+  background-size: 45px 45px;
 }
+
+/* Ambient glows */
 
 .tpGlow {
   position: fixed;
-  width: 430px;
-  height: 430px;
+
+  width: 360px;
+  height: 360px;
+
   border-radius: 50%;
-  filter: blur(130px);
+
+  filter: blur(120px);
+
+  opacity: 0.16;
+
   pointer-events: none;
+
   z-index: 0;
-  opacity: .12;
 }
 
 .tpOrange {
-  left: -280px;
-  top: 20%;
-  background: #ff4d00;
+  left: -220px;
+  top: 22%;
+
+  background: #ff4b00;
 }
 
-.tpPurple {
-  right: -290px;
-  top: 45%;
-  background: #623cff;
+.tpBlue {
+  right: -220px;
+  top: 48%;
+
+  background: #643cff;
 }
+
+/* =========================================================
+   HEADER
+   ========================================================= */
 
 .tpHeader {
   position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: 100;
+
   height: 66px;
-  padding: 0 clamp(12px, 4vw, 55px);
+
+  padding: 0 4vw;
+
   display: flex;
   align-items: center;
-  background: rgba(3,5,10,.88);
-  border-bottom: 1px solid #202738;
+
+  background: rgba(3, 5, 10, 0.92);
+
+  border-bottom: 1px solid #202636;
+
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
 }
 
 .backButton {
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
+
   display: grid;
   place-items: center;
-  border: 1px solid #2c3548;
-  border-radius: 9px;
+
+  border: 1px solid #30384b;
+  border-radius: 10px;
+
   background: #080c14;
-  color: #fff;
+
+  color: #ffffff;
+
   font-size: 20px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
 .backButton:hover {
-  border-color: #ff5600;
-  box-shadow: 0 0 18px rgba(255,70,0,.15);
+  border-color: #ff5800;
+
+  box-shadow:
+    0 0 18px rgba(255, 80, 0, 0.2);
+
+  transform: translateY(-1px);
 }
 
-.tpBrand {
-  margin-left: 13px;
+.tpTitle {
+  margin-left: 15px;
 }
 
-.tpBrand span,
-.tpBrand strong {
+.tpTitle span,
+.tpTitle strong {
   display: block;
 }
 
-.tpBrand span {
+.tpTitle span {
   color: #ff5800;
+
   font-size: 6px;
   font-weight: 900;
+
   letter-spacing: 2px;
 }
 
-.tpBrand strong {
+.tpTitle strong {
   margin-top: 3px;
+
   font-size: 13px;
   font-weight: 900;
 }
 
 .tpRight {
   margin-left: auto;
+
   display: flex;
   align-items: center;
+
   gap: 8px;
 }
 
 .tpWallet {
-  min-width: 74px;
-  height: 38px;
+  min-width: 76px;
+  height: 39px;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(255,78,0,.55);
+
+  border: 1px solid rgba(255, 78, 0, 0.55);
   border-radius: 9px;
-  background: rgba(255,65,0,.06);
-  color: #fff;
+
+  background: rgba(255, 65, 0, 0.06);
+
+  color: #ffffff;
+
+  box-shadow:
+    inset 0 0 15px rgba(255, 70, 0, 0.03),
+    0 0 18px rgba(255, 70, 0, 0.05);
 }
 
 .tpWallet small {
-  color: #727b8d;
+  color: #737b8d;
+
   font-size: 6px;
+  font-weight: 800;
+
   letter-spacing: 1px;
 }
 
 .tpWallet strong {
   margin-top: 2px;
+
+  color: #ffffff;
+
   font-size: 10px;
 }
 
 .tpProfile {
-  width: 38px;
-  height: 38px;
+  width: 39px;
+  height: 39px;
+
+  display: grid;
+  place-items: center;
+
   border: 1px solid #643bba;
   border-radius: 50%;
-  background: rgba(100,55,190,.12);
+
+  background: rgba(100, 55, 190, 0.12);
+
   color: #bd9aff;
-  font-size: 11px;
-  font-weight: 900;
+
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
+
+.tpProfile:hover {
+  box-shadow:
+    0 0 20px rgba(120, 70, 255, 0.3);
+
+  transform: scale(1.04);
+}
+
+/* =========================================================
+   COMMON CONTAINERS
+   ========================================================= */
 
 .gameSelection,
 .tournamentContent {
   position: relative;
   z-index: 2;
+
   width: min(1180px, 92vw);
+
   margin: 0 auto;
 }
 
 /* =========================================================
    GAME SELECTION
-========================================================= */
+   ========================================================= */
 
 .gameSelection {
-  padding: 70px 0 90px;
+  padding: 80px 0;
 }
 
-.selectionIntro > span {
+.selectionIntro span {
   color: #ff5800;
+
   font-size: 8px;
   font-weight: 900;
+
   letter-spacing: 2px;
 }
 
 .selectionIntro h1 {
-  margin: 10px 0 12px;
-  font-size: clamp(48px, 8vw, 88px);
-  line-height: .88;
+  margin: 10px 0;
+
+  color: #ffffff;
+
+  font-size: clamp(48px, 8vw, 90px);
+  line-height: 0.88;
+
   letter-spacing: -4px;
 }
 
 .selectionIntro h1 em {
   color: #ff4d0a;
+
   font-style: normal;
-  text-shadow: 0 0 28px rgba(255,70,0,.3);
+
+  text-shadow:
+    0 0 25px rgba(255, 70, 0, 0.35);
 }
 
 .selectionIntro p {
-  max-width: 620px;
-  margin: 0;
+  max-width: 650px;
+
   color: #737c8f;
+
   font-size: 11px;
+  line-height: 1.6;
 }
 
-.miniSync {
-  display: inline-block;
-  margin-top: 12px;
-  color: #00df8b;
-  font-size: 7px;
-  font-weight: 900;
-  letter-spacing: 1px;
-}
+/* =========================================================
+   GAME CARDS
+   ========================================================= */
 
 .gameCards {
-  margin-top: 40px;
+  margin-top: 45px;
+
   display: grid;
-  grid-template-columns: repeat(2, minmax(0,1fr));
-  gap: 16px;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 18px;
 }
 
 .gameSelectCard {
   width: 100%;
+
   padding: 0;
+
   overflow: hidden;
+
   border: 1px solid #252e3e;
-  border-radius: 16px;
+  border-radius: 18px;
+
   background: #080c14;
-  color: #fff;
+
+  color: #ffffff;
+
   text-align: left;
-  transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+
+  transition:
+    transform 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .gameSelectCard:hover {
-  transform: translateY(-5px);
+  transform: translateY(-6px);
+
   border-color: #ff5600;
-  box-shadow: 0 18px 50px rgba(0,0,0,.5), 0 0 30px rgba(255,65,0,.1);
+
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.55),
+    0 0 30px rgba(255, 65, 0, 0.12);
 }
+
+/* Game name */
 
 .gameCardName {
-  min-height: 52px;
-  padding: 15px 17px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  border-bottom: 1px solid #202938;
-}
+  padding: 18px 20px;
 
-.gameCardName span {
+  border-bottom: 1px solid #202938;
+
   font-size: 14px;
   font-weight: 900;
-  letter-spacing: .6px;
+
+  letter-spacing: 1px;
 }
 
-.gameCardName b {
-  color: #ff5a00;
-  font-size: 7px;
-  white-space: nowrap;
-}
+/* =========================================================
+   GAME IMAGE
+   Default aspect ratio = 16:9
+   ========================================================= */
 
 .gameImage {
   position: relative;
+
   width: 100%;
+
   aspect-ratio: 16 / 9;
+
+  min-height: 0;
+
   overflow: hidden;
-  background: #060910;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(255, 68, 0, 0.2),
+      transparent 52%
+    ),
+    #05080e;
 }
 
 .gameImage img {
+  position: relative;
+  z-index: 2;
+
+  display: block;
+
   width: 100%;
   height: 100%;
-  display: block;
+
   object-fit: cover;
   object-position: center;
-  transition: transform .5s ease;
+
+  image-rendering: auto;
+
+  transition:
+    transform 0.5s ease,
+    filter 0.5s ease;
 }
 
 .gameSelectCard:hover .gameImage img {
@@ -289,738 +431,887 @@ button {
 .imageFallback {
   position: absolute;
   inset: 0;
+
   display: grid;
   place-items: center;
-  font-size: 70px;
-  background: radial-gradient(circle, rgba(255,70,0,.2), transparent 55%), #060910;
+
+  font-size: 75px;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(255, 65, 0, 0.18),
+      transparent 55%
+    ),
+    linear-gradient(
+      135deg,
+      rgba(255, 65, 0, 0.12),
+      rgba(60, 30, 180, 0.12)
+    );
 }
 
-.imageOverlay {
+.imageGlow {
   position: absolute;
-  inset: 0;
+
+  width: 180px;
+  height: 180px;
+
+  left: 50%;
+  top: 50%;
+
+  transform: translate(-50%, -50%);
+
+  border-radius: 50%;
+
+  background: #ff4d00;
+
+  filter: blur(90px);
+
+  opacity: 0.17;
+
   pointer-events: none;
-  background: linear-gradient(180deg, transparent 55%, rgba(0,0,0,.65));
 }
+
+/* Card lower info */
 
 .gameCardBottom {
-  min-height: 42px;
-  padding: 11px 17px;
+  min-height: 47px;
+
+  padding: 14px 18px;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 10px;
+
+  border-bottom: 1px solid #202938;
 }
 
 .gameCardBottom span {
-  color: #778196;
+  color: #788195;
+
   font-size: 7px;
   font-weight: 800;
 }
 
-.gameCardBottom span:last-child {
+.gameCardBottom b {
+  color: #ff5a00;
+
+  font-size: 7px;
+  font-weight: 900;
+}
+
+/* Status */
+
+.gameStatusRow {
+  min-height: 43px;
+
+  padding: 12px 18px;
+
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 12px;
+}
+
+.gameStatusRow span {
   font-size: 6px;
-}
-
-.statusUpcoming { color: #ffb000 !important; }
-.statusLive { color: #00e58c !important; }
-.statusDeciding { color: #b777ff !important; }
-.statusPast { color: #8992a4 !important; }
-
-.gameLoading,
-.comingSoon {
-  margin-top: 28px;
-  min-height: 280px;
-  padding: 45px 25px;
-  display: grid;
-  place-items: center;
-  align-content: center;
-  text-align: center;
-  border: 1px solid #242d3e;
-  border-radius: 16px;
-  background: rgba(7,10,17,.8);
-}
-
-.loadingRing {
-  width: 42px;
-  height: 42px;
-  border: 2px solid #20293a;
-  border-top-color: #ff5800;
-  border-right-color: #673cff;
-  border-radius: 50%;
-  animation: spin .8s linear infinite;
-}
-
-.gameLoading strong,
-.comingSoon > span {
-  margin-top: 15px;
-  color: #ff5800;
-  font-size: 7px;
   font-weight: 900;
-  letter-spacing: 1.5px;
+
+  letter-spacing: 0.5px;
 }
 
-.gameLoading span,
-.comingSoon p {
-  margin-top: 7px;
-  max-width: 480px;
-  color: #687286;
-  font-size: 9px;
-  line-height: 1.55;
+.statusUpcoming {
+  color: #ffb000;
 }
 
-.comingGlow {
-  font-size: 38px;
-  filter: drop-shadow(0 0 22px rgba(255,70,0,.3));
+.statusLive {
+  color: #00e58c;
 }
 
-.comingSoon h2 {
-  margin: 8px 0 0;
-  font-size: clamp(28px, 5vw, 48px);
-  letter-spacing: -1px;
-}
-
-.comingSoon button {
-  margin-top: 12px;
-  height: 34px;
-  padding: 0 14px;
-  border: 1px solid #ff5800;
-  border-radius: 7px;
-  background: transparent;
-  color: #ff5800;
-  font-size: 7px;
-  font-weight: 900;
+.statusDeciding {
+  color: #b16cff;
 }
 
 /* =========================================================
-   TOURNAMENT HERO
-========================================================= */
+   TOURNAMENT CONTENT
+   ========================================================= */
 
 .tournamentContent {
-  padding: 24px 0 90px;
+  padding: 30px 0 100px;
 }
+
+/* =========================================================
+   GAME BANNER
+   ========================================================= */
 
 .gameBanner {
   position: relative;
-  min-height: 210px;
-  padding: 34px 42px;
+
+  min-height: 220px;
+
+  padding: 35px;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   overflow: hidden;
+
   border: 1px solid #292f41;
   border-radius: 18px;
+
   background:
-    radial-gradient(circle at 86% 50%, rgba(255,70,0,.2), transparent 36%),
-    radial-gradient(circle at 15% 80%, rgba(80,45,180,.09), transparent 35%),
+    radial-gradient(
+      circle at 80% 50%,
+      rgba(255, 70, 0, 0.2),
+      transparent 40%
+    ),
     #080c14;
 }
 
-.gameBanner::before {
+.gameBanner::after {
   content: "";
+
   position: absolute;
   inset: 0;
+
   pointer-events: none;
-  background-image:
-    linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
-  background-size: 32px 32px;
-  opacity: .45;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 80, 0, 0.04),
+      transparent
+    );
 }
 
-.bannerCopy {
+.bannerEyebrow {
   position: relative;
   z-index: 2;
-}
 
-.bannerCopy > span {
-  color: #ff5800;
+  color: #ff5a00;
+
   font-size: 7px;
   font-weight: 900;
+
   letter-spacing: 2px;
 }
 
-.bannerCopy h1 {
-  margin: 9px 0;
-  font-size: clamp(45px, 7vw, 78px);
-  line-height: .9;
-  letter-spacing: -4px;
-}
-
-.bannerCopy p {
-  margin: 0;
-  color: #737c8f;
-  font-size: 9px;
-}
-
-.bannerVisual {
+.gameBanner h1 {
   position: relative;
   z-index: 2;
-  width: 155px;
-  height: 155px;
-  display: grid;
-  place-items: center;
-  flex: 0 0 auto;
-  overflow: hidden;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,70,0,.2), transparent 60%);
+
+  margin: 9px 0;
+
+  font-size: clamp(40px, 7vw, 70px);
+  line-height: 0.9;
+
+  letter-spacing: -3px;
 }
 
-.bannerVisual img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 0 28px rgba(255,70,0,.3));
+.gameBanner p {
+  position: relative;
+  z-index: 2;
+
+  max-width: 600px;
+
+  color: #727b8d;
+
+  font-size: 9px;
+  line-height: 1.5;
 }
 
-.bannerVisual span {
-  font-size: 72px;
+.bannerGameIcon {
+  position: relative;
+  z-index: 2;
+
+  flex-shrink: 0;
+
+  font-size: 100px;
+
+  filter:
+    drop-shadow(0 0 30px rgba(255, 70, 0, 0.35));
 }
 
 /* =========================================================
-   STICKY SELECTED FILTER BAR
-========================================================= */
+   STATUS TABS
+   ========================================================= */
 
-.filterSticky {
-  position: sticky;
-  top: 66px;
-  z-index: 900;
-  min-height: 54px;
-  margin-top: 14px;
-  padding: 8px 10px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  border: 1px solid #242d3e;
-  border-radius: 10px;
-  background: rgba(4,7,12,.92);
-  box-shadow: 0 10px 30px rgba(0,0,0,.25);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-}
+.statusTabs {
+  margin-top: 20px;
 
-.selectedFilterChips {
-  min-width: 0;
   display: flex;
-  align-items: center;
-  gap: 6px;
+
+  gap: 7px;
+
   overflow-x: auto;
+
   scrollbar-width: none;
 }
 
-.selectedFilterChips::-webkit-scrollbar {
+.statusTabs::-webkit-scrollbar {
   display: none;
 }
 
-.filterLabel {
-  color: #ff5800;
-  font-size: 6px;
-  font-weight: 900;
-  letter-spacing: 1px;
-  flex: 0 0 auto;
-}
+.statusTabs button {
+  flex-shrink: 0;
 
-.noFilters {
-  color: #687286;
-  font-size: 7px;
-  font-weight: 800;
+  height: 39px;
+
+  padding: 0 18px;
+
   white-space: nowrap;
-}
 
-.filterChip {
-  flex: 0 0 auto;
-  height: 27px;
-  padding: 0 9px;
-  border: 1px solid rgba(255,88,0,.5);
-  border-radius: 6px;
-  background: rgba(255,70,0,.08);
-  color: #fff;
-  font-size: 6px;
+  border: 1px solid #252e3e;
+  border-radius: 8px;
+
+  background: #080c14;
+
+  color: #6d7689;
+
+  font-size: 8px;
   font-weight: 900;
+
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background 0.2s ease;
 }
 
-.filterActions {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+.statusTabs button:hover {
+  border-color: #454f63;
+
+  color: #ffffff;
 }
 
-.searchButton,
-.resetButton {
-  height: 30px;
-  padding: 0 11px;
-  border-radius: 6px;
-  font-size: 6px;
-  font-weight: 900;
-  letter-spacing: .5px;
-}
+.statusTabs button.active {
+  color: #ffffff;
 
-.searchButton {
-  border: 1px solid #354056;
-  background: #0a0e16;
-  color: #fff;
-}
+  border-color: #ff5600;
 
-.searchButton.active,
-.searchButton:hover {
-  border-color: #ff5800;
-  color: #ff5800;
-}
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255, 65, 0, 0.17),
+      rgba(255, 65, 0, 0.04)
+    );
 
-.resetButton {
-  border: 1px solid rgba(255,88,0,.6);
-  background: rgba(255,70,0,.08);
-  color: #ff5800;
-}
-
-.resetButton:hover {
-  background: #ff5800;
-  color: #fff;
+  box-shadow:
+    0 0 20px rgba(255, 65, 0, 0.12);
 }
 
 /* =========================================================
    FILTER PANEL
-========================================================= */
+   ========================================================= */
 
 .filterPanel {
-  margin-top: 10px;
-  padding: 17px;
+  margin-top: 18px;
+
+  padding: 20px;
+
   border: 1px solid #242d3e;
-  border-radius: 14px;
-  background: rgba(6,9,15,.9);
+  border-radius: 15px;
+
+  background: rgba(7, 10, 17, 0.92);
+
+  box-shadow:
+    inset 0 0 30px rgba(255, 255, 255, 0.01);
 }
 
-.filterHeader > div > span {
+.filterTitle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 20px;
+}
+
+.filterTitle span,
+.resultsHeader span {
+  display: block;
+
   color: #ff5800;
+
   font-size: 6px;
   font-weight: 900;
+
   letter-spacing: 1.5px;
 }
 
-.filterHeader strong {
+.filterTitle strong {
   display: block;
-  margin-top: 4px;
+
+  margin-top: 5px;
+
   font-size: 11px;
 }
 
-.searchRow {
-  height: 38px;
-  margin-bottom: 13px;
-  padding: 0 10px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border: 1px solid #303a4e;
-  border-radius: 7px;
-  background: #080c14;
-}
+.filterTitle button {
+  border: 0;
 
-.searchRow:focus-within {
-  border-color: #ff5800;
-  box-shadow: 0 0 18px rgba(255,70,0,.08);
-}
+  background: transparent;
 
-.searchRow > span {
   color: #ff5800;
-}
 
-.searchRow input {
-  min-width: 0;
-  flex: 1;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  color: #fff;
-  font-size: 9px;
-}
-
-.searchRow input::placeholder {
-  color: #586275;
-}
-
-.searchRow button {
-  border: 0;
-  background: transparent;
-  color: #8892a4;
-  font-size: 17px;
+  font-size: 7px;
+  font-weight: 900;
 }
 
 .filterGroup {
-  margin-top: 16px;
+  margin-top: 18px;
 }
 
 .filterGroup label {
   display: block;
-  margin-bottom: 7px;
+
+  margin-bottom: 8px;
+
   color: #687286;
+
   font-size: 6px;
   font-weight: 900;
-  letter-spacing: 1.1px;
+
+  letter-spacing: 1.2px;
 }
 
-.compactFilters {
+.filterScroll {
   display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-}
 
-.compactFilters button {
-  min-height: 31px;
-  padding: 0 10px;
-  border: 1px solid #252e3e;
-  border-radius: 6px;
-  background: #090d15;
-  color: #727c90;
-  font-size: 6px;
-  font-weight: 900;
-}
+  gap: 7px;
 
-.compactFilters button:hover {
-  border-color: #465168;
-  color: #fff;
-}
-
-.compactFilters button.selected {
-  border-color: #ff5800;
-  background: rgba(255,70,0,.1);
-  color: #fff;
-  box-shadow: 0 0 12px rgba(255,70,0,.08);
-}
-
-.scrollFilters {
   overflow-x: auto;
-  flex-wrap: nowrap;
+
   scrollbar-width: none;
 }
 
-.scrollFilters::-webkit-scrollbar {
+.filterScroll::-webkit-scrollbar {
   display: none;
 }
 
-.liveDot {
-  display: inline-block;
-  width: 5px;
-  height: 5px;
-  margin-right: 4px;
-  border-radius: 50%;
-  background: #00e58c;
-  box-shadow: 0 0 8px #00e58c;
-}
+.filterScroll button,
+.smallFilterGrid button {
+  min-height: 35px;
 
-.slotGrid {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0,1fr));
-  gap: 6px;
-}
+  padding: 0 12px;
 
-.slotGrid button {
-  min-height: 46px;
-  padding: 7px 9px;
-  text-align: left;
+  white-space: nowrap;
+
   border: 1px solid #252e3e;
   border-radius: 7px;
-  background: #090d15;
-  color: #fff;
+
+  background: #0a0e16;
+
+  color: #747d90;
+
+  font-size: 7px;
+  font-weight: 900;
 }
 
-.slotGrid button:hover {
-  border-color: #465168;
+.filterScroll button:hover,
+.smallFilterGrid button:hover {
+  border-color: #49546b;
+
+  color: #ffffff;
 }
 
+.filterScroll button.selected,
+.smallFilterGrid button.selected,
 .slotGrid button.selected {
   border-color: #ff5800;
-  background: linear-gradient(90deg, rgba(255,70,0,.12), rgba(255,70,0,.03));
-  box-shadow: 0 0 14px rgba(255,70,0,.08);
-}
 
-.slotGrid strong {
-  display: block;
-  font-size: 7px;
-}
+  color: #ffffff;
 
-.slotGrid small {
-  display: block;
-  margin-top: 3px;
-  color: #626c7f;
-  font-size: 5px;
+  background: rgba(255, 70, 0, 0.1);
+
+  box-shadow:
+    0 0 15px rgba(255, 65, 0, 0.1);
 }
 
 /* =========================================================
-   RESULTS
-========================================================= */
+   TIME SLOTS
+   ========================================================= */
 
-.resultsHeader {
-  margin: 25px 0 11px;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 10px;
+.slotGrid {
+  display: grid;
+
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  gap: 7px;
 }
 
-.resultsHeader span {
-  display: block;
-  color: #ff5800;
-  font-size: 6px;
-  font-weight: 900;
-  letter-spacing: 1.5px;
+.slotGrid button {
+  min-height: 50px;
+
+  padding: 7px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+
+  border: 1px solid #252e3e;
+  border-radius: 8px;
+
+  background: #0a0e16;
+
+  color: #ffffff;
+}
+
+.slotGrid strong {
+  font-size: 8px;
+}
+
+.slotGrid small {
+  margin-top: 4px;
+
+  color: #626c7f;
+
+  font-size: 5px;
+}
+
+.smallFilterGrid {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 7px;
+}
+
+/* =========================================================
+   RESULTS HEADER
+   ========================================================= */
+
+.resultsHeader {
+  margin: 28px 0 13px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+
+  gap: 15px;
 }
 
 .resultsHeader strong {
   display: block;
-  margin-top: 4px;
+
+  margin-top: 5px;
+
   font-size: 13px;
 }
 
-.syncing {
-  color: #00df8b;
-  font-size: 6px;
-  font-weight: 900;
+.resultsHeader > span {
+  color: #717a8d;
+
+  font-size: 7px;
 }
 
 /* =========================================================
-   TOURNAMENT CARDS
-========================================================= */
+   TOURNAMENT GRID
+   ========================================================= */
 
 .tournamentGrid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0,1fr));
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
   gap: 14px;
 }
 
+/* =========================================================
+   MATCH CARD
+   ========================================================= */
+
 .matchCard {
+  position: relative;
+
   overflow: hidden;
+
+  padding: 19px;
+
   border: 1px solid #252e3e;
   border-radius: 14px;
+
   background: #080c14;
-  transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .matchCard:hover {
   transform: translateY(-4px);
-  border-color: #3a465c;
-  box-shadow: 0 18px 45px rgba(0,0,0,.35);
+
+  border-color: #39445a;
+
+  box-shadow:
+    0 15px 40px rgba(0, 0, 0, 0.35);
 }
 
-.matchCard.statusLive {
-  border-color: rgba(0,229,140,.5);
-  box-shadow: 0 0 22px rgba(0,229,140,.07);
+.matchCard.live {
+  border-color: rgba(0, 229, 140, 0.45);
+
+  box-shadow:
+    0 0 25px rgba(0, 229, 140, 0.08);
 }
 
-.matchCard.statusDeciding {
-  border-color: rgba(183,119,255,.45);
+.matchCard.deciding {
+  border-color: rgba(171, 103, 255, 0.45);
 }
 
-.matchCard.statusPast {
-  opacity: .9;
+.matchCard.past {
+  opacity: 0.82;
 }
 
-.matchImage {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
-  background: #060910;
-}
-
-.matchImage img {
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: cover;
-  object-position: center;
-}
-
-.matchImageFallback {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  font-size: 65px;
-  background: radial-gradient(circle, rgba(255,70,0,.18), transparent 55%), #060910;
-}
-
-.matchImageShade {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(0,0,0,.1), rgba(0,0,0,.75));
-  pointer-events: none;
-}
-
-.matchImageTop {
-  position: absolute;
-  left: 12px;
-  right: 12px;
-  top: 11px;
+.cardTop {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 8px;
+
+  gap: 10px;
 }
 
-.matchImageTop span {
-  color: #fff;
-  font-size: 7px;
-  font-weight: 900;
-  text-shadow: 0 1px 5px #000;
-}
+.matchGame {
+  color: #ff5800;
 
-.matchImageTop b {
-  padding: 5px 7px;
-  border: 1px solid rgba(255,255,255,.25);
-  border-radius: 5px;
-  background: rgba(0,0,0,.42);
   font-size: 6px;
+  font-weight: 900;
+
+  letter-spacing: 1.5px;
 }
 
-.statusLive .matchImageTop b {
+.cardTop h3 {
+  margin: 6px 0 0;
+
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.matchStatus {
+  flex-shrink: 0;
+
+  height: fit-content;
+
+  padding: 5px 7px;
+
+  border: 1px solid #30394b;
+  border-radius: 5px;
+
+  color: #8a92a3;
+
+  font-size: 6px;
+  font-weight: 900;
+}
+
+.live .matchStatus {
   color: #00e58c;
+
   border-color: #00a96a;
 }
 
-.statusDeciding .matchImageTop b {
-  color: #b777ff;
-  border-color: #7143a8;
+.deciding .matchStatus {
+  color: #b57aff;
+
+  border-color: #713bb2;
 }
 
-.matchBody {
-  padding: 15px;
-}
-
-.matchTitleRow small {
-  color: #ff5800;
-  font-size: 5px;
-  font-weight: 900;
-  letter-spacing: 1.4px;
-}
-
-.matchTitleRow h3 {
-  margin: 5px 0 0;
-  font-size: 16px;
-  line-height: 1.2;
-}
+/* =========================================================
+   MATCH DETAILS
+   ========================================================= */
 
 .matchDetails {
-  margin-top: 13px;
+  margin-top: 17px;
+
   display: grid;
-  grid-template-columns: repeat(4, minmax(0,1fr));
-  gap: 5px;
+
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  gap: 6px;
 }
 
-.matchDetails > div,
-.rewardDetails > div {
+.matchDetails div,
+.rewardDetails div {
   min-width: 0;
-  padding: 8px 7px;
+
+  padding: 9px 7px;
+
   border: 1px solid #1e2634;
-  border-radius: 6px;
-  background: rgba(255,255,255,.012);
+  border-radius: 7px;
+
+  background: rgba(255, 255, 255, 0.012);
 }
 
 .matchDetails small,
 .rewardDetails small {
   display: block;
+
   color: #626b7d;
+
   font-size: 5px;
 }
 
 .matchDetails strong,
 .rewardDetails strong {
   display: block;
-  margin-top: 4px;
+
+  margin-top: 5px;
+
+  color: #ffffff;
+
+  font-size: 8px;
+
   overflow: hidden;
+
   text-overflow: ellipsis;
+
   white-space: nowrap;
-  color: #fff;
-  font-size: 7px;
 }
 
 .rewardDetails {
-  margin-top: 5px;
+  margin-top: 8px;
+
   display: grid;
-  grid-template-columns: repeat(3, minmax(0,1fr));
-  gap: 5px;
+
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  gap: 6px;
 }
 
-.rewardDetails .accentDetail strong {
-  color: #ff5800;
+.orangeText {
+  color: #ff5800 !important;
 }
+
+/* =========================================================
+   PLAYERS
+   ========================================================= */
+
+.players {
+  margin-top: 15px;
+}
+
+.players > div:first-child {
+  display: flex;
+  justify-content: space-between;
+
+  color: #687286;
+
+  font-size: 6px;
+}
+
+.players strong {
+  color: #ffffff;
+}
+
+.progressBar {
+  height: 4px;
+
+  margin-top: 7px;
+
+  overflow: hidden;
+
+  border-radius: 10px;
+
+  background: #181f2c;
+}
+
+.progressBar span {
+  display: block;
+
+  height: 100%;
+
+  background:
+    linear-gradient(
+      90deg,
+      #ff3d00,
+      #ff8700
+    );
+
+  box-shadow:
+    0 0 12px #ff5000;
+}
+
+/* =========================================================
+   ACTION BUTTONS
+   ========================================================= */
 
 .joinButton,
 .liveButton,
+.decidingButton,
 .resultButton {
   width: 100%;
-  height: 39px;
-  margin-top: 12px;
+  height: 40px;
+
+  margin-top: 14px;
+
   border: 0;
-  border-radius: 6px;
-  color: #fff;
-  font-size: 7px;
+  border-radius: 7px;
+
+  color: #ffffff;
+
+  font-size: 8px;
   font-weight: 900;
-}
 
-.joinButton {
-  background: #ff5108;
-  box-shadow: 0 0 17px rgba(255,70,0,.18);
-}
-
-.liveButton {
-  background: #00bf7b;
-  box-shadow: 0 0 17px rgba(0,229,140,.15);
-}
-
-.resultButton {
-  background: #222b3c;
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease;
 }
 
 .joinButton:hover,
 .liveButton:hover,
+.decidingButton:hover,
 .resultButton:hover {
-  filter: brightness(1.1);
+  filter: brightness(1.12);
+
+  transform: translateY(-1px);
 }
 
-.tpNeonBottom {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 100;
-  height: 2px;
-  pointer-events: none;
-  background: linear-gradient(90deg, transparent, #ff4d00, #ff8700, #673cff, #00aaff, transparent);
-  box-shadow: 0 0 18px #ff5000;
+.joinButton {
+  background: #ff5108;
+
+  box-shadow:
+    0 0 18px rgba(255, 70, 0, 0.22);
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+.liveButton {
+  background: #00a96a;
+
+  box-shadow:
+    0 0 18px rgba(0, 229, 140, 0.18);
+}
+
+.decidingButton {
+  background: #6d3ac0;
+}
+
+.resultButton {
+  background: #202838;
 }
 
 /* =========================================================
-   RESPONSIVE
-========================================================= */
+   EMPTY STATE
+   ========================================================= */
+
+.emptyState {
+  padding: 70px 20px;
+
+  text-align: center;
+
+  border: 1px dashed #293244;
+  border-radius: 15px;
+
+  background: #080c14;
+}
+
+.emptyState > div {
+  color: #ff5800;
+
+  font-size: 35px;
+
+  text-shadow:
+    0 0 20px rgba(255, 70, 0, 0.35);
+}
+
+.emptyState h3 {
+  margin: 10px 0;
+
+  font-size: 15px;
+}
+
+.emptyState p {
+  color: #687286;
+
+  font-size: 8px;
+}
+
+.emptyState button {
+  margin-top: 10px;
+
+  height: 35px;
+
+  padding: 0 14px;
+
+  border: 1px solid #ff5800;
+  border-radius: 6px;
+
+  background: transparent;
+
+  color: #ff5800;
+
+  font-size: 7px;
+  font-weight: 900;
+}
+
+/* =========================================================
+   BOTTOM NEON LINE
+   ========================================================= */
+
+.tpNeonBottom {
+  position: fixed;
+
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  height: 2px;
+
+  z-index: 90;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      #ff4d00,
+      #ff8000,
+      #673cff,
+      #00aaff,
+      transparent
+    );
+
+  box-shadow:
+    0 0 20px #ff5000;
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
 
 @media (max-width: 900px) {
-  .gameCards,
+  .gameCards {
+    grid-template-columns: 1fr;
+  }
+
   .tournamentGrid {
     grid-template-columns: 1fr;
   }
 
-  .slotGrid {
-    grid-template-columns: repeat(3, minmax(0,1fr));
+  .gameImage {
+    aspect-ratio: 16 / 9;
   }
 }
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
 
 @media (max-width: 700px) {
   .tpHeader {
     height: 60px;
+
     padding: 0 10px;
   }
 
-  .tpBrand {
-    margin-left: 8px;
+  .tpTitle {
+    margin-left: 9px;
   }
 
-  .tpBrand strong {
+  .tpTitle strong {
     font-size: 11px;
+  }
+
+  .tpTitle span {
+    font-size: 5px;
   }
 
   .gameSelection,
@@ -1029,54 +1320,69 @@ button {
   }
 
   .gameSelection {
-    padding-top: 50px;
+    padding: 55px 0;
   }
 
   .selectionIntro h1 {
-    font-size: 54px;
+    font-size: 55px;
+
+    letter-spacing: -3px;
+  }
+
+  .gameCards {
+    grid-template-columns: 1fr;
+
+    gap: 13px;
+
+    margin-top: 30px;
+  }
+
+  .gameImage {
+    aspect-ratio: 16 / 9;
+
+    width: 100%;
   }
 
   .gameBanner {
-    min-height: 165px;
+    min-height: 180px;
+
     padding: 22px;
   }
 
-  .bannerCopy h1 {
+  .gameBanner h1 {
     font-size: 42px;
-    letter-spacing: -2px;
   }
 
-  .bannerVisual {
-    width: 90px;
-    height: 90px;
+  .bannerGameIcon {
+    font-size: 65px;
   }
 
-  .bannerVisual span {
-    font-size: 48px;
-  }
-
-  .filterSticky {
-    top: 60px;
-  }
-
-  .filterLabel {
-    display: none;
-  }
-
-  .filterActions span {
-    display: none;
+  .statusTabs button {
+    padding: 0 14px;
   }
 
   .filterPanel {
-    padding: 13px;
+    padding: 14px;
   }
 
   .slotGrid {
-    grid-template-columns: repeat(2, minmax(0,1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tournamentGrid {
+    grid-template-columns: 1fr;
   }
 
   .matchDetails {
-    grid-template-columns: repeat(2, minmax(0,1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .rewardDetails {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .rewardDetails div {
+    padding: 8px 5px;
   }
 
   .tpWallet {
@@ -1087,23 +1393,625 @@ button {
     width: 36px;
     height: 36px;
   }
+
+  .gameCardName {
+    padding: 15px 16px;
+  }
+
+  .gameCardBottom {
+    padding: 12px 16px;
+  }
+
+  .gameStatusRow {
+    padding: 10px 16px;
+  }
 }
 
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
 @media (max-width: 380px) {
-  .tpWallet {
+  .tpTitle span {
     display: none;
+  }
+
+  .tpTitle strong {
+    font-size: 10px;
   }
 
   .gameBanner {
     padding: 18px;
   }
 
-  .bannerVisual {
-    width: 70px;
-    height: 70px;
+  .gameBanner p {
+    max-width: 180px;
   }
 
-  .matchBody {
-    padding: 12px;
+  .bannerGameIcon {
+    font-size: 50px;
+  }
+
+  .matchCard {
+    padding: 14px;
+  }
+
+  .matchDetails strong,
+  .rewardDetails strong {
+    font-size: 7px;
+  }
+}
+
+/* =========================================================
+   PLAY2PROVE — ADVANCED ARENA LAYER
+   Safe overrides: keeps existing responsive structure intact.
+========================================================= */
+
+:root {
+  --pp-orange: #ff5a00;
+  --pp-orange-2: #ff8a00;
+  --pp-blue: #6c4cff;
+  --pp-cyan: #00c8ff;
+  --pp-green: #00e58c;
+  --pp-bg: #03050a;
+  --pp-panel: rgba(9, 13, 22, .92);
+  --pp-line: rgba(132, 148, 180, .18);
+}
+
+.tournamentPage {
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 50% -10%, rgba(255, 82, 0, .13), transparent 32%),
+    radial-gradient(circle at 100% 40%, rgba(93, 67, 255, .12), transparent 28%),
+    linear-gradient(180deg, #03050a 0%, #050811 48%, #020409 100%);
+}
+
+.tournamentPage::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: .045;
+  background-image: radial-gradient(rgba(255,255,255,.8) .6px, transparent .6px);
+  background-size: 5px 5px;
+  mix-blend-mode: screen;
+}
+
+.tpGrid {
+  animation: ppGridMove 22s linear infinite;
+  background-size: 52px 52px;
+}
+
+.tpGlow { animation: ppGlow 7s ease-in-out infinite alternate; }
+.tpBlue { animation-delay: -3s; }
+
+@keyframes ppGridMove {
+  from { transform: translate3d(0,0,0); }
+  to { transform: translate3d(52px,52px,0); }
+}
+
+@keyframes ppGlow {
+  from { opacity: .10; transform: scale(.92); }
+  to { opacity: .22; transform: scale(1.08); }
+}
+
+.tpHeader {
+  background: rgba(3,5,10,.76);
+  border-bottom-color: rgba(255,255,255,.10);
+  box-shadow: 0 12px 35px rgba(0,0,0,.28);
+}
+
+.tpHeader::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--pp-orange), var(--pp-blue), transparent);
+  opacity: .75;
+}
+
+.selectionIntro h1 {
+  text-shadow: 0 8px 50px rgba(0,0,0,.55);
+}
+
+.gameCards {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.gameSelectCard {
+  position: relative;
+  isolation: isolate;
+  border-color: rgba(113,128,158,.22);
+  background: linear-gradient(145deg, rgba(13,18,30,.98), rgba(5,8,14,.98));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.035), 0 20px 60px rgba(0,0,0,.22);
+}
+
+.gameSelectCard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255,90,0,.55), transparent 34%, rgba(105,73,255,.38), transparent 75%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: .35;
+  pointer-events: none;
+}
+
+.gameSelectCard:hover::before { opacity: 1; }
+
+.gameCardName {
+  font-size: 15px;
+  letter-spacing: .7px;
+  background: linear-gradient(180deg, rgba(255,255,255,.025), transparent);
+}
+
+.gameImage {
+  min-height: 180px;
+  background: #070a12;
+}
+
+.gameImage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 55%, rgba(0,0,0,.62));
+}
+
+.gameImage img { filter: saturate(1.08) contrast(1.04); }
+.gameSelectCard:hover .gameImage img { filter: saturate(1.18) contrast(1.06); }
+
+.gameCardBottom span,
+.gameCardBottom b { font-size: 8px; }
+.gameStatusRow span { font-size: 8px; }
+
+.gameBanner {
+  border-color: rgba(255,255,255,.11);
+  background:
+    radial-gradient(circle at 85% 50%, rgba(255,80,0,.22), transparent 33%),
+    radial-gradient(circle at 70% 0%, rgba(100,65,255,.12), transparent 30%),
+    linear-gradient(135deg, #0a0f1b, #05070d);
+  box-shadow: 0 22px 70px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.04);
+}
+
+.statusTabs button,
+.filterScroll button,
+.smallFilterGrid button,
+.slotGrid button {
+  min-height: 40px;
+  font-size: 8px;
+}
+
+.filterPanel {
+  background: linear-gradient(145deg, rgba(10,14,23,.96), rgba(5,8,14,.92));
+  border-color: rgba(120,136,168,.18);
+  box-shadow: 0 18px 55px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.03);
+}
+
+.filterTitle strong { font-size: 14px; }
+.filterGroup label { font-size: 7px; }
+
+.slotGrid button {
+  min-height: 62px;
+  transition: transform .2s ease, border-color .2s ease, background .2s ease;
+}
+
+.slotGrid button:hover { transform: translateY(-2px); }
+.slotGrid strong { font-size: 10px; }
+.slotGrid small { font-size: 7px; }
+
+.resultsHeader strong { font-size: 15px; }
+
+.tournamentGrid { gap: 18px; }
+
+.matchCard {
+  border-color: rgba(113,128,158,.18);
+  background: linear-gradient(145deg, rgba(10,14,23,.98), rgba(5,8,14,.98));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.035), 0 16px 45px rgba(0,0,0,.22);
+}
+
+.matchCard:hover {
+  border-color: rgba(255,90,0,.48);
+  box-shadow: 0 20px 55px rgba(0,0,0,.42), 0 0 30px rgba(255,80,0,.07);
+}
+
+.matchImageWrap {
+  position: relative;
+  width: calc(100% + 38px);
+  margin: -19px -19px 17px;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #060912;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.matchImageWrap img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.01);
+  transition: transform .5s ease;
+}
+
+.matchCard:hover .matchImageWrap img { transform: scale(1.045); }
+
+.matchImageShade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 38%, rgba(4,6,11,.78));
+  pointer-events: none;
+}
+
+.cardTop h3 { font-size: 18px; }
+.matchGame { font-size: 8px; }
+.matchStatus { font-size: 7px; }
+.matchDetails strong, .rewardDetails strong { font-size: 10px; }
+.matchDetails small, .rewardDetails small { font-size: 6px; }
+
+.joinButton,
+.liveButton,
+.decidingButton,
+.resultButton {
+  height: 44px;
+  font-size: 9px;
+  letter-spacing: .3px;
+}
+
+.joinButton {
+  background: linear-gradient(135deg, #ff4b00, #ff7600);
+}
+
+.liveButton {
+  background: linear-gradient(135deg, #00a96a, #00d487);
+}
+
+.tournamentLoading {
+  min-height: 230px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 15px;
+  background: rgba(8,12,20,.78);
+}
+
+.tournamentLoading strong { font-size: 12px; letter-spacing: 1px; }
+.tournamentLoading span { color: #687286; font-size: 8px; }
+
+.loadingSpinner {
+  width: 38px;
+  height: 38px;
+  border: 2px solid rgba(255,255,255,.08);
+  border-top-color: var(--pp-orange);
+  border-right-color: var(--pp-blue);
+  border-radius: 50%;
+  animation: ppSpin .8s linear infinite;
+  box-shadow: 0 0 22px rgba(255,80,0,.12);
+}
+
+@keyframes ppSpin { to { transform: rotate(360deg); } }
+
+@media (max-width: 900px) {
+  .gameCards { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 700px) {
+  .gameCards { gap: 15px; }
+  .gameImage { min-height: 0; aspect-ratio: 16 / 9; }
+  .matchImageWrap { width: calc(100% + 28px); margin: -14px -14px 15px; }
+  .cardTop h3 { font-size: 16px; }
+  .matchDetails strong, .rewardDetails strong { font-size: 9px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tpGrid, .tpGlow, .loadingSpinner { animation: none; }
+  * { scroll-behavior: auto !important; }
+}
+
+
+/* =========================================================
+   FINAL FILTER UX — USER REQUESTED
+   - Status: ALL / UPCOMING / LIVE / PAST only
+   - No Exact Time filter
+   - Compact buttons
+   - Sticky selected-filter/search/reset bar
+========================================================= */
+
+.statusTabs {
+  gap: 6px;
+}
+
+.statusTabs button {
+  height: 36px;
+  min-width: 72px;
+  padding: 0 13px;
+  font-size: 7px;
+  letter-spacing: .2px;
+}
+
+.filterPanel {
+  position: relative;
+  overflow: visible;
+}
+
+.activeFilterBar {
+  position: sticky;
+  top: 66px;
+  z-index: 70;
+
+  margin: 15px -1px 18px;
+  padding: 9px 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 9px;
+
+  background: rgba(5, 8, 14, .94);
+  box-shadow:
+    0 12px 30px rgba(0,0,0,.32),
+    inset 0 1px 0 rgba(255,255,255,.035);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.activeFilterBar::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: -1px;
+  height: 1px;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,90,0,.8),
+    rgba(108,76,255,.8),
+    transparent
+  );
+}
+
+.activeFilterChips {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.activeFilterLabel {
+  color: #ff5800;
+  font-size: 6px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.activeFilterChip,
+.noActiveFilters {
+  min-height: 24px;
+  padding: 0 8px;
+
+  display: inline-flex;
+  align-items: center;
+
+  border-radius: 5px;
+
+  font-size: 6px;
+  font-weight: 800;
+}
+
+.activeFilterChip {
+  border: 1px solid rgba(255,90,0,.32);
+  background: rgba(255,90,0,.07);
+  color: #d9dee8;
+  cursor: pointer;
+}
+
+.activeFilterChip:hover {
+  border-color: #ff5800;
+  color: #fff;
+}
+
+.noActiveFilters {
+  color: #6c7588;
+  border: 1px solid rgba(255,255,255,.06);
+  background: rgba(255,255,255,.015);
+}
+
+.filterActions {
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.filterSearch {
+  width: min(250px, 26vw);
+  height: 32px;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 0 8px;
+
+  border: 1px solid #252e3e;
+  border-radius: 6px;
+
+  background: #080c14;
+}
+
+.filterSearch > span {
+  color: #7c869a;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.filterSearch:focus-within {
+  border-color: rgba(255,90,0,.65);
+  box-shadow: 0 0 16px rgba(255,80,0,.08);
+}
+
+.filterSearch input {
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+
+  border: 0;
+  outline: 0;
+
+  background: transparent;
+  color: #fff;
+
+  font-size: 7px;
+  font-weight: 700;
+}
+
+.filterSearch input::placeholder {
+  color: #626c7f;
+}
+
+.searchClear {
+  flex-shrink: 0;
+
+  width: 18px;
+  height: 18px;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: rgba(255,255,255,.06);
+  color: #8d96a7;
+
+  font-size: 11px;
+  line-height: 18px;
+}
+
+.compactReset {
+  height: 32px;
+  padding: 0 11px;
+
+  border: 1px solid rgba(255,90,0,.48);
+  border-radius: 6px;
+
+  background: rgba(255,70,0,.06);
+  color: #ff650f;
+
+  font-size: 7px;
+  font-weight: 900;
+}
+
+.compactReset:hover {
+  background: rgba(255,70,0,.13);
+  border-color: #ff5800;
+}
+
+/* Date / mode / map buttons compact */
+.filterScroll button,
+.smallFilterGrid button {
+  min-height: 32px;
+  padding: 0 10px;
+  font-size: 7px;
+}
+
+.slotGrid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.slotGrid button {
+  min-height: 50px;
+}
+
+/* Tournament image: fixed 16:9 so every card stays identical */
+.matchImageWrap {
+  aspect-ratio: 16 / 9;
+}
+
+.matchImageWrap img {
+  image-rendering: auto;
+  object-fit: cover;
+}
+
+.matchImageFallback {
+  width: 100%;
+  height: 100%;
+
+  display: grid;
+  place-items: center;
+
+  font-size: 58px;
+
+  background:
+    radial-gradient(circle at center, rgba(255,70,0,.20), transparent 55%),
+    linear-gradient(135deg, #080d17, #11142a);
+}
+
+/* Search result count stays readable */
+.resultsHeader > span {
+  max-width: 45%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+  .activeFilterBar {
+    top: 60px;
+
+    align-items: stretch;
+    flex-direction: column;
+
+    padding: 8px;
+  }
+
+  .activeFilterChips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .activeFilterChips::-webkit-scrollbar {
+    display: none;
+  }
+
+  .filterActions {
+    width: 100%;
+  }
+
+  .filterSearch {
+    width: 100%;
+  }
+
+  .compactReset {
+    flex-shrink: 0;
+  }
+
+  .statusTabs button {
+    min-width: 66px;
+    padding: 0 11px;
+  }
+
+  .slotGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
