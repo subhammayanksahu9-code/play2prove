@@ -3390,7 +3390,7 @@ a:focus-visible {
   position: absolute;
 
   left: 50%;
-  top: 50%;
+  top: 58%;
 
   width: 105px;
   height: 105px;
@@ -3460,7 +3460,7 @@ a:focus-visible {
 
 .rewardVisual span:nth-of-type(1) {
   left: 20px;
-  top: 50%;
+  top: 58%;
 
   transform: translateY(-50%);
 }
@@ -3484,7 +3484,7 @@ a:focus-visible {
 
 .rewardVisual span:nth-of-type(3) {
   right: 20px;
-  top: 50%;
+  top: 58%;
 
   transform: translateY(-50%);
 }
@@ -3659,16 +3659,16 @@ a:focus-visible {
   }
 
   .rewardVisual span:first-of-type {
-    transform: translateX(-65px);
-  }
+  transform: translateX(-55px);
+}
 
-  .rewardVisual span:nth-of-type(2) {
-    transform: translateY(-48px);
-  }
+.rewardVisual span:nth-of-type(2) {
+  transform: translateY(-43px);
+}
 
-  .rewardVisual span:last-of-type {
-    transform: translateX(65px);
-  }
+.rewardVisual span:last-of-type {
+  transform: translateX(55px);
+}
 
   .ctaButtons {
     flex-direction: column;
