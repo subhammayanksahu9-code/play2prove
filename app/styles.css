@@ -2104,10 +2104,6 @@ a:focus-visible {
       repeat(2, 1fr);
   }
 
-  .tournamentGrid {
-    grid-template-columns:
-      repeat(2, 1fr);
-  }
 }
 
 @media (max-width: 800px) {
@@ -2748,9 +2744,11 @@ a:focus-visible {
   display: grid;
 
   grid-template-columns:
-    repeat(2, minmax(0, 1fr));
+    repeat(3, minmax(0, 1fr));
 
   gap: 18px;
+
+  width: 100%;
 }
 
 .tournamentCard,
@@ -3184,10 +3182,7 @@ a:focus-visible {
     grid-template-columns: 1fr;
   }
 
-  .gamesGrid {
-    grid-template-columns:
-      repeat(2, 1fr);
-  }
+  
 
   .stepsGrid {
     grid-template-columns:
