@@ -3365,24 +3365,26 @@ a:focus-visible {
    REWARD VISUAL
    ========================= */
 
+/* =========================
+   REWARD VISUAL — FIXED POSITION
+   ========================= */
+
 .rewardVisual {
   position: relative;
 
   width: 100%;
-  max-width: 500px;
+  max-width: 560px;
+  height: 190px;
 
-  min-height: 145px;
+  margin: 40px auto 0;
 
-  margin: 34px auto 0;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  gap: 18px;
-
-  overflow: hidden;
+  overflow: visible;
 }
+
+
+/* =========================
+   CENTER P2P ORB
+   ========================= */
 
 .rewardOrb {
   position: absolute;
@@ -3390,8 +3392,8 @@ a:focus-visible {
   left: 50%;
   top: 50%;
 
-  width: 92px;
-  height: 92px;
+  width: 105px;
+  height: 105px;
 
   transform: translate(-50%, -50%);
 
@@ -3404,33 +3406,40 @@ a:focus-visible {
     radial-gradient(
       circle at 35% 30%,
       #202b42,
-      #05070d 65%
+      #05070d 68%
     );
 
-  border: 1px solid rgba(255,255,255,0.14);
+  border: 1px solid rgba(255,255,255,0.16);
 
-  color: white;
+  color: #fff;
 
-  font-size: 23px;
+  font-size: 25px;
   font-weight: 1000;
 
   box-shadow:
-    0 0 35px rgba(0,140,255,0.18),
-    inset 0 0 25px rgba(0,140,255,0.08);
+    0 0 40px rgba(0,140,255,0.2),
+    inset 0 0 30px rgba(0,140,255,0.08);
 
-  z-index: 2;
+  z-index: 3;
 }
 
+
+/* =========================
+   ALL LABELS
+   ========================= */
+
 .rewardVisual span {
-  position: relative;
-  z-index: 1;
+  position: absolute;
 
-  padding: 8px 13px;
+  padding: 9px 15px;
 
-  border: 1px solid rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.08);
+
   border-radius: 999px;
 
   background: rgba(255,255,255,0.025);
+
+  backdrop-filter: blur(8px);
 
   color: #737c8e;
 
@@ -3438,20 +3447,111 @@ a:focus-visible {
   font-weight: 900;
 
   letter-spacing: 1.5px;
+
+  white-space: nowrap;
+
+  z-index: 2;
 }
 
-.rewardVisual span:first-of-type {
-  transform: translateX(-78px);
+
+/* =========================
+   SKILL — LEFT
+   ========================= */
+
+.rewardVisual span:nth-of-type(1) {
+  left: 20px;
+  top: 50%;
+
+  transform: translateY(-50%);
 }
+
+
+/* =========================
+   RANK — TOP
+   ========================= */
 
 .rewardVisual span:nth-of-type(2) {
-  transform: translateY(-55px);
+  left: 50%;
+  top: 5px;
+
+  transform: translateX(-50%);
 }
 
-.rewardVisual span:last-of-type {
-  transform: translateX(78px);
+
+/* =========================
+   REWARD — RIGHT
+   ========================= */
+
+.rewardVisual span:nth-of-type(3) {
+  right: 20px;
+  top: 50%;
+
+  transform: translateY(-50%);
 }
 
+
+/* =========================
+   MOBILE
+   ========================= */
+
+@media (max-width: 800px) {
+
+  .rewardVisual {
+    max-width: 390px;
+    height: 170px;
+  }
+
+  .rewardOrb {
+    width: 82px;
+    height: 82px;
+
+    font-size: 20px;
+  }
+
+  .rewardVisual span {
+    padding: 7px 11px;
+    font-size: 6px;
+  }
+
+  .rewardVisual span:nth-of-type(1) {
+    left: 5px;
+  }
+
+  .rewardVisual span:nth-of-type(2) {
+    top: 5px;
+  }
+
+  .rewardVisual span:nth-of-type(3) {
+    right: 5px;
+  }
+}
+
+
+/* =========================
+   SMALL PHONE
+   ========================= */
+
+@media (max-width: 480px) {
+
+  .rewardVisual {
+    height: 155px;
+  }
+
+  .rewardOrb {
+    width: 72px;
+    height: 72px;
+
+    font-size: 18px;
+  }
+
+  .rewardVisual span:nth-of-type(1) {
+    left: 0;
+  }
+
+  .rewardVisual span:nth-of-type(3) {
+    right: 0;
+  }
+}
 
 /* =========================
    FINAL CTA BUTTON WRAPPER
