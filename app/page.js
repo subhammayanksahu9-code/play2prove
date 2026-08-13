@@ -7,6 +7,8 @@ export default function HomePage() {
 
 const [homeTournaments, setHomeTournaments] = useState([]);
 const [homeTournamentLoading, setHomeTournamentLoading] = useState(true);
+const [homeGames, setHomeGames] = useState([]);
+const [homeGamesLoading, setHomeGamesLoading] = useState(true);  
 
 useEffect(() => {
   let cancelled = false;
@@ -30,10 +32,15 @@ useEffect(() => {
       const tournaments = Array.isArray(data?.tournaments)
         ? data.tournaments
         : [];
+      const games = Array.isArray(data?.games)
+  ? data.games
+  : [];
 
       if (!cancelled) {
-        setHomeTournaments(tournaments);
-      }
+  setHomeTournaments(tournaments);
+  setHomeGames(games);
+  setHomeGamesLoading(false);
+}
     } catch (error) {
       console.error(
         "PLAY2PROVE HOME TOURNAMENT API:",
@@ -42,10 +49,12 @@ useEffect(() => {
 
       if (!cancelled) {
         setHomeTournaments([]);
+        setHomeGames([]);
       }
     } finally {
       if (!cancelled) {
         setHomeTournamentLoading(false);
+        setHomeGamesLoading(false);
       }
     }
   }
@@ -543,35 +552,39 @@ const featuredTournaments = useMemo(() => {
 
         <div className="gamesGrid">
 
-          <GameCard
-            icon="🔥"
-            game="FREE FIRE"
-            type="BATTLE ROYALE"
-            color="orange"
-          />
+  {homeGamesLoading ? (
 
-          <GameCard
-            icon="🎯"
-            game="BGMI"
-            type="BATTLE ROYALE"
-            color="blue"
-          />
+    <div className="tournamentMessage">
+      LOADING GAMES...
+    </div>
 
-          <GameCard
-            icon="⚡"
-            game="VALORANT"
-            type="TACTICAL FPS"
-            color="purple"
-          />
+  ) : homeGames.length > 0 ? (
 
-          <GameCard
-            icon="＋"
-            game="MORE GAMES"
-            type="COMING SOON"
-            color="cyan"
-          />
+    <>
+      {homeGames.slice(0, 3).map((game) => (
 
-        </div>
+        <GameCard
+          key={game.gameName}
+          game={game.gameName}
+          image={game.image}
+          type={game.status || "LIVE"}
+        />
+
+      ))}
+
+      <MoreGamesCard />
+
+    </>
+
+  ) : (
+
+    <div className="tournamentMessage">
+      NO GAMES AVAILABLE
+    </div>
+
+  )}
+
+</div>
 
       </section>
 
@@ -997,25 +1010,69 @@ const prize = String(
 
 
 function GameCard({
-  icon,
   game,
   type,
-  color,
+  image,
 }) {
   return (
-    <article className={`newGameCard ${color}`}>
+  <article className="newGameCard">
 
-      <div className="gameGlowNew"></div>
+    <div className="gameImageNew">
+      {image ? (
+        <img
+          src={image}
+          alt={game}
+          loading="lazy"
+        />
+      ) : (
+        <div className="gameImageFallback">
+          🎮
+        </div>
+      )}
+    </div>
 
-      <div className="gameIconNew">
-        {icon}
+    <div className="gameCardInfo">
+
+      <span>
+        {type}
+      </span>
+
+      <h3>
+        {game}
+      </h3>
+
+    </div>
+
+    <strong className="gameArrowNew">
+      →
+    </strong>
+
+  </article>
+);
+}
+function MoreGamesCard() {
+
+  return (
+    <article
+      className="newGameCard moreGamesCard"
+      onClick={() => {
+        window.location.href = "/games";
+      }}
+    >
+
+      <div className="moreGamesIcon">
+        +
       </div>
 
-      <div>
+      <div className="gameCardInfo">
 
-        <span>{type}</span>
+        <span>
+          EXPLORE
+        </span>
 
-        <h3>{game}</h3>
+        <h3>
+          MORE GAMES
+        </h3>
 
       </div>
 
@@ -1026,7 +1083,6 @@ function GameCard({
     </article>
   );
 }
-
 
 function Step({
   number,
