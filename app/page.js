@@ -876,16 +876,22 @@ function TournamentCard({ tournament }) {
   ).trim();
 
   const image = String(
-    tournament?.image ?? ""
-  ).trim();
+  tournament?.image ??
+  tournament?.imageUrl ??
+  ""
+).trim();
 
-  const entry = Number(
-    tournament?.entry ?? 0
-  );
+const entry = Number(
+  tournament?.entryFee ??
+  tournament?.entry ??
+  0
+);
 
-  const prize = Number(
-    tournament?.prize ?? 0
-  );
+const prize = Number(
+  tournament?.prizePool ??
+  tournament?.prize ??
+  0
+);
 
   return (
     <article className="newTournamentCard">
