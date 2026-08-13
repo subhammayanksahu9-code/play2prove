@@ -912,10 +912,12 @@ const prize = String(
       {image && (
         <div className="homeTournamentImage">
           <img
-            src={image}
-            alt={title}
-            loading="lazy"
-          />
+  src={image}
+  alt={game}
+  loading="lazy"
+  decoding="async"
+  fetchPriority="low"
+/>
         </div>
       )}
 
