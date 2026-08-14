@@ -499,6 +499,48 @@ fetchData();
     };
   }, []);
 
+   /* =======================================================
+   OPEN SPECIFIC GAME FROM HOME
+======================================================= */
+
+useEffect(() => {
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+  const gameSlug =
+    params.get("game");
+
+  if (!gameSlug || games.length === 0) {
+    return;
+  }
+
+  const matchedGame =
+    games.find(
+      (game) =>
+        game.id === gameSlug
+    );
+
+  if (matchedGame) {
+    setSelectedGame(
+      matchedGame.id
+    );
+
+    setStatus("All");
+    setDate("All");
+    setSlot("All");
+    setMode("All");
+    setMap("All");
+    setSearch("");
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
+}, [games]);
+
   /* =======================================================
      SELECTED GAME
   ======================================================= */
