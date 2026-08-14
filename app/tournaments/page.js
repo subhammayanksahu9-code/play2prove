@@ -1676,6 +1676,165 @@ function TournamentCard({
       tournament.status
     );
 
+  const [liveSecondsLeft, setLiveSecondsLeft] =
+    useState(0);
+
+   useEffect(() => {
+
+    if (status !== "Live") {
+      setLiveSecondsLeft(0);
+      return;
+    }
+
+    function calculateRemaining() {
+
+      const rawDate =
+        clean(tournament.date);
+
+      const rawTime =
+        clean(tournament.time);
+
+      const rawYear =
+        clean(tournament.year);
+
+      if (!rawDate || !rawTime) {
+        return;
+      }
+
+      const dateMatch =
+        rawDate.match(
+          /^(\d{1,2})\s+([A-Za-z]+)/
+        );
+
+      if (!dateMatch) {
+        return;
+      }
+
+      const day =
+        Number(dateMatch[1]);
+
+      const monthName =
+        dateMatch[2].toLowerCase();
+
+      const months = {
+        jan: 0,
+        january: 0,
+        feb: 1,
+        february: 1,
+        mar: 2,
+        march: 2,
+        apr: 3,
+        april: 3,
+        may: 4,
+        jun: 5,
+        june: 5,
+        jul: 6,
+        july: 6,
+        aug: 7,
+        august: 7,
+        sep: 8,
+        september: 8,
+        oct: 9,
+        october: 9,
+        nov: 10,
+        november: 10,
+        dec: 11,
+        december: 11,
+      };
+
+      const month =
+        months[monthName];
+
+      const year =
+        Number(rawYear) ||
+        new Date().getFullYear();
+
+      const timeMatch =
+        rawTime
+          .toUpperCase()
+          .match(
+            /^(\d{1,2})(?::(\d{1,2}))?\s*(AM|PM)$/
+          );
+
+      if (
+        month === undefined ||
+        !timeMatch
+      ) {
+        return;
+      }
+
+      let hour =
+        Number(timeMatch[1]);
+
+      const minute =
+        Number(
+          timeMatch[2] || 0
+        );
+
+      const period =
+        timeMatch[3];
+
+      if (
+        period === "AM" &&
+        hour === 12
+      ) {
+        hour = 0;
+      }
+
+      if (
+        period === "PM" &&
+        hour !== 12
+      ) {
+        hour += 12;
+      }
+
+      const startTime =
+        new Date(
+          year,
+          month,
+          day,
+          hour,
+          minute,
+          0
+        );
+
+      const endTime =
+        startTime.getTime() +
+        10 * 60 * 1000;
+
+      const remaining =
+        Math.max(
+          0,
+          Math.ceil(
+            (endTime -
+              Date.now()) /
+              1000
+          )
+        );
+
+      setLiveSecondsLeft(
+        remaining
+      );
+    }
+
+    calculateRemaining();
+
+    const timer =
+      setInterval(
+        calculateRemaining,
+        1000
+      );
+
+    return () =>
+      clearInterval(timer);
+
+  }, [
+    status,
+    tournament.date,
+    tournament.time,
+    tournament.year,
+  ]);
+
   const percentage =
     tournament.capacity >
     0
@@ -1799,6 +1958,22 @@ function TournamentCard({
         </span>
 
       </div>
+{status === "Live" &&
+  liveSecondsLeft > 0 && (
+
+    <div className="liveCountdown">
+      {String(
+        Math.floor(
+          liveSecondsLeft / 60
+        )
+      ).padStart(2, "0")}
+      :
+      {String(
+        liveSecondsLeft % 60
+      ).padStart(2, "0")}
+    </div>
+
+  )}
 
       {/* =================================================
           DETAILS
