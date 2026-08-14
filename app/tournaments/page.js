@@ -56,12 +56,91 @@ function clean(value) {
 }
 
 function normalizeStatus(value) {
-  const v = clean(value).toLowerCase();
+  const v = clean(value)
+    .toLowerCase()
+    .replace(/_/g, " ");
+
+  if (v === "upcoming") return "Upcoming";
+
+  if (
+    v === "starting soon" ||
+    v === "starting"
+  ) {
+    return "Starting Soon";
+  }
 
   if (v === "live") return "Live";
-  if (v === "past") return "Past";
-  if (v === "deciding") return "Deciding";
+
+  if (
+    v === "match ongoing" ||
+    v === "ongoing"
+  ) {
+    return "Match Ongoing";
+  }
+
+  if (
+    v === "match closing" ||
+    v === "match finishing"
+  ) {
+    return "Match Closing";
+  }
+
+  if (
+    v === "calculation ongoing" ||
+    v === "calculation pending"
+  ) {
+    return "Calculation Ongoing";
+  }
+
+  if (
+    v === "past" ||
+    v === "completed"
+  ) {
+    return "Past";
+  }
+
+  /*
+    Deciding is GAME-level status only.
+    Tournament does not use it.
+  */
+
   return "Upcoming";
+}
+
+function statusClass(status) {
+  const value =
+    normalizeStatus(status)
+      .toLowerCase();
+
+  if (value === "upcoming") {
+    return "upcoming";
+  }
+
+  if (value === "starting soon") {
+    return "startingSoon";
+  }
+
+  if (value === "live") {
+    return "live";
+  }
+
+  if (value === "match ongoing") {
+    return "matchOngoing";
+  }
+
+  if (value === "match closing") {
+    return "matchClosing";
+  }
+
+  if (value === "calculation ongoing") {
+    return "calculationOngoing";
+  }
+
+  if (value === "past") {
+    return "past";
+  }
+
+  return "";
 }
 
 function numberValue(value) {
@@ -273,6 +352,18 @@ export default function TournamentsPage() {
         status: normalizeStatus(
           row?.status
         ),
+
+         calculationStatus:
+  clean(
+    row?.calculationStatus ??
+      row?.["Calculation Status"]
+  ) || "Pending",
+
+calculationReason:
+  clean(
+    row?.calculationReason ??
+      row?.["Calculation Reason"]
+  ),
 
         publish:
           row?.publish === undefined
@@ -494,9 +585,16 @@ export default function TournamentsPage() {
 
 
 fetchData();
-    return () => {
-      cancelled = true;
-    };
+
+const refreshTimer = setInterval(() => {
+  fetchData();
+}, 10000);
+
+return () => {
+  cancelled = true;
+
+  clearInterval(refreshTimer);
+};
   }, []);
 
    /* =======================================================
@@ -644,15 +742,53 @@ useEffect(() => {
 
       return gameTournaments.filter(
         (item) => {
+           
+           const itemStatus =
+  normalizeStatus(item.status);
           /* STATUS */
 
-          if (
-            status !== "All" &&
-            item.status.toLowerCase() !==
-              status.toLowerCase()
-          ) {
-            return false;
-          }
+         if (status === "All") {
+
+  if (itemStatus === "Past") {
+    return false;
+  }
+
+}
+
+if (status === "Upcoming") {
+
+  if (
+    ![
+      "Upcoming",
+      "Starting Soon",
+    ].includes(itemStatus)
+  ) {
+    return false;
+  }
+
+}
+
+if (status === "Live") {
+
+  if (
+    ![
+      "Live",
+      "Match Ongoing",
+      "Match Closing",
+    ].includes(itemStatus)
+  ) {
+    return false;
+  }
+
+}
+
+if (status === "Past") {
+
+  if (itemStatus !== "Past") {
+    return false;
+  }
+
+}
 
           /* DATE */
 
@@ -1671,6 +1807,42 @@ function TournamentCard({
   tournament,
   game,
 }) {
+
+   function statusClassName(status) {
+  const value =
+    normalizeStatus(status);
+
+  if (value === "Upcoming") {
+    return "upcoming";
+  }
+
+  if (value === "Starting Soon") {
+    return "startingSoon";
+  }
+
+  if (value === "Live") {
+    return "live";
+  }
+
+  if (value === "Match Ongoing") {
+    return "matchOngoing";
+  }
+
+  if (value === "Match Closing") {
+    return "matchClosing";
+  }
+
+  if (value === "Calculation Ongoing") {
+    return "calculationOngoing";
+  }
+
+  if (value === "Past") {
+    return "past";
+  }
+
+  return "";
+}
+   
   const status =
     normalizeStatus(
       tournament.status
@@ -1846,16 +2018,8 @@ function TournamentCard({
         )
       : 0;
 
-  const statusClass =
-    status === "Live"
-      ? "live"
-      : status ===
-        "Deciding"
-      ? "deciding"
-      : status ===
-        "Past"
-      ? "past"
-      : "";
+  const cardStatusClass =
+  statusClass(status);
 
   /* Tournament image first.
      Game image fallback second. */
@@ -1867,8 +2031,8 @@ function TournamentCard({
 
   return (
     <article
-      className={`matchCard ${statusClass}`}
-    >
+  className={`matchCard ${cardStatusClass}`}
+>
 
       {/* =================================================
           16:9 IMAGE
@@ -2112,37 +2276,56 @@ function TournamentCard({
       )}
 
       {/* =================================================
-          ACTION
-      ================================================= */}
+    ACTION
+================================================= */}
 
-      {status ===
-      "Past" ? (
+{status === "Past" &&
+tournament.calculationStatus
+  ?.toLowerCase() ===
+    "completed" ? (
 
-        <button className="resultButton">
-          VIEW RESULTS →
-        </button>
+  <button
+    className="resultButton"
+  >
+    CHECK MATCH RESULTS →
+  </button>
 
-      ) : status ===
-        "Live" ? (
+) : status ===
+  "Calculation Ongoing" ? (
 
-        <button className="liveButton">
-          VIEW LIVE MATCH →
-        </button>
+  <div className="statusAction calculationAction">
+    CALCULATION ONGOING
+  </div>
 
-      ) : status ===
-        "Deciding" ? (
+) : status ===
+  "Match Closing" ? (
 
-        <button className="decidingButton">
-          VIEW RESULT STATUS →
-        </button>
+  <div className="statusAction closingAction">
+    MATCH CLOSING
+  </div>
 
-      ) : (
+) : status ===
+  "Match Ongoing" ? (
 
-        <button className="joinButton">
-          VIEW & JOIN →
-        </button>
+  <div className="statusAction ongoingAction">
+    MATCH ONGOING
+  </div>
 
-      )}
+) : (
+
+  <button
+    className={
+      status === "Live"
+        ? "liveButton"
+        : "joinButton"
+    }
+  >
+    {status === "Live"
+      ? "VIEW & JOIN →"
+      : "VIEW & JOIN →"}
+  </button>
+
+)}
 
     </article>
   );
