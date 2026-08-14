@@ -2103,3 +2103,48 @@ button {
   border: 1px solid rgba(197,140,255,.3);
   background: rgba(197,140,255,.06);
 }
+/* =========================================================
+   STATUS ACTION — SAME SIZE & SAME POSITION AS VIEW & JOIN
+========================================================= */
+
+.statusAction {
+  width: 100%;
+  height: 44px;
+  min-height: 44px;
+
+  margin-top: 14px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 7px;
+
+  font-size: 9px;
+  font-weight: 900;
+
+  letter-spacing: .3px;
+
+  box-sizing: border-box;
+}
+
+/* Calculation */
+.calculationAction {
+  color: #c58cff;
+  border: 1px solid rgba(197,140,255,.35);
+  background: rgba(197,140,255,.07);
+}
+
+/* Match ongoing */
+.ongoingAction {
+  color: #ff9d00;
+  border: 1px solid rgba(255,157,0,.35);
+  background: rgba(255,157,0,.07);
+}
+
+/* Match closing */
+.closingAction {
+  color: #ff5c35;
+  border: 1px solid rgba(255,92,53,.35);
+  background: rgba(255,92,53,.07);
+}
