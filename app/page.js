@@ -998,13 +998,22 @@ const prize = String(
       </div>
 
       <button
-        onClick={() => {
-          window.location.href = "/tournaments";
-        }}
-      >
-        VIEW & JOIN
-        <span>→</span>
-      </button>
+  onClick={() => {
+    const gameSlug = String(
+      tournament?.game ?? ""
+    )
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+
+    window.location.href =
+      `/tournaments?game=${encodeURIComponent(gameSlug)}`;
+  }}
+>
+  VIEW & JOIN
+  <span>→</span>
+</button>
 
     </article>
   );
