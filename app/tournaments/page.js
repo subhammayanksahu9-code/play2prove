@@ -1,6 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from "react";
 import "./tournaments.css";
 
 /* =========================================================
@@ -9,6 +14,60 @@ import "./tournaments.css";
 ========================================================= */
 
 const API_URL = "/api/tournaments";
+/* =========================================================
+   PLAY2PROVE — MASTER CLOCK CLIENT
+   Cloudflare Server Time
+   Browser Clock NOT trusted
+========================================================= */
+
+const MASTER_CLOCK = {
+  serverTimestamp: Date.now(),
+  performanceStart: null,
+};
+
+function setMasterClock(serverTimestamp) {
+
+  const timestamp =
+    Number(serverTimestamp);
+
+  if (
+    !Number.isFinite(timestamp)
+  ) {
+    return;
+  }
+
+  MASTER_CLOCK.serverTimestamp =
+    timestamp;
+
+  MASTER_CLOCK.performanceStart =
+    performance.now();
+
+}
+
+
+/*
+  Returns current time according to
+  Cloudflare Master Clock.
+*/
+
+function getMasterNow() {
+
+  if (
+    MASTER_CLOCK.performanceStart ===
+    null
+  ) {
+    return Date.now();
+  }
+
+  return (
+    MASTER_CLOCK.serverTimestamp +
+    (
+      performance.now() -
+      MASTER_CLOCK.performanceStart
+    )
+  );
+
+}
 
 const CACHE_KEY = "play2prove_tournaments_v5";
 const CACHE_MAX_AGE = 5 * 60 * 1000;
@@ -267,7 +326,7 @@ export default function TournamentsPage() {
         status: normalizeStatus(
           row?.status
         ),
-
+         
         publish: isTrue(
           row?.publish
         ),
@@ -352,6 +411,16 @@ export default function TournamentsPage() {
         status: normalizeStatus(
           row?.status
         ),
+
+         startTimestamp:
+  Number(
+    row?.startTimestamp
+  ) || null,
+
+serverTimestamp:
+  Number(
+    row?.serverTimestamp
+  ) || null,
 
          calculationStatus:
   clean(
@@ -506,6 +575,23 @@ calculationReason:
 
 
     const data = await response.json();
+     /* =======================================================
+   SYNC CLIENT WITH CLOUDFLARE MASTER CLOCK
+======================================================= */
+
+if (
+  Number.isFinite(
+    Number(data?.serverTimestamp)
+  )
+) {
+
+  setMasterClock(
+    Number(
+      data.serverTimestamp
+    )
+  );
+
+}
 
 
     if (
@@ -1848,164 +1934,172 @@ function TournamentCard({
       tournament.status
     );
 
-  const [liveSecondsLeft, setLiveSecondsLeft] =
-    useState(0);
+  /* =========================================================
+   MASTER CLOCK — LIVE COUNTDOWN
+========================================================= */
 
-   useEffect(() => {
+const [clockTick, setClockTick] =
+  useState(0);
 
-    if (status !== "Live") {
-      setLiveSecondsLeft(0);
-      return;
-    }
 
-    function calculateRemaining() {
+/*
+  One lightweight local timer.
 
-      const rawDate =
-        clean(tournament.date);
+  IMPORTANT:
+  This timer does NOT decide the time.
+  It only refreshes the screen.
 
-      const rawTime =
-        clean(tournament.time);
+  Actual time comes from Cloudflare Master Clock.
+*/
 
-      const rawYear =
-        clean(tournament.year);
+useEffect(() => {
 
-      if (!rawDate || !rawTime) {
-        return;
-      }
+  const timer =
+    setInterval(() => {
 
-      const dateMatch =
-        rawDate.match(
-          /^(\d{1,2})\s+([A-Za-z]+)/
-        );
-
-      if (!dateMatch) {
-        return;
-      }
-
-      const day =
-        Number(dateMatch[1]);
-
-      const monthName =
-        dateMatch[2].toLowerCase();
-
-      const months = {
-        jan: 0,
-        january: 0,
-        feb: 1,
-        february: 1,
-        mar: 2,
-        march: 2,
-        apr: 3,
-        april: 3,
-        may: 4,
-        jun: 5,
-        june: 5,
-        jul: 6,
-        july: 6,
-        aug: 7,
-        august: 7,
-        sep: 8,
-        september: 8,
-        oct: 9,
-        october: 9,
-        nov: 10,
-        november: 10,
-        dec: 11,
-        december: 11,
-      };
-
-      const month =
-        months[monthName];
-
-      const year =
-        Number(rawYear) ||
-        new Date().getFullYear();
-
-      const timeMatch =
-        rawTime
-          .toUpperCase()
-          .match(
-            /^(\d{1,2})(?::(\d{1,2}))?\s*(AM|PM)$/
-          );
-
-      if (
-        month === undefined ||
-        !timeMatch
-      ) {
-        return;
-      }
-
-      let hour =
-        Number(timeMatch[1]);
-
-      const minute =
-        Number(
-          timeMatch[2] || 0
-        );
-
-      const period =
-        timeMatch[3];
-
-      if (
-        period === "AM" &&
-        hour === 12
-      ) {
-        hour = 0;
-      }
-
-      if (
-        period === "PM" &&
-        hour !== 12
-      ) {
-        hour += 12;
-      }
-
-      const startTime =
-        new Date(
-          year,
-          month,
-          day,
-          hour,
-          minute,
-          0
-        );
-
-      const endTime =
-        startTime.getTime() +
-        10 * 60 * 1000;
-
-      const remaining =
-        Math.max(
-          0,
-          Math.ceil(
-            (endTime -
-              Date.now()) /
-              1000
-          )
-        );
-
-      setLiveSecondsLeft(
-        remaining
-      );
-    }
-
-    calculateRemaining();
-
-    const timer =
-      setInterval(
-        calculateRemaining,
-        1000
+      setClockTick(
+        value => value + 1
       );
 
-    return () =>
-      clearInterval(timer);
+    }, 250);
 
-  }, [
-    status,
-    tournament.date,
-    tournament.time,
-    tournament.year,
-  ]);
+  return () =>
+    clearInterval(timer);
+
+}, []);
+
+
+/* =========================================================
+   AUTOMATIC TOURNAMENT STATUS
+========================================================= */
+
+function getAutomaticStatus(
+  tournament,
+  now
+) {
+
+  const start =
+    Number(
+      tournament.startTimestamp
+    );
+
+
+  if (
+    !Number.isFinite(start)
+  ) {
+
+    return normalizeStatus(
+      tournament.status
+    );
+
+  }
+
+
+  const STARTING_SOON =
+    10 * 60 * 1000;
+
+
+  const LIVE =
+    10 * 60 * 1000;
+
+
+  const MATCH_ONGOING =
+  30 * 60 * 1000;
+
+
+  const MATCH_CLOSING =
+    5 * 60 * 1000;
+
+
+  if (
+    now <
+    start - STARTING_SOON
+  ) {
+
+    return "Upcoming";
+
+  }
+
+
+  if (
+    now <
+    start
+  ) {
+
+    return "Starting Soon";
+
+  }
+
+
+  if (
+    now <
+    start + LIVE
+  ) {
+
+    return "Live";
+
+  }
+
+
+  if (
+    now <
+    start +
+    LIVE +
+    MATCH_ONGOING
+  ) {
+
+    return "Match Ongoing";
+
+  }
+
+
+  if (
+    now <
+    start +
+    LIVE +
+    MATCH_ONGOING +
+    MATCH_CLOSING
+  ) {
+
+    return "Match Closing";
+
+  }
+
+
+  const calculation =
+    clean(
+      tournament.calculationStatus
+    ).toLowerCase();
+
+
+  if (
+    calculation === "completed" ||
+    calculation === "complete" ||
+    calculation === "done"
+  ) {
+
+    return "Past";
+
+  }
+
+
+  return "Calculation Ongoing";
+
+}
+
+
+/* =========================================================
+   CURRENT MASTER STATUS
+========================================================= */
+
+const masterNow =
+  getMasterNow();
+
+const status =
+  getAutomaticStatus(
+    tournament,
+    masterNow
+  );
 
   const percentage =
     tournament.capacity >
@@ -2123,21 +2217,55 @@ function TournamentCard({
 
       </div>
 {status === "Live" &&
-  liveSecondsLeft > 0 && (
+  Number.isFinite(
+    Number(tournament.startTimestamp)
+  ) && (
 
     <div className="liveCountdown">
-      {String(
-        Math.floor(
-          liveSecondsLeft / 60
-        )
-      ).padStart(2, "0")}
-      :
-      {String(
-        liveSecondsLeft % 60
-      ).padStart(2, "0")}
+
+      {(() => {
+
+        const liveEnd =
+          Number(
+            tournament.startTimestamp
+          ) +
+          10 * 60 * 1000;
+
+        const secondsLeft =
+          Math.max(
+            0,
+            Math.ceil(
+              (
+                liveEnd -
+                getMasterNow()
+              ) /
+              1000
+            )
+          );
+
+        return (
+          <>
+            {String(
+              Math.floor(
+                secondsLeft / 60
+              )
+            ).padStart(2, "0")}
+
+            :
+
+            {String(
+              secondsLeft % 60
+            ).padStart(2, "0")}
+          </>
+        );
+
+      })()}
+
     </div>
 
-  )}
+)}
+
+    
 
       {/* =================================================
           DETAILS
