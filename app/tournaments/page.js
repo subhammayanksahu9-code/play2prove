@@ -1928,12 +1928,7 @@ function TournamentCard({
 
   return "";
 }
-   
-  const status =
-    normalizeStatus(
-      tournament.status
-    );
-
+ 
   /* =========================================================
    MASTER CLOCK — LIVE COUNTDOWN
 ========================================================= */
