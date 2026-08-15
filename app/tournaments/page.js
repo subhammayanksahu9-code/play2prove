@@ -166,6 +166,105 @@ function normalizeStatus(value) {
   return "Upcoming";
 }
 
+function getTournamentAutomaticStatus(
+  tournament,
+  now
+) {
+
+  const start =
+    Number(
+      tournament?.startTimestamp
+    );
+
+  if (
+    !Number.isFinite(start)
+  ) {
+
+    return normalizeStatus(
+      tournament?.status
+    );
+
+  }
+
+  const STARTING_SOON =
+    10 * 60 * 1000;
+
+  const LIVE =
+    10 * 60 * 1000;
+
+  const MATCH_ONGOING =
+    30 * 60 * 1000;
+
+  const MATCH_CLOSING =
+    5 * 60 * 1000;
+
+
+  if (
+    now <
+    start -
+      STARTING_SOON
+  ) {
+    return "Upcoming";
+  }
+
+
+  if (
+    now <
+    start
+  ) {
+    return "Starting Soon";
+  }
+
+
+  if (
+    now <
+    start +
+      LIVE
+  ) {
+    return "Live";
+  }
+
+
+  if (
+    now <
+    start +
+      LIVE +
+      MATCH_ONGOING
+  ) {
+    return "Match Ongoing";
+  }
+
+
+  if (
+    now <
+    start +
+      LIVE +
+      MATCH_ONGOING +
+      MATCH_CLOSING
+  ) {
+    return "Match Closing";
+  }
+
+
+  const calculation =
+    clean(
+      tournament?.calculationStatus
+    ).toLowerCase();
+
+
+  if (
+    calculation === "completed" ||
+    calculation === "complete" ||
+    calculation === "done"
+  ) {
+    return "Past";
+  }
+
+
+  return "Calculation Ongoing";
+
+}
+
 function statusClass(status) {
   const value =
     normalizeStatus(status)
@@ -295,6 +394,25 @@ export default function TournamentsPage() {
   const [mode, setMode] = useState("All");
   const [map, setMap] = useState("All");
   const [search, setSearch] = useState("");
+  const [clockTick, setClockTick] =
+  useState(0);
+
+useEffect(() => {
+
+  const timer =
+    setInterval(() => {
+
+      setClockTick(
+        value => value + 1
+      );
+
+    }, 1000);
+
+  return () =>
+    clearInterval(timer);
+
+}, []);
+  
 
   /* =======================================================
      FETCH ALL DATA — ONE REQUEST
@@ -829,8 +947,11 @@ useEffect(() => {
       return gameTournaments.filter(
         (item) => {
            
-           const itemStatus =
-  normalizeStatus(item.status);
+const itemStatus =
+  getTournamentAutomaticStatus(
+    item,
+    getMasterNow()
+  );
           /* STATUS */
 
          if (status === "All") {
@@ -943,15 +1064,16 @@ if (status === "Past") {
         }
       );
     }, [
-      selectedGame,
-      gameTournaments,
-      status,
-      date,
-      slot,
-      mode,
-      map,
-      search,
-    ]);
+  selectedGame,
+  gameTournaments,
+  status,
+  date,
+  slot,
+  mode,
+  map,
+  search,
+  clockTick,
+]);
 
   /* =======================================================
      SELECT GAME
@@ -1894,207 +2016,65 @@ function TournamentCard({
   game,
 }) {
 
-   function statusClassName(status) {
-  const value =
-    normalizeStatus(status);
+  /* =======================================================
+     LIVE SCREEN REFRESH
+     This only refreshes UI.
+     Actual time comes from Master Clock.
+  ======================================================= */
 
-  if (value === "Upcoming") {
-    return "upcoming";
-  }
+  const [, setClockTick] =
+    useState(0);
 
-  if (value === "Starting Soon") {
-    return "startingSoon";
-  }
+  useEffect(() => {
 
-  if (value === "Live") {
-    return "live";
-  }
+    const timer =
+      setInterval(() => {
 
-  if (value === "Match Ongoing") {
-    return "matchOngoing";
-  }
+        setClockTick(
+          value => value + 1
+        );
 
-  if (value === "Match Closing") {
-    return "matchClosing";
-  }
+      }, 1000);
 
-  if (value === "Calculation Ongoing") {
-    return "calculationOngoing";
-  }
+    return () =>
+      clearInterval(timer);
 
-  if (value === "Past") {
-    return "past";
-  }
+  }, []);
 
-  return "";
-}
+
+  /* =======================================================
+     AUTOMATIC TOURNAMENT STATUS
+  ======================================================= */
+
  
-  /* =========================================================
-   MASTER CLOCK — LIVE COUNTDOWN
-========================================================= */
-
-const [clockTick, setClockTick] =
-  useState(0);
 
 
-/*
-  One lightweight local timer.
+  /* =======================================================
+     CURRENT MASTER STATUS
+  ======================================================= */
 
-  IMPORTANT:
-  This timer does NOT decide the time.
-  It only refreshes the screen.
-
-  Actual time comes from Cloudflare Master Clock.
-*/
-
-useEffect(() => {
-
-  const timer =
-    setInterval(() => {
-
-      setClockTick(
-        value => value + 1
-      );
-
-    }, 250);
-
-  return () =>
-    clearInterval(timer);
-
-}, []);
+  const masterNow =
+    getMasterNow();
 
 
-/* =========================================================
-   AUTOMATIC TOURNAMENT STATUS
-========================================================= */
-
-function getAutomaticStatus(
-  tournament,
-  now
-) {
-
-  const start =
-    Number(
-      tournament.startTimestamp
-    );
-
-
-  if (
-    !Number.isFinite(start)
-  ) {
-
-    return normalizeStatus(
-      tournament.status
-    );
-
-  }
-
-
-  const STARTING_SOON =
-    10 * 60 * 1000;
-
-
-  const LIVE =
-    10 * 60 * 1000;
-
-
-  const MATCH_ONGOING =
-  30 * 60 * 1000;
-
-
-  const MATCH_CLOSING =
-    5 * 60 * 1000;
-
-
-  if (
-    now <
-    start - STARTING_SOON
-  ) {
-
-    return "Upcoming";
-
-  }
-
-
-  if (
-    now <
-    start
-  ) {
-
-    return "Starting Soon";
-
-  }
-
-
-  if (
-    now <
-    start + LIVE
-  ) {
-
-    return "Live";
-
-  }
-
-
-  if (
-    now <
-    start +
-    LIVE +
-    MATCH_ONGOING
-  ) {
-
-    return "Match Ongoing";
-
-  }
-
-
-  if (
-    now <
-    start +
-    LIVE +
-    MATCH_ONGOING +
-    MATCH_CLOSING
-  ) {
-
-    return "Match Closing";
-
-  }
-
-
-  const calculation =
-    clean(
-      tournament.calculationStatus
-    ).toLowerCase();
-
-
-  if (
-    calculation === "completed" ||
-    calculation === "complete" ||
-    calculation === "done"
-  ) {
-
-    return "Past";
-
-  }
-
-
-  return "Calculation Ongoing";
-
-}
-
-
-/* =========================================================
-   CURRENT MASTER STATUS
-========================================================= */
-
-const masterNow =
-  getMasterNow();
-
-const status =
-  getAutomaticStatus(
+  const status =
+  getTournamentAutomaticStatus(
     tournament,
     masterNow
   );
+
+
+  /* =======================================================
+     CARD STATUS CLASS
+  ======================================================= */
+
+  const cardStatusClass =
+    statusClass(status);
+
+
+  /* =======================================================
+     PLAYER PERCENTAGE
+  ======================================================= */
 
   const percentage =
     tournament.capacity >
@@ -2107,21 +2087,78 @@ const status =
         )
       : 0;
 
-  const cardStatusClass =
-  statusClass(status);
 
-  /* Tournament image first.
-     Game image fallback second. */
+  /* =======================================================
+     IMAGE
+  ======================================================= */
 
   const image =
     tournament.image ||
     game?.image ||
     "";
 
+
+  /* =======================================================
+     LIVE COUNTDOWN
+  ======================================================= */
+
+  let liveSecondsLeft = 0;
+
+
+  if (
+    status === "Live" &&
+    Number.isFinite(
+      Number(
+        tournament.startTimestamp
+      )
+    )
+  ) {
+
+    const liveEnd =
+      Number(
+        tournament.startTimestamp
+      ) +
+      10 * 60 * 1000;
+
+
+    liveSecondsLeft =
+      Math.max(
+        0,
+        Math.ceil(
+          (
+            liveEnd -
+            masterNow
+          ) /
+          1000
+        )
+      );
+
+  }
+
+
+  const liveMinutes =
+    Math.floor(
+      liveSecondsLeft / 60
+    );
+
+
+  const liveSeconds =
+    liveSecondsLeft % 60;
+
+
+  const liveCountdown =
+    `${String(
+      liveMinutes
+    ).padStart(2, "0")}:${String(
+      liveSeconds
+    ).padStart(2, "0")}`;
+
+
   return (
+
     <article
-  className={`matchCard ${cardStatusClass}`}
->
+      className={`matchCard ${cardStatusClass}`}
+    >
 
       {/* =================================================
           16:9 IMAGE
@@ -2144,16 +2181,21 @@ const status =
               const img =
                 e.currentTarget;
 
+
               if (
                 game?.image &&
                 img.src !==
                   game.image
               ) {
+
                 img.src =
                   game.image;
+
               } else {
+
                 img.style.display =
                   "none";
+
               }
 
             }}
@@ -2165,9 +2207,7 @@ const status =
 
             {game?.name
               ?.toLowerCase()
-              .includes(
-                "free"
-              )
+              .includes("free")
               ? "🔥"
               : "🎮"}
 
@@ -2178,6 +2218,7 @@ const status =
         <div className="matchImageShade" />
 
       </div>
+
 
       {/* =================================================
           CARD HEADER
@@ -2200,6 +2241,7 @@ const status =
 
         </div>
 
+
         <span className="matchStatus">
 
           {status ===
@@ -2211,56 +2253,23 @@ const status =
         </span>
 
       </div>
-{status === "Live" &&
-  Number.isFinite(
-    Number(tournament.startTimestamp)
-  ) && (
 
-    <div className="liveCountdown">
 
-      {(() => {
+      {/* =================================================
+          LIVE COUNTDOWN
+      ================================================= */}
 
-        const liveEnd =
-          Number(
-            tournament.startTimestamp
-          ) +
-          10 * 60 * 1000;
+      {status ===
+        "Live" && (
 
-        const secondsLeft =
-          Math.max(
-            0,
-            Math.ceil(
-              (
-                liveEnd -
-                getMasterNow()
-              ) /
-              1000
-            )
-          );
+        <div className="liveCountdown">
 
-        return (
-          <>
-            {String(
-              Math.floor(
-                secondsLeft / 60
-              )
-            ).padStart(2, "0")}
+          LIVE • {liveCountdown}
 
-            :
+        </div>
 
-            {String(
-              secondsLeft % 60
-            ).padStart(2, "0")}
-          </>
-        );
+      )}
 
-      })()}
-
-    </div>
-
-)}
-
-    
 
       {/* =================================================
           DETAILS
@@ -2269,6 +2278,7 @@ const status =
       <div className="matchDetails">
 
         <div>
+
           <small>
             DATE
           </small>
@@ -2279,9 +2289,12 @@ const status =
               tournament.year
             )}
           </strong>
+
         </div>
 
+
         <div>
+
           <small>
             TIME
           </small>
@@ -2290,9 +2303,12 @@ const status =
             {tournament.time ||
               "—"}
           </strong>
+
         </div>
 
+
         <div>
+
           <small>
             MODE
           </small>
@@ -2301,9 +2317,12 @@ const status =
             {tournament.mode ||
               "—"}
           </strong>
+
         </div>
 
+
         <div>
+
           <small>
             MAP
           </small>
@@ -2312,9 +2331,11 @@ const status =
             {tournament.map ||
               "—"}
           </strong>
+
         </div>
 
       </div>
+
 
       {/* =================================================
           MONEY
@@ -2323,6 +2344,7 @@ const status =
       <div className="rewardDetails">
 
         <div>
+
           <small>
             ENTRY
           </small>
@@ -2331,9 +2353,12 @@ const status =
             ₹
             {tournament.entry}
           </strong>
+
         </div>
 
+
         <div>
+
           <small>
             PER KILL
           </small>
@@ -2342,9 +2367,12 @@ const status =
             ₹
             {tournament.kill}
           </strong>
+
         </div>
 
+
         <div>
+
           <small>
             PRIZE POOL
           </small>
@@ -2353,9 +2381,11 @@ const status =
             ₹
             {tournament.prize}
           </strong>
+
         </div>
 
       </div>
+
 
       {/* =================================================
           PLAYERS
@@ -2384,11 +2414,13 @@ const status =
 
           </div>
 
+
           <div className="progressBar">
 
             <span
               style={{
-                width: `${percentage}%`,
+                width:
+                  `${percentage}%`,
               }}
             />
 
@@ -2398,61 +2430,66 @@ const status =
 
       )}
 
+
       {/* =================================================
-    ACTION
-================================================= */}
+          ACTION
+      ================================================= */}
 
-{status === "Past" &&
-tournament.calculationStatus
-  ?.toLowerCase() ===
-    "completed" ? (
+      {status ===
+        "Past" &&
+      tournament.calculationStatus
+        ?.toLowerCase() ===
+        "completed" ? (
 
-  <button
-    className="resultButton"
-  >
-    CHECK MATCH RESULTS →
-  </button>
+        <button
+          className="resultButton"
+        >
+          CHECK MATCH RESULTS →
+        </button>
 
-) : status ===
-  "Calculation Ongoing" ? (
+      ) : status ===
+        "Calculation Ongoing" ? (
 
-  <div className="statusAction calculationAction">
-    CALCULATION ONGOING
-  </div>
+        <div className="statusAction calculationAction">
+          CALCULATION ONGOING
+        </div>
 
-) : status ===
-  "Match Closing" ? (
+      ) : status ===
+        "Match Closing" ? (
 
-  <div className="statusAction closingAction">
-    MATCH CLOSING
-  </div>
+        <div className="statusAction closingAction">
+          MATCH CLOSING
+        </div>
 
-) : status ===
-  "Match Ongoing" ? (
+      ) : status ===
+        "Match Ongoing" ? (
 
-  <div className="statusAction ongoingAction">
-    MATCH ONGOING
-  </div>
+        <div className="statusAction ongoingAction">
+          MATCH ONGOING
+        </div>
 
-) : (
+      ) : (
 
-  <button
-    className={
-      status === "Live"
-        ? "liveButton"
-        : "joinButton"
-    }
-  >
-    {status === "Live"
-      ? "VIEW & JOIN →"
-      : "VIEW & JOIN →"}
-  </button>
+        <button
+          className={
+            status ===
+            "Live"
+              ? "liveButton"
+              : "joinButton"
+          }
+        >
+          VIEW & JOIN →
+        </button>
 
-)}
+      )}
 
     </article>
+
   );
+
 }
+
+
 
 /* =========================================================
    AUTOMATIC SLOT FALLBACK
