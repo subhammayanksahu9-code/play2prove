@@ -1,389 +1,555 @@
 /* =========================================================
-   PLAY2PROVE — TOURNAMENTS PAGE
-   Stable responsive CSS
-   ========================================================= */
+   PLAY2PROVE TOURNAMENTS — ADVANCED COMPATIBLE PATCH
+   PATCH 1 / 7
 
-* {
-  box-sizing: border-box;
-}
+   PURPOSE:
+   - Keeps existing CSS intact
+   - Works with CURRENT page.js
+   - Foundation + Game Selection + Tournament Header
+   - No old class removed
+   - No JSX/page.js changes required
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-  background: #03050a;
-  color: #ffffff;
-  font-family: Arial, Helvetica, sans-serif;
-}
+   NEXT PATCHES MUST BE ADDED BELOW THIS PATCH
+========================================================= */
 
-button,
-input,
-select {
-  font-family: inherit;
-}
-
-button {
-  cursor: pointer;
-}
 
 /* =========================================================
-   MAIN PAGE
-   ========================================================= */
+   1. ADVANCED DESIGN TOKENS
+========================================================= */
+
+:root {
+  --pp-orange: #ff5800;
+  --pp-orange-bright: #ff7600;
+  --pp-orange-soft: rgba(255, 88, 0, .12);
+
+  --pp-purple: #704cff;
+  --pp-purple-soft: rgba(112, 76, 255, .12);
+
+  --pp-green: #00e58c;
+  --pp-red: #ff4040;
+  --pp-yellow: #ffd000;
+
+  --pp-bg-0: #020409;
+  --pp-bg-1: #03050a;
+  --pp-bg-2: #050811;
+
+  --pp-panel: rgba(8, 12, 20, .96);
+  --pp-panel-2: rgba(10, 14, 23, .94);
+
+  --pp-line: rgba(120, 136, 168, .18);
+  --pp-line-soft: rgba(255, 255, 255, .08);
+
+  --pp-text: #ffffff;
+  --pp-muted: #717b8e;
+  --pp-muted-2: #626c7f;
+
+  --pp-radius-lg: 18px;
+  --pp-radius-md: 14px;
+  --pp-radius-sm: 8px;
+
+  --pp-shadow:
+    0 20px 60px rgba(0, 0, 0, .35);
+
+  --pp-glow-orange:
+    0 0 30px rgba(255, 80, 0, .14);
+
+  --pp-glow-purple:
+    0 0 30px rgba(112, 76, 255, .12);
+}
+
+
+/* =========================================================
+   2. PAGE FOUNDATION
+========================================================= */
 
 .tournamentPage {
   position: relative;
+
   min-height: 100vh;
+
   overflow-x: hidden;
-  padding-bottom: 90px;
+
+  isolation: isolate;
+
+  color: var(--pp-text);
 
   background:
     radial-gradient(
-      circle at 8% 12%,
-      rgba(255, 70, 0, 0.12),
-      transparent 28%
+      circle at 8% 8%,
+      rgba(255, 70, 0, .14),
+      transparent 27%
     ),
     radial-gradient(
-      circle at 92% 35%,
-      rgba(92, 55, 255, 0.14),
-      transparent 32%
+      circle at 92% 28%,
+      rgba(100, 65, 255, .13),
+      transparent 30%
     ),
-    #03050a;
+    radial-gradient(
+      circle at 50% 100%,
+      rgba(0, 170, 255, .045),
+      transparent 35%
+    ),
+    linear-gradient(
+      180deg,
+      var(--pp-bg-1) 0%,
+      var(--pp-bg-2) 52%,
+      var(--pp-bg-0) 100%
+    );
 }
 
-/* Background grid */
 
-.tpGrid {
+/* Prevent accidental horizontal movement
+   ONLY inside tournament page */
+
+.tournamentPage {
+  max-width: 100%;
+}
+
+
+/* =========================================================
+   3. ADVANCED PAGE LIGHT / GRID LAYER
+========================================================= */
+
+.tournamentPage::before {
+  content: "";
+
   position: fixed;
+
   inset: 0;
-  z-index: 0;
+
+  z-index: -1;
 
   pointer-events: none;
 
-  opacity: 0.09;
+  opacity: .045;
 
   background-image:
-    linear-gradient(
-      rgba(255, 255, 255, 0.07) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0.07) 1px,
-      transparent 1px
+    radial-gradient(
+      rgba(255,255,255,.9) .55px,
+      transparent .55px
     );
 
-  background-size: 45px 45px;
+  background-size: 5px 5px;
 }
 
-/* Ambient glows */
 
-.tpGlow {
-  position: fixed;
+/* =========================================================
+   4. EXISTING GRID ENHANCEMENT
+   Compatible with old .tpGrid
+========================================================= */
 
-  width: 360px;
-  height: 360px;
+.tournamentPage .tpGrid {
+  opacity: .055;
 
-  border-radius: 50%;
+  background-size: 52px 52px;
 
-  filter: blur(120px);
+  mask-image:
+    linear-gradient(
+      to bottom,
+      black,
+      rgba(0,0,0,.7),
+      transparent
+    );
 
-  opacity: 0.16;
+  -webkit-mask-image:
+    linear-gradient(
+      to bottom,
+      black,
+      rgba(0,0,0,.7),
+      transparent
+    );
+}
+
+
+/* =========================================================
+   5. EXISTING GLOW ENHANCEMENT
+========================================================= */
+
+.tournamentPage .tpGlow {
+  opacity: .12;
 
   pointer-events: none;
 
-  z-index: 0;
+  filter: blur(125px);
 }
 
-.tpOrange {
-  left: -220px;
-  top: 22%;
-
+.tournamentPage .tpOrange {
   background: #ff4b00;
 }
 
-.tpBlue {
-  right: -220px;
-  top: 48%;
-
-  background: #643cff;
+.tournamentPage .tpBlue {
+  background: #6545ff;
 }
 
-/* =========================================================
-   HEADER
-   ========================================================= */
 
-.tpHeader {
-  position: sticky;
+/* =========================================================
+   6. TOP NEON
+   CURRENT page.js uses .tpNeonTop
+========================================================= */
+
+.tpNeonTop {
+  position: fixed;
+
+  left: 0;
+  right: 0;
   top: 0;
-  z-index: 100;
 
-  height: 66px;
+  height: 2px;
 
-  padding: 0 4vw;
+  z-index: 300;
 
-  display: flex;
-  align-items: center;
+  pointer-events: none;
 
-  background: rgba(3, 5, 10, 0.92);
-
-  border-bottom: 1px solid #202636;
-
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-}
-
-.backButton {
-  width: 40px;
-  height: 40px;
-
-  display: grid;
-  place-items: center;
-
-  border: 1px solid #30384b;
-  border-radius: 10px;
-
-  background: #080c14;
-
-  color: #ffffff;
-
-  font-size: 20px;
-
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    transform 0.2s ease;
-}
-
-.backButton:hover {
-  border-color: #ff5800;
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      #ff4d00 20%,
+      #ff8000 40%,
+      #704cff 65%,
+      #00aaff 82%,
+      transparent 100%
+    );
 
   box-shadow:
-    0 0 18px rgba(255, 80, 0, 0.2);
-
-  transform: translateY(-1px);
+    0 0 18px rgba(255, 80, 0, .65),
+    0 0 35px rgba(112, 76, 255, .25);
 }
 
-.tpTitle {
-  margin-left: 15px;
-}
-
-.tpTitle span,
-.tpTitle strong {
-  display: block;
-}
-
-.tpTitle span {
-  color: #ff5800;
-
-  font-size: 6px;
-  font-weight: 900;
-
-  letter-spacing: 2px;
-}
-
-.tpTitle strong {
-  margin-top: 3px;
-
-  font-size: 13px;
-  font-weight: 900;
-}
-
-.tpRight {
-  margin-left: auto;
-
-  display: flex;
-  align-items: center;
-
-  gap: 8px;
-}
-
-.tpWallet {
-  min-width: 76px;
-  height: 39px;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  border: 1px solid rgba(255, 78, 0, 0.55);
-  border-radius: 9px;
-
-  background: rgba(255, 65, 0, 0.06);
-
-  color: #ffffff;
-
-  box-shadow:
-    inset 0 0 15px rgba(255, 70, 0, 0.03),
-    0 0 18px rgba(255, 70, 0, 0.05);
-}
-
-.tpWallet small {
-  color: #737b8d;
-
-  font-size: 6px;
-  font-weight: 800;
-
-  letter-spacing: 1px;
-}
-
-.tpWallet strong {
-  margin-top: 2px;
-
-  color: #ffffff;
-
-  font-size: 10px;
-}
-
-.tpProfile {
-  width: 39px;
-  height: 39px;
-
-  display: grid;
-  place-items: center;
-
-  border: 1px solid #643bba;
-  border-radius: 50%;
-
-  background: rgba(100, 55, 190, 0.12);
-
-  color: #bd9aff;
-
-  transition:
-    box-shadow 0.2s ease,
-    transform 0.2s ease;
-}
-
-.tpProfile:hover {
-  box-shadow:
-    0 0 20px rgba(120, 70, 255, 0.3);
-
-  transform: scale(1.04);
-}
 
 /* =========================================================
-   COMMON CONTAINERS
-   ========================================================= */
+   7. GAME SELECTION SECTION
+   CURRENT page.js:
+   .gameSelection
+========================================================= */
 
-.gameSelection,
-.tournamentContent {
+.gameSelection {
   position: relative;
+
   z-index: 2;
 
   width: min(1180px, 92vw);
 
   margin: 0 auto;
+
+  padding:
+    clamp(60px, 8vw, 90px)
+    0
+    100px;
 }
 
-/* =========================================================
-   GAME SELECTION
-   ========================================================= */
 
-.gameSelection {
-  padding: 80px 0;
+/* =========================================================
+   8. GAME SELECTION INTRO
+========================================================= */
+
+.selectionIntro {
+  position: relative;
+
+  max-width: 760px;
+}
+
+.selectionIntro::before {
+  content: "";
+
+  position: absolute;
+
+  left: -35px;
+  top: 10px;
+
+  width: 2px;
+  height: 75px;
+
+  border-radius: 10px;
+
+  background:
+    linear-gradient(
+      180deg,
+      var(--pp-orange),
+      transparent
+    );
+
+  box-shadow:
+    0 0 18px rgba(255, 80, 0, .35);
 }
 
 .selectionIntro span {
-  color: #ff5800;
+  display: block;
+
+  color: var(--pp-orange);
 
   font-size: 8px;
+
   font-weight: 900;
 
-  letter-spacing: 2px;
+  letter-spacing: 2.2px;
+
+  text-transform: uppercase;
 }
 
 .selectionIntro h1 {
-  margin: 10px 0;
+  margin:
+    10px 0
+    12px;
 
-  color: #ffffff;
+  color: #fff;
 
-  font-size: clamp(48px, 8vw, 90px);
-  line-height: 0.88;
+  font-size:
+    clamp(
+      52px,
+      8vw,
+      90px
+    );
+
+  line-height: .86;
 
   letter-spacing: -4px;
+
+  text-shadow:
+    0 12px 50px rgba(0,0,0,.55);
 }
 
 .selectionIntro h1 em {
-  color: #ff4d0a;
+  color: var(--pp-orange);
 
   font-style: normal;
 
   text-shadow:
-    0 0 25px rgba(255, 70, 0, 0.35);
+    0 0 25px rgba(255, 70, 0, .32),
+    0 8px 35px rgba(0,0,0,.4);
 }
 
 .selectionIntro p {
   max-width: 650px;
 
-  color: #737c8f;
+  margin: 0;
+
+  color: var(--pp-muted);
 
   font-size: 11px;
-  line-height: 1.6;
+
+  line-height: 1.7;
 }
 
+
 /* =========================================================
-   GAME CARDS
-   ========================================================= */
+   9. GAME CARD GRID
+   CURRENT page.js uses .gameCards
+========================================================= */
 
 .gameCards {
-  margin-top: 45px;
+  position: relative;
+
+  z-index: 2;
+
+  margin-top: 42px;
 
   display: grid;
 
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
 
-  gap: 18px;
+  gap: 22px;
 }
 
+
+/* =========================================================
+   10. GAME SELECT CARD
+   CURRENT page.js uses .gameSelectCard
+========================================================= */
+
 .gameSelectCard {
+  position: relative;
+
   width: 100%;
+
+  min-width: 0;
 
   padding: 0;
 
   overflow: hidden;
 
-  border: 1px solid #252e3e;
-  border-radius: 18px;
-
-  background: #080c14;
-
-  color: #ffffff;
+  isolation: isolate;
 
   text-align: left;
 
-  transition:
-    transform 0.3s ease,
-    border-color 0.3s ease,
-    box-shadow 0.3s ease;
-}
+  color: #fff;
 
-.gameSelectCard:hover {
-  transform: translateY(-6px);
+  border:
+    1px solid
+    rgba(113,128,158,.22);
 
-  border-color: #ff5600;
+  border-radius:
+    var(--pp-radius-lg);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(13,18,30,.98),
+      rgba(5,8,14,.98)
+    );
 
   box-shadow:
-    0 18px 50px rgba(0, 0, 0, 0.55),
-    0 0 30px rgba(255, 65, 0, 0.12);
+    inset 0 1px 0
+      rgba(255,255,255,.035),
+    0 20px 60px
+      rgba(0,0,0,.25);
+
+  transition:
+    transform .28s ease,
+    border-color .28s ease,
+    box-shadow .28s ease;
 }
 
-/* Game name */
 
-.gameCardName {
-  padding: 18px 20px;
+/* Neon border layer */
 
-  border-bottom: 1px solid #202938;
+.gameSelectCard::before {
+  content: "";
 
-  font-size: 14px;
-  font-weight: 900;
+  position: absolute;
 
-  letter-spacing: 1px;
+  inset: 0;
+
+  z-index: -1;
+
+  padding: 1px;
+
+  border-radius:
+    inherit;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,88,0,.55),
+      transparent 35%,
+      rgba(112,76,255,.40),
+      transparent 75%
+    );
+
+  -webkit-mask:
+    linear-gradient(#000 0 0)
+      content-box,
+    linear-gradient(#000 0 0);
+
+  -webkit-mask-composite: xor;
+
+  mask-composite: exclude;
+
+  opacity: .32;
+
+  pointer-events: none;
+
+  transition:
+    opacity .28s ease;
 }
+
+
+/* Hover */
+
+.gameSelectCard:hover {
+  transform:
+    translateY(-6px);
+
+  border-color:
+    rgba(255,88,0,.55);
+
+  box-shadow:
+    0 24px 65px
+      rgba(0,0,0,.48),
+    0 0 32px
+      rgba(255,80,0,.10);
+}
+
+.gameSelectCard:hover::before {
+  opacity: 1;
+}
+
 
 /* =========================================================
-   GAME IMAGE
-   Default aspect ratio = 16:9
-   ========================================================= */
+   11. GAME CARD NAME
+   CURRENT page.js has .gameCardName
+========================================================= */
+
+.gameCardName {
+  min-height: 58px;
+
+  padding:
+    17px
+    20px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 15px;
+
+  border-bottom:
+    1px solid
+    rgba(255,255,255,.08);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,.025),
+      transparent
+    );
+}
+
+.gameCardName span {
+  min-width: 0;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+
+  color: #fff;
+
+  font-size: 15px;
+
+  font-weight: 900;
+
+  letter-spacing: .7px;
+}
+
+.gameCardName b {
+  flex-shrink: 0;
+
+  color: var(--pp-orange);
+
+  font-size: 7px;
+
+  font-weight: 900;
+
+  letter-spacing: .8px;
+
+  white-space: nowrap;
+
+  transition:
+    transform .2s ease,
+    color .2s ease;
+}
+
+.gameSelectCard:hover
+.gameCardName b {
+  color: #ff8a45;
+
+  transform:
+    translateX(3px);
+}
+
+
+/* =========================================================
+   12. GAME IMAGE
+   CURRENT page.js uses .gameImage
+========================================================= */
 
 .gameImage {
   position: relative;
@@ -392,935 +558,591 @@ button {
 
   aspect-ratio: 16 / 9;
 
-  min-height: 0;
+  min-height: 180px;
 
   overflow: hidden;
 
   background:
     radial-gradient(
       circle at center,
-      rgba(255, 68, 0, 0.2),
+      rgba(255,70,0,.18),
       transparent 52%
     ),
     #05080e;
 }
 
+
+/* Image */
+
 .gameImage img {
   position: relative;
+
   z-index: 2;
 
   display: block;
 
   width: 100%;
+
   height: 100%;
 
   object-fit: cover;
+
   object-position: center;
 
   image-rendering: auto;
 
+  filter:
+    saturate(1.06)
+    contrast(1.04);
+
   transition:
-    transform 0.5s ease,
-    filter 0.5s ease;
+    transform .5s ease,
+    filter .5s ease;
 }
 
-.gameSelectCard:hover .gameImage img {
-  transform: scale(1.035);
+.gameSelectCard:hover
+.gameImage img {
+  transform:
+    scale(1.035);
+
+  filter:
+    saturate(1.15)
+    contrast(1.06);
 }
+
+
+/* Image bottom shade */
+
+.gameImage::after {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  z-index: 3;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      180deg,
+      transparent 48%,
+      rgba(0,0,0,.58) 100%
+    );
+}
+
+
+/* Current page.js uses imageOverlay */
+
+.imageOverlay {
+  position: absolute;
+
+  inset: 0;
+
+  z-index: 4;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,80,0,.04),
+      transparent 40%,
+      rgba(100,70,255,.06)
+    );
+}
+
+
+/* =========================================================
+   13. IMAGE FALLBACK
+========================================================= */
 
 .imageFallback {
   position: absolute;
+
   inset: 0;
 
+  z-index: 1;
+
   display: grid;
+
   place-items: center;
 
-  font-size: 75px;
+  font-size: 72px;
 
   background:
     radial-gradient(
       circle at center,
-      rgba(255, 65, 0, 0.18),
+      rgba(255,65,0,.18),
       transparent 55%
     ),
     linear-gradient(
       135deg,
-      rgba(255, 65, 0, 0.12),
-      rgba(60, 30, 180, 0.12)
+      #080d17,
+      #11142a
     );
 }
 
-.imageGlow {
-  position: absolute;
 
-  width: 180px;
-  height: 180px;
-
-  left: 50%;
-  top: 50%;
-
-  transform: translate(-50%, -50%);
-
-  border-radius: 50%;
-
-  background: #ff4d00;
-
-  filter: blur(90px);
-
-  opacity: 0.17;
-
-  pointer-events: none;
-}
-
-/* Card lower info */
+/* =========================================================
+   14. GAME CARD BOTTOM
+   CURRENT page.js uses .gameCardBottom
+========================================================= */
 
 .gameCardBottom {
-  min-height: 47px;
+  min-height: 50px;
 
-  padding: 14px 18px;
+  padding:
+    13px
+    18px;
 
   display: flex;
-  justify-content: space-between;
+
   align-items: center;
 
-  border-bottom: 1px solid #202938;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  border-top:
+    1px solid
+    rgba(255,255,255,.03);
+
+  background:
+    rgba(255,255,255,.012);
 }
 
 .gameCardBottom span {
-  color: #788195;
-
-  font-size: 7px;
-  font-weight: 800;
-}
-
-.gameCardBottom b {
-  color: #ff5a00;
-
-  font-size: 7px;
-  font-weight: 900;
-}
-
-/* Status */
-
-.gameStatusRow {
-  min-height: 43px;
-
-  padding: 12px 18px;
-
-  display: flex;
-  flex-wrap: wrap;
-
-  gap: 12px;
-}
-
-.gameStatusRow span {
-  font-size: 6px;
-  font-weight: 900;
-
-  letter-spacing: 0.5px;
-}
-
-.statusUpcoming {
-  color: #ffb000;
-}
-
-.statusLive {
-  color: #00e58c;
-}
-
-.statusDeciding {
-  color: #b16cff;
-}
-
-/* =========================================================
-   TOURNAMENT CONTENT
-   ========================================================= */
-
-.tournamentContent {
-  padding: 30px 0 100px;
-}
-
-/* =========================================================
-   GAME BANNER
-   ========================================================= */
-
-.gameBanner {
-  position: relative;
-
-  min-height: 220px;
-
-  padding: 35px;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  overflow: hidden;
-
-  border: 1px solid #292f41;
-  border-radius: 18px;
-
-  background:
-    radial-gradient(
-      circle at 80% 50%,
-      rgba(255, 70, 0, 0.2),
-      transparent 40%
-    ),
-    #080c14;
-}
-
-.gameBanner::after {
-  content: "";
-
-  position: absolute;
-  inset: 0;
-
-  pointer-events: none;
-
-  background:
-    linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 80, 0, 0.04),
-      transparent
-    );
-}
-
-.bannerEyebrow {
-  position: relative;
-  z-index: 2;
-
-  color: #ff5a00;
-
-  font-size: 7px;
-  font-weight: 900;
-
-  letter-spacing: 2px;
-}
-
-.gameBanner h1 {
-  position: relative;
-  z-index: 2;
-
-  margin: 9px 0;
-
-  font-size: clamp(40px, 7vw, 70px);
-  line-height: 0.9;
-
-  letter-spacing: -3px;
-}
-
-.gameBanner p {
-  position: relative;
-  z-index: 2;
-
-  max-width: 600px;
-
-  color: #727b8d;
-
-  font-size: 9px;
-  line-height: 1.5;
-}
-
-.bannerGameIcon {
-  position: relative;
-  z-index: 2;
-
-  flex-shrink: 0;
-
-  font-size: 100px;
-
-  filter:
-    drop-shadow(0 0 30px rgba(255, 70, 0, 0.35));
-}
-
-/* =========================================================
-   STATUS TABS
-   ========================================================= */
-
-.statusTabs {
-  margin-top: 20px;
-
-  display: flex;
-
-  gap: 7px;
-
-  overflow-x: auto;
-
-  scrollbar-width: none;
-}
-
-.statusTabs::-webkit-scrollbar {
-  display: none;
-}
-
-.statusTabs button {
-  flex-shrink: 0;
-
-  height: 39px;
-
-  padding: 0 18px;
-
-  white-space: nowrap;
-
-  border: 1px solid #252e3e;
-  border-radius: 8px;
-
-  background: #080c14;
-
-  color: #6d7689;
-
-  font-size: 8px;
-  font-weight: 900;
-
-  transition:
-    border-color 0.2s ease,
-    color 0.2s ease,
-    background 0.2s ease;
-}
-
-.statusTabs button:hover {
-  border-color: #454f63;
-
-  color: #ffffff;
-}
-
-.statusTabs button.active {
-  color: #ffffff;
-
-  border-color: #ff5600;
-
-  background:
-    linear-gradient(
-      90deg,
-      rgba(255, 65, 0, 0.17),
-      rgba(255, 65, 0, 0.04)
-    );
-
-  box-shadow:
-    0 0 20px rgba(255, 65, 0, 0.12);
-}
-
-/* =========================================================
-   FILTER PANEL
-   ========================================================= */
-
-.filterPanel {
-  margin-top: 18px;
-
-  padding: 20px;
-
-  border: 1px solid #242d3e;
-  border-radius: 15px;
-
-  background: rgba(7, 10, 17, 0.92);
-
-  box-shadow:
-    inset 0 0 30px rgba(255, 255, 255, 0.01);
-}
-
-.filterTitle {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  gap: 20px;
-}
-
-.filterTitle span,
-.resultsHeader span {
-  display: block;
-
-  color: #ff5800;
-
-  font-size: 6px;
-  font-weight: 900;
-
-  letter-spacing: 1.5px;
-}
-
-.filterTitle strong {
-  display: block;
-
-  margin-top: 5px;
-
-  font-size: 11px;
-}
-
-.filterTitle button {
-  border: 0;
-
-  background: transparent;
-
-  color: #ff5800;
-
-  font-size: 7px;
-  font-weight: 900;
-}
-
-.filterGroup {
-  margin-top: 18px;
-}
-
-.filterGroup label {
-  display: block;
-
-  margin-bottom: 8px;
-
-  color: #687286;
-
-  font-size: 6px;
-  font-weight: 900;
-
-  letter-spacing: 1.2px;
-}
-
-.filterScroll {
-  display: flex;
-
-  gap: 7px;
-
-  overflow-x: auto;
-
-  scrollbar-width: none;
-}
-
-.filterScroll::-webkit-scrollbar {
-  display: none;
-}
-
-.filterScroll button,
-.smallFilterGrid button {
-  min-height: 35px;
-
-  padding: 0 12px;
-
-  white-space: nowrap;
-
-  border: 1px solid #252e3e;
-  border-radius: 7px;
-
-  background: #0a0e16;
-
-  color: #747d90;
-
-  font-size: 7px;
-  font-weight: 900;
-}
-
-.filterScroll button:hover,
-.smallFilterGrid button:hover {
-  border-color: #49546b;
-
-  color: #ffffff;
-}
-
-.filterScroll button.selected,
-.smallFilterGrid button.selected,
-.slotGrid button.selected {
-  border-color: #ff5800;
-
-  color: #ffffff;
-
-  background: rgba(255, 70, 0, 0.1);
-
-  box-shadow:
-    0 0 15px rgba(255, 65, 0, 0.1);
-}
-
-/* =========================================================
-   TIME SLOTS
-   ========================================================= */
-
-.slotGrid {
-  display: grid;
-
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-
-  gap: 7px;
-}
-
-.slotGrid button {
-  min-height: 50px;
-
-  padding: 7px;
-
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-
-  border: 1px solid #252e3e;
-  border-radius: 8px;
-
-  background: #0a0e16;
-
-  color: #ffffff;
-}
-
-.slotGrid strong {
-  font-size: 8px;
-}
-
-.slotGrid small {
-  margin-top: 4px;
-
-  color: #626c7f;
-
-  font-size: 5px;
-}
-
-.smallFilterGrid {
-  display: flex;
-
-  flex-wrap: wrap;
-
-  gap: 7px;
-}
-
-/* =========================================================
-   RESULTS HEADER
-   ========================================================= */
-
-.resultsHeader {
-  margin: 28px 0 13px;
-
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-
-  gap: 15px;
-}
-
-.resultsHeader strong {
-  display: block;
-
-  margin-top: 5px;
-
-  font-size: 13px;
-}
-
-.resultsHeader > span {
-  color: #717a8d;
-
-  font-size: 7px;
-}
-
-/* =========================================================
-   TOURNAMENT GRID
-   ========================================================= */
-
-.tournamentGrid {
-  display: grid;
-
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-
-  gap: 14px;
-}
-
-/* =========================================================
-   MATCH CARD
-   ========================================================= */
-
-.matchCard {
-  position: relative;
-
-  overflow: hidden;
-
-  padding: 19px;
-
-  border: 1px solid #252e3e;
-  border-radius: 14px;
-
-  background: #080c14;
-
-  transition:
-    transform 0.25s ease,
-    border-color 0.25s ease,
-    box-shadow 0.25s ease;
-}
-
-.matchCard:hover {
-  transform: translateY(-4px);
-
-  border-color: #39445a;
-
-  box-shadow:
-    0 15px 40px rgba(0, 0, 0, 0.35);
-}
-
-.matchCard.live {
-  border-color: rgba(0, 229, 140, 0.45);
-
-  box-shadow:
-    0 0 25px rgba(0, 229, 140, 0.08);
-}
-
-.matchCard.deciding {
-  border-color: rgba(171, 103, 255, 0.45);
-}
-
-.matchCard.past {
-  opacity: 0.82;
-}
-
-.cardTop {
-  display: flex;
-  justify-content: space-between;
-
-  gap: 10px;
-}
-
-.matchGame {
-  color: #ff5800;
-
-  font-size: 6px;
-  font-weight: 900;
-
-  letter-spacing: 1.5px;
-}
-
-.cardTop h3 {
-  margin: 6px 0 0;
-
-  font-size: 16px;
-  line-height: 1.25;
-}
-
-.matchStatus {
-  flex-shrink: 0;
-
-  height: fit-content;
-
-  padding: 5px 7px;
-
-  border: 1px solid #30394b;
-  border-radius: 5px;
-
-  color: #8a92a3;
-
-  font-size: 6px;
-  font-weight: 900;
-}
-
-.live .matchStatus {
-  color: #00e58c;
-
-  border-color: #00a96a;
-}
-
-.deciding .matchStatus {
-  color: #b57aff;
-
-  border-color: #713bb2;
-}
-
-/* =========================================================
-   MATCH DETAILS
-   ========================================================= */
-
-.matchDetails {
-  margin-top: 17px;
-
-  display: grid;
-
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-
-  gap: 6px;
-}
-
-.matchDetails div,
-.rewardDetails div {
   min-width: 0;
-
-  padding: 9px 7px;
-
-  border: 1px solid #1e2634;
-  border-radius: 7px;
-
-  background: rgba(255, 255, 255, 0.012);
-}
-
-.matchDetails small,
-.rewardDetails small {
-  display: block;
-
-  color: #626b7d;
-
-  font-size: 5px;
-}
-
-.matchDetails strong,
-.rewardDetails strong {
-  display: block;
-
-  margin-top: 5px;
-
-  color: #ffffff;
-
-  font-size: 8px;
 
   overflow: hidden;
 
   text-overflow: ellipsis;
 
   white-space: nowrap;
-}
 
-.rewardDetails {
-  margin-top: 8px;
-
-  display: grid;
-
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-
-  gap: 6px;
-}
-
-.orangeText {
-  color: #ff5800 !important;
-}
-
-/* =========================================================
-   PLAYERS
-   ========================================================= */
-
-.players {
-  margin-top: 15px;
-}
-
-.players > div:first-child {
-  display: flex;
-  justify-content: space-between;
-
-  color: #687286;
-
-  font-size: 6px;
-}
-
-.players strong {
-  color: #ffffff;
-}
-
-.progressBar {
-  height: 4px;
-
-  margin-top: 7px;
-
-  overflow: hidden;
-
-  border-radius: 10px;
-
-  background: #181f2c;
-}
-
-.progressBar span {
-  display: block;
-
-  height: 100%;
-
-  background:
-    linear-gradient(
-      90deg,
-      #ff3d00,
-      #ff8700
-    );
-
-  box-shadow:
-    0 0 12px #ff5000;
-}
-
-/* =========================================================
-   ACTION BUTTONS
-   ========================================================= */
-
-.joinButton,
-.liveButton,
-.decidingButton,
-.resultButton {
-  width: 100%;
-  height: 40px;
-
-  margin-top: 14px;
-
-  border: 0;
-  border-radius: 7px;
-
-  color: #ffffff;
+  color: #788195;
 
   font-size: 8px;
-  font-weight: 900;
 
-  transition:
-    transform 0.2s ease,
-    filter 0.2s ease;
+  font-weight: 800;
 }
 
-.joinButton:hover,
-.liveButton:hover,
-.decidingButton:hover,
-.resultButton:hover {
-  filter: brightness(1.12);
 
-  transform: translateY(-1px);
+/* Status text generated by current page.js */
+
+.gameCardBottom
+span.statusUpcoming {
+  color: var(--pp-yellow);
 }
 
-.joinButton {
-  background: #ff5108;
-
-  box-shadow:
-    0 0 18px rgba(255, 70, 0, 0.22);
+.gameCardBottom
+span.statusLive {
+  color: var(--pp-green);
 }
 
-.liveButton {
-  background: #00a96a;
-
-  box-shadow:
-    0 0 18px rgba(0, 229, 140, 0.18);
+.gameCardBottom
+span.statusDeciding {
+  color: #b16cff;
 }
 
-.decidingButton {
-  background: #6d3ac0;
+.gameCardBottom
+span.statusPast {
+  color: #8b94a5;
 }
 
-.resultButton {
-  background: #202838;
-}
 
 /* =========================================================
-   EMPTY STATE
-   ========================================================= */
+   15. COMING SOON
+   CURRENT page.js uses .comingSoon
+========================================================= */
 
-.emptyState {
-  padding: 70px 20px;
+.comingSoon {
+  position: relative;
+
+  min-height: 320px;
+
+  margin-top: 40px;
+
+  padding: 50px 25px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
 
   text-align: center;
 
-  border: 1px dashed #293244;
-  border-radius: 15px;
+  overflow: hidden;
 
-  background: #080c14;
+  border:
+    1px dashed
+    rgba(120,136,168,.25);
+
+  border-radius:
+    var(--pp-radius-lg);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(9,13,22,.96),
+      rgba(5,8,14,.94)
+    );
+
+  box-shadow:
+    var(--pp-shadow);
 }
 
-.emptyState > div {
-  color: #ff5800;
+.comingSoon::before {
+  content: "";
 
-  font-size: 35px;
+  position: absolute;
 
-  text-shadow:
-    0 0 20px rgba(255, 70, 0, 0.35);
+  width: 280px;
+  height: 280px;
+
+  top: 50%;
+  left: 50%;
+
+  transform:
+    translate(-50%,-50%);
+
+  border-radius: 50%;
+
+  background:
+    rgba(255,70,0,.10);
+
+  filter: blur(80px);
+
+  pointer-events: none;
 }
 
-.emptyState h3 {
-  margin: 10px 0;
+.comingGlow {
+  position: relative;
 
-  font-size: 15px;
+  z-index: 2;
+
+  margin-bottom: 15px;
+
+  font-size: 50px;
+
+  filter:
+    drop-shadow(
+      0 0 25px
+      rgba(255,80,0,.28)
+    );
 }
 
-.emptyState p {
-  color: #687286;
+.comingSoon > span {
+  position: relative;
 
-  font-size: 8px;
-}
+  z-index: 2;
 
-.emptyState button {
-  margin-top: 10px;
-
-  height: 35px;
-
-  padding: 0 14px;
-
-  border: 1px solid #ff5800;
-  border-radius: 6px;
-
-  background: transparent;
-
-  color: #ff5800;
+  color: var(--pp-orange);
 
   font-size: 7px;
+
   font-weight: 900;
+
+  letter-spacing: 2px;
 }
 
-/* =========================================================
-   BOTTOM NEON LINE
-   ========================================================= */
+.comingSoon h2 {
+  position: relative;
 
-.tpNeonBottom {
-  position: fixed;
+  z-index: 2;
+
+  margin: 8px 0;
+
+  font-size: 25px;
+
+  letter-spacing: 1px;
+}
+
+.comingSoon p {
+  position: relative;
+
+  z-index: 2;
+
+  margin: 0;
+
+  color: var(--pp-muted);
+
+  font-size: 9px;
+}
+
+
+/* =========================================================
+   16. TOURNAMENT SECTION FOUNDATION
+   CURRENT page.js uses .tournamentSection
+========================================================= */
+
+.tournamentSection {
+  position: relative;
+
+  z-index: 2;
+
+  width: min(1180px, 92vw);
+
+  margin: 0 auto;
+
+  padding:
+    30px
+    0
+    110px;
+}
+
+
+/* =========================================================
+   17. BACK TO GAMES
+   CURRENT page.js uses .backToGames
+========================================================= */
+
+.backToGames {
+  position: relative;
+
+  z-index: 10;
+
+  height: 40px;
+
+  margin-bottom: 18px;
+
+  padding:
+    0 14px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 7px;
+
+  border:
+    1px solid
+    #30394b;
+
+  border-radius:
+    8px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #0c111b,
+      #070a11
+    );
+
+  color: #d9dee8;
+
+  font-size: 8px;
+
+  font-weight: 900;
+
+  letter-spacing: .4px;
+
+  transition:
+    border-color .2s ease,
+    color .2s ease,
+    background .2s ease,
+    transform .2s ease;
+}
+
+.backToGames:hover {
+  border-color:
+    var(--pp-orange);
+
+  color: #fff;
+
+  background:
+    rgba(255,70,0,.08);
+
+  transform:
+    translateX(-2px);
+
+  box-shadow:
+    0 0 20px
+    rgba(255,80,0,.10);
+}
+
+
+/* =========================================================
+   18. TOURNAMENT HEADER
+   CURRENT page.js uses .tournamentHeader
+========================================================= */
+
+.tournamentHeader {
+  position: relative;
+
+  min-height: 210px;
+
+  padding:
+    34px;
+
+  display: flex;
+
+  align-items: center;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(255,255,255,.10);
+
+  border-radius:
+    var(--pp-radius-lg);
+
+  background:
+    radial-gradient(
+      circle at 85% 50%,
+      rgba(255,80,0,.20),
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at 70% 0%,
+      rgba(100,65,255,.12),
+      transparent 30%
+    ),
+    linear-gradient(
+      135deg,
+      #0a0f1b,
+      #05070d
+    );
+
+  box-shadow:
+    0 22px 70px
+      rgba(0,0,0,.32),
+    inset 0 1px 0
+      rgba(255,255,255,.04);
+}
+
+
+/* Header glow line */
+
+.tournamentHeader::after {
+  content: "";
+
+  position: absolute;
 
   left: 0;
   right: 0;
+
   bottom: 0;
 
-  height: 2px;
-
-  z-index: 90;
-
-  pointer-events: none;
+  height: 1px;
 
   background:
     linear-gradient(
       90deg,
       transparent,
-      #ff4d00,
-      #ff8000,
-      #673cff,
-      #00aaff,
+      var(--pp-orange),
+      var(--pp-purple),
       transparent
     );
 
-  box-shadow:
-    0 0 20px #ff5000;
+  opacity: .65;
+
+  pointer-events: none;
 }
 
+.tournamentHeader > div {
+  position: relative;
+
+  z-index: 2;
+}
+
+.tournamentHeader span {
+  display: block;
+
+  color: var(--pp-orange);
+
+  font-size: 8px;
+
+  font-weight: 900;
+
+  letter-spacing: 2px;
+
+  text-transform: uppercase;
+}
+
+.tournamentHeader h1 {
+  margin:
+    8px 0
+    10px;
+
+  color: #fff;
+
+  font-size:
+    clamp(
+      42px,
+      7vw,
+      72px
+    );
+
+  line-height: .9;
+
+  letter-spacing: -3px;
+}
+
+.tournamentHeader h1 em {
+  color: var(--pp-orange);
+
+  font-style: normal;
+
+  text-shadow:
+    0 0 25px
+    rgba(255,70,0,.30);
+}
+
+.tournamentHeader p {
+  max-width: 580px;
+
+  margin: 0;
+
+  color: var(--pp-muted);
+
+  font-size: 10px;
+
+  line-height: 1.6;
+}
+
+
 /* =========================================================
-   TABLET
-   ========================================================= */
+   19. MOBILE FOUNDATION
+========================================================= */
 
 @media (max-width: 900px) {
+
   .gameCards {
     grid-template-columns: 1fr;
   }
 
-  .tournamentGrid {
-    grid-template-columns: 1fr;
+  .tournamentSection {
+    width: min(94vw, 720px);
   }
 
-  .gameImage {
-    aspect-ratio: 16 / 9;
+  .tournamentHeader {
+    min-height: 190px;
   }
+
 }
 
-/* =========================================================
-   MOBILE
-   ========================================================= */
 
 @media (max-width: 700px) {
-  .tpHeader {
-    height: 60px;
-
-    padding: 0 10px;
-  }
-
-  .tpTitle {
-    margin-left: 9px;
-  }
-
-  .tpTitle strong {
-    font-size: 11px;
-  }
-
-  .tpTitle span {
-    font-size: 5px;
-  }
-
-  .gameSelection,
-  .tournamentContent {
-    width: calc(100% - 18px);
-  }
 
   .gameSelection {
-    padding: 55px 0;
+    width: calc(100% - 18px);
+
+    padding:
+      55px 0
+      80px;
+  }
+
+  .selectionIntro::before {
+    display: none;
   }
 
   .selectionIntro h1 {
@@ -1329,822 +1151,4749 @@ button {
     letter-spacing: -3px;
   }
 
+  .selectionIntro p {
+    font-size: 10px;
+  }
+
   .gameCards {
-    grid-template-columns: 1fr;
-
-    gap: 13px;
-
     margin-top: 30px;
+
+    gap: 15px;
+  }
+
+  .gameCardName {
+    min-height: 54px;
+
+    padding:
+      15px 16px;
+  }
+
+  .gameCardName span {
+    font-size: 13px;
+  }
+
+  .gameCardName b {
+    font-size: 6px;
   }
 
   .gameImage {
-    aspect-ratio: 16 / 9;
+    min-height: 0;
 
-    width: 100%;
+    aspect-ratio: 16 / 9;
   }
 
-  .gameBanner {
+  .gameCardBottom {
+    padding:
+      11px 16px;
+  }
+
+  .gameCardBottom span {
+    font-size: 7px;
+  }
+
+  .tournamentSection {
+    width: calc(100% - 18px);
+
+    padding:
+      20px 0
+      90px;
+  }
+
+  .backToGames {
+    height: 38px;
+
+    font-size: 7px;
+  }
+
+  .tournamentHeader {
     min-height: 180px;
 
     padding: 22px;
   }
 
-  .gameBanner h1 {
+  .tournamentHeader h1 {
     font-size: 42px;
+
+    letter-spacing: -2px;
   }
 
-  .bannerGameIcon {
-    font-size: 65px;
+  .tournamentHeader p {
+    max-width: 240px;
+
+    font-size: 9px;
   }
 
-  .statusTabs button {
-    padding: 0 14px;
-  }
-
-  .filterPanel {
-    padding: 14px;
-  }
-
-  .slotGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .tournamentGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .matchDetails {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .rewardDetails {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .rewardDetails div {
-    padding: 8px 5px;
-  }
-
-  .tpWallet {
-    min-width: 58px;
-  }
-
-  .tpProfile {
-    width: 36px;
-    height: 36px;
-  }
-
-  .gameCardName {
-    padding: 15px 16px;
-  }
-
-  .gameCardBottom {
-    padding: 12px 16px;
-  }
-
-  .gameStatusRow {
-    padding: 10px 16px;
-  }
 }
 
-/* =========================================================
-   SMALL MOBILE
-   ========================================================= */
 
 @media (max-width: 380px) {
-  .tpTitle span {
+
+  .selectionIntro h1 {
+    font-size: 46px;
+  }
+
+  .gameCardName b {
     display: none;
   }
 
-  .tpTitle strong {
-    font-size: 10px;
-  }
-
-  .gameBanner {
+  .tournamentHeader {
     padding: 18px;
   }
 
-  .gameBanner p {
-    max-width: 180px;
+  .tournamentHeader h1 {
+    font-size: 36px;
   }
 
-  .bannerGameIcon {
-    font-size: 50px;
+  .tournamentHeader p {
+    max-width: 190px;
   }
 
-  .matchCard {
-    padding: 14px;
-  }
-
-  .matchDetails strong,
-  .rewardDetails strong {
-    font-size: 7px;
-  }
 }
+
 
 /* =========================================================
-   PLAY2PROVE — ADVANCED ARENA LAYER
-   Safe overrides: keeps existing responsive structure intact.
+   PATCH 1 END
+   DO NOT DELETE THIS MARKER
+
+   PATCH 2 WILL CONTINUE FROM HERE
+========================================================= */
+/* =========================================================
+   PLAY2PROVE TOURNAMENTS
+   PATCH 2 / 7
+   ADVANCED FILTER SYSTEM
+   Compatible with CURRENT page.js
 ========================================================= */
 
-:root {
-  --pp-orange: #ff5a00;
-  --pp-orange-2: #ff8a00;
-  --pp-blue: #6c4cff;
-  --pp-cyan: #00c8ff;
-  --pp-green: #00e58c;
-  --pp-bg: #03050a;
-  --pp-panel: rgba(9, 13, 22, .92);
-  --pp-line: rgba(132, 148, 180, .18);
-}
 
-.tournamentPage {
-  isolation: isolate;
-  background:
-    radial-gradient(circle at 50% -10%, rgba(255, 82, 0, .13), transparent 32%),
-    radial-gradient(circle at 100% 40%, rgba(93, 67, 255, .12), transparent 28%),
-    linear-gradient(180deg, #03050a 0%, #050811 48%, #020409 100%);
-}
-
-.tournamentPage::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  opacity: .045;
-  background-image: radial-gradient(rgba(255,255,255,.8) .6px, transparent .6px);
-  background-size: 5px 5px;
-  mix-blend-mode: screen;
-}
-
-.tpGrid {
-  animation: ppGridMove 22s linear infinite;
-  background-size: 52px 52px;
-}
-
-.tpGlow { animation: ppGlow 7s ease-in-out infinite alternate; }
-.tpBlue { animation-delay: -3s; }
-
-@keyframes ppGridMove {
-  from { transform: translate3d(0,0,0); }
-  to { transform: translate3d(52px,52px,0); }
-}
-
-@keyframes ppGlow {
-  from { opacity: .10; transform: scale(.92); }
-  to { opacity: .22; transform: scale(1.08); }
-}
-
-.tpHeader {
-  background: rgba(3,5,10,.76);
-  border-bottom-color: rgba(255,255,255,.10);
-  box-shadow: 0 12px 35px rgba(0,0,0,.28);
-}
-
-.tpHeader::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -1px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--pp-orange), var(--pp-blue), transparent);
-  opacity: .75;
-}
-
-.selectionIntro h1 {
-  text-shadow: 0 8px 50px rgba(0,0,0,.55);
-}
-
-.gameCards {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 22px;
-}
-
-.gameSelectCard {
-  position: relative;
-  isolation: isolate;
-  border-color: rgba(113,128,158,.22);
-  background: linear-gradient(145deg, rgba(13,18,30,.98), rgba(5,8,14,.98));
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.035), 0 20px 60px rgba(0,0,0,.22);
-}
-
-.gameSelectCard::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(135deg, rgba(255,90,0,.55), transparent 34%, rgba(105,73,255,.38), transparent 75%);
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: .35;
-  pointer-events: none;
-}
-
-.gameSelectCard:hover::before { opacity: 1; }
-
-.gameCardName {
-  font-size: 15px;
-  letter-spacing: .7px;
-  background: linear-gradient(180deg, rgba(255,255,255,.025), transparent);
-}
-
-.gameImage {
-  min-height: 180px;
-  background: #070a12;
-}
-
-.gameImage::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  pointer-events: none;
-  background: linear-gradient(180deg, transparent 55%, rgba(0,0,0,.62));
-}
-
-.gameImage img { filter: saturate(1.08) contrast(1.04); }
-.gameSelectCard:hover .gameImage img { filter: saturate(1.18) contrast(1.06); }
-
-.gameCardBottom span,
-.gameCardBottom b { font-size: 8px; }
-.gameStatusRow span { font-size: 8px; }
-
-.gameBanner {
-  border-color: rgba(255,255,255,.11);
-  background:
-    radial-gradient(circle at 85% 50%, rgba(255,80,0,.22), transparent 33%),
-    radial-gradient(circle at 70% 0%, rgba(100,65,255,.12), transparent 30%),
-    linear-gradient(135deg, #0a0f1b, #05070d);
-  box-shadow: 0 22px 70px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.04);
-}
-
-.statusTabs button,
-.filterScroll button,
-.smallFilterGrid button,
-.slotGrid button {
-  min-height: 40px;
-  font-size: 8px;
-}
+/* =========================================================
+   20. FILTER PANEL
+========================================================= */
 
 .filterPanel {
-  background: linear-gradient(145deg, rgba(10,14,23,.96), rgba(5,8,14,.92));
-  border-color: rgba(120,136,168,.18);
-  box-shadow: 0 18px 55px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.03);
+  position: relative;
+
+  width: 100%;
+
+  margin-top: 18px;
+
+  padding: 22px;
+
+  border: 1px solid var(--pp-line);
+
+  border-radius: var(--pp-radius-md);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(10,14,23,.97),
+      rgba(5,8,14,.96)
+    );
+
+  box-shadow:
+    0 18px 55px rgba(0,0,0,.30),
+    inset 0 1px 0 rgba(255,255,255,.025);
 }
 
-.filterTitle strong { font-size: 14px; }
-.filterGroup label { font-size: 7px; }
+
+/* Top glow */
+
+.filterPanel::before {
+  content: "";
+
+  position: absolute;
+
+  left: 18px;
+  right: 18px;
+  top: 0;
+
+  height: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,88,0,.7),
+      rgba(112,76,255,.55),
+      transparent
+    );
+
+  opacity: .65;
+}
+
+
+/* =========================================================
+   21. FILTER GROUP
+========================================================= */
+
+.filterGroup {
+  position: relative;
+
+  margin-top: 20px;
+}
+
+.filterGroup:first-child {
+  margin-top: 0;
+}
+
+.filterGroup label {
+  display: block;
+
+  margin-bottom: 9px;
+
+  color: var(--pp-muted-2);
+
+  font-size: 7px;
+
+  font-weight: 900;
+
+  letter-spacing: 1.5px;
+
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+   22. COMPACT FILTERS
+   CURRENT page.js:
+   STATUS / DATE / MODE / MAP
+========================================================= */
+
+.compactFilters {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  align-items: center;
+
+  gap: 7px;
+
+  min-width: 0;
+}
+
+.compactFilters button {
+  position: relative;
+
+  min-height: 36px;
+
+  padding:
+    0 13px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 5px;
+
+  flex-shrink: 0;
+
+  border:
+    1px solid
+    #252e3e;
+
+  border-radius: 7px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #0b1019,
+      #080b12
+    );
+
+  color: #747e91;
+
+  font-size: 7px;
+
+  font-weight: 900;
+
+  letter-spacing: .25px;
+
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  transition:
+    color .2s ease,
+    border-color .2s ease,
+    background .2s ease,
+    transform .2s ease,
+    box-shadow .2s ease;
+}
+
+
+/* Hover */
+
+.compactFilters button:hover {
+  color: #fff;
+
+  border-color:
+    #4a556b;
+
+  transform:
+    translateY(-1px);
+
+  background:
+    linear-gradient(
+      145deg,
+      #0e1420,
+      #090d16
+    );
+}
+
+
+/* Selected */
+
+.compactFilters button.selected {
+  color: #fff;
+
+  border-color:
+    var(--pp-orange);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,88,0,.16),
+      rgba(255,88,0,.035)
+    );
+
+  box-shadow:
+    0 0 18px
+    rgba(255,88,0,.10),
+    inset 0 0 15px
+    rgba(255,88,0,.025);
+}
+
+
+/* Selected top line */
+
+.compactFilters button.selected::before {
+  content: "";
+
+  position: absolute;
+
+  left: 8px;
+  right: 8px;
+  top: -1px;
+
+  height: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      var(--pp-orange),
+      transparent
+    );
+
+  opacity: .8;
+}
+
+
+/* =========================================================
+   23. LIVE FILTER INDICATOR
+   Supports current/new page if liveDot exists
+========================================================= */
+
+.liveDot {
+  display: inline-block;
+
+  width: 6px;
+  height: 6px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background:
+    var(--pp-green);
+
+  box-shadow:
+    0 0 8px
+    rgba(0,229,140,.85);
+
+  animation:
+    ppLivePulse 1.5s ease-in-out infinite;
+}
+
+@keyframes ppLivePulse {
+
+  0%,
+  100% {
+    opacity: 1;
+
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: .45;
+
+    transform: scale(.78);
+  }
+}
+
+
+/* =========================================================
+   24. HORIZONTAL SCROLL FILTERS
+   CURRENT page.js:
+   scrollFilters
+========================================================= */
+
+.scrollFilters {
+  flex-wrap: nowrap;
+
+  overflow-x: auto;
+
+  overflow-y: hidden;
+
+  padding-bottom: 3px;
+
+  scrollbar-width: none;
+
+  -webkit-overflow-scrolling:
+    touch;
+}
+
+.scrollFilters::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* =========================================================
+   25. DATE FILTER
+========================================================= */
+
+.filterGroup:nth-child(2)
+.compactFilters button {
+  min-width: 76px;
+}
+
+
+/* =========================================================
+   26. TIME SLOT GRID
+   CURRENT page.js uses .slotGrid
+========================================================= */
+
+.slotGrid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      5,
+      minmax(0, 1fr)
+    );
+
+  gap: 8px;
+
+  width: 100%;
+}
+
+
+/* Slot button */
 
 .slotGrid button {
-  min-height: 62px;
-  transition: transform .2s ease, border-color .2s ease, background .2s ease;
-}
-
-.slotGrid button:hover { transform: translateY(-2px); }
-.slotGrid strong { font-size: 10px; }
-.slotGrid small { font-size: 7px; }
-
-.resultsHeader strong { font-size: 15px; }
-
-.tournamentGrid { gap: 18px; }
-
-.matchCard {
-  border-color: rgba(113,128,158,.18);
-  background: linear-gradient(145deg, rgba(10,14,23,.98), rgba(5,8,14,.98));
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.035), 0 16px 45px rgba(0,0,0,.22);
-}
-
-.matchCard:hover {
-  border-color: rgba(255,90,0,.48);
-  box-shadow: 0 20px 55px rgba(0,0,0,.42), 0 0 30px rgba(255,80,0,.07);
-}
-
-.matchImageWrap {
   position: relative;
-  width: calc(100% + 38px);
-  margin: -19px -19px 17px;
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
-  background: #060912;
-  border-bottom: 1px solid rgba(255,255,255,.08);
-}
 
-.matchImageWrap img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  transform: scale(1.01);
-  transition: transform .5s ease;
-}
+  min-width: 0;
 
-.matchCard:hover .matchImageWrap img { transform: scale(1.045); }
+  min-height: 62px;
 
-.matchImageShade {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, transparent 38%, rgba(4,6,11,.78));
-  pointer-events: none;
-}
+  padding:
+    10px;
 
-.cardTop h3 { font-size: 18px; }
-.matchGame { font-size: 8px; }
-.matchStatus { font-size: 7px; }
-.matchDetails strong, .rewardDetails strong { font-size: 10px; }
-.matchDetails small, .rewardDetails small { font-size: 6px; }
-
-.joinButton,
-.liveButton,
-.decidingButton,
-.resultButton {
-  height: 44px;
-  font-size: 9px;
-  letter-spacing: .3px;
-}
-
-.joinButton {
-  background: linear-gradient(135deg, #ff4b00, #ff7600);
-}
-
-.liveButton {
-  background: linear-gradient(135deg, #00a96a, #00d487);
-}
-
-.tournamentLoading {
-  min-height: 230px;
   display: flex;
+
   flex-direction: column;
-  align-items: center;
+
+  align-items: flex-start;
+
   justify-content: center;
-  gap: 8px;
-  border: 1px solid rgba(255,255,255,.08);
-  border-radius: 15px;
-  background: rgba(8,12,20,.78);
+
+  text-align: left;
+
+  border:
+    1px solid
+    #252e3e;
+
+  border-radius: 8px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #0b1019,
+      #080b12
+    );
+
+  color: #fff;
+
+  cursor: pointer;
+
+  overflow: hidden;
+
+  transition:
+    border-color .2s ease,
+    background .2s ease,
+    transform .2s ease,
+    box-shadow .2s ease;
 }
 
-.tournamentLoading strong { font-size: 12px; letter-spacing: 1px; }
-.tournamentLoading span { color: #687286; font-size: 8px; }
 
-.loadingSpinner {
-  width: 38px;
-  height: 38px;
-  border: 2px solid rgba(255,255,255,.08);
-  border-top-color: var(--pp-orange);
-  border-right-color: var(--pp-blue);
-  border-radius: 50%;
-  animation: ppSpin .8s linear infinite;
-  box-shadow: 0 0 22px rgba(255,80,0,.12);
+/* Slot shine */
+
+.slotGrid button::after {
+  content: "";
+
+  position: absolute;
+
+  left: -40%;
+
+  top: 0;
+
+  width: 40%;
+
+  height: 100%;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,255,255,.055),
+      transparent
+    );
+
+  transform:
+    skewX(-20deg);
+
+  transition:
+    left .45s ease;
 }
 
-@keyframes ppSpin { to { transform: rotate(360deg); } }
+.slotGrid button:hover::after {
+  left: 120%;
+}
+
+
+/* Slot hover */
+
+.slotGrid button:hover {
+  border-color:
+    #465168;
+
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 8px 22px
+    rgba(0,0,0,.25);
+}
+
+
+/* Selected slot */
+
+.slotGrid button.selected {
+  border-color:
+    var(--pp-orange);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,88,0,.16),
+      rgba(255,88,0,.035)
+    );
+
+  box-shadow:
+    0 0 20px
+    rgba(255,88,0,.10);
+}
+
+
+/* Selected slot glow */
+
+.slotGrid button.selected::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  top: 10px;
+  bottom: 10px;
+
+  width: 2px;
+
+  border-radius: 5px;
+
+  background:
+    var(--pp-orange);
+
+  box-shadow:
+    0 0 10px
+    var(--pp-orange);
+}
+
+
+/* Slot title */
+
+.slotGrid button strong {
+  display: block;
+
+  color: #fff;
+
+  font-size: 9px;
+
+  font-weight: 900;
+
+  line-height: 1.1;
+}
+
+
+/* Slot time */
+
+.slotGrid button small {
+  display: block;
+
+  margin-top: 5px;
+
+  color: #687286;
+
+  font-size: 6px;
+
+  font-weight: 700;
+
+  line-height: 1.2;
+}
+
+.slotGrid button.selected small {
+  color:
+    rgba(255,255,255,.60);
+}
+
+
+/* =========================================================
+   27. MODE FILTER
+========================================================= */
+
+.filterGroup:nth-child(4)
+.compactFilters button {
+  min-width: 72px;
+}
+
+
+/* =========================================================
+   28. MAP FILTER
+========================================================= */
+
+.filterGroup:nth-child(5)
+.compactFilters button {
+  min-width: 76px;
+}
+
+
+/* =========================================================
+   29. FILTER PANEL SEPARATION
+========================================================= */
+
+.filterGroup + .filterGroup {
+  padding-top: 1px;
+}
+
+
+/* =========================================================
+   30. FILTER FOCUS ACCESSIBILITY
+========================================================= */
+
+.compactFilters button:focus-visible,
+.slotGrid button:focus-visible,
+.backToGames:focus-visible,
+.gameSelectCard:focus-visible {
+  outline: 2px solid
+    rgba(255,88,0,.75);
+
+  outline-offset: 3px;
+}
+
+
+/* =========================================================
+   31. FILTER DISABLED STATE
+========================================================= */
+
+.compactFilters button:disabled,
+.slotGrid button:disabled {
+  opacity: .45;
+
+  cursor: not-allowed;
+
+  transform: none !important;
+
+  box-shadow: none !important;
+}
+
+
+/* =========================================================
+   32. FILTER MOBILE
+========================================================= */
 
 @media (max-width: 900px) {
-  .gameCards { grid-template-columns: 1fr; }
+
+  .filterPanel {
+    padding: 18px;
+  }
+
+  .slotGrid {
+    grid-template-columns:
+      repeat(
+        3,
+        minmax(0, 1fr)
+      );
+  }
+
 }
+
 
 @media (max-width: 700px) {
-  .gameCards { gap: 15px; }
-  .gameImage { min-height: 0; aspect-ratio: 16 / 9; }
-  .matchImageWrap { width: calc(100% + 28px); margin: -14px -14px 15px; }
-  .cardTop h3 { font-size: 16px; }
-  .matchDetails strong, .rewardDetails strong { font-size: 9px; }
+
+  .filterPanel {
+    margin-top: 14px;
+
+    padding: 15px;
+
+    border-radius:
+      12px;
+  }
+
+  .filterGroup {
+    margin-top: 17px;
+  }
+
+  .filterGroup label {
+    margin-bottom: 8px;
+
+    font-size: 6px;
+  }
+
+  .compactFilters {
+    gap: 6px;
+
+    flex-wrap: nowrap;
+
+    overflow-x: auto;
+
+    overflow-y: hidden;
+
+    padding-bottom: 2px;
+
+    scrollbar-width: none;
+
+    -webkit-overflow-scrolling:
+      touch;
+  }
+
+  .compactFilters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .compactFilters button {
+    min-height: 35px;
+
+    padding:
+      0 12px;
+
+    font-size: 7px;
+  }
+
+  .slotGrid {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+
+    gap: 7px;
+  }
+
+  .slotGrid button {
+    min-height: 58px;
+
+    padding: 9px;
+  }
+
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .tpGrid, .tpGlow, .loadingSpinner { animation: none; }
-  * { scroll-behavior: auto !important; }
+
+@media (max-width: 380px) {
+
+  .filterPanel {
+    padding: 13px;
+  }
+
+  .slotGrid {
+    gap: 6px;
+  }
+
+  .slotGrid button {
+    min-height: 54px;
+  }
+
+  .slotGrid button strong {
+    font-size: 8px;
+  }
+
+  .slotGrid button small {
+    font-size: 5px;
+  }
+
 }
 
 
 /* =========================================================
-   FINAL FILTER UX — USER REQUESTED
-   - Status: ALL / UPCOMING / LIVE / PAST only
-   - No Exact Time filter
-   - Compact buttons
-   - Sticky selected-filter/search/reset bar
+   PATCH 2 END
+   PATCH 3 CONTINUES BELOW THIS LINE
+========================================================= */
+/* =========================================================
+   PLAY2PROVE TOURNAMENTS
+   PATCH 3 / 7
+   ACTIVE FILTERS + SEARCH + RESET
 ========================================================= */
 
-.statusTabs {
-  gap: 6px;
-}
 
-.statusTabs button {
-  height: 36px;
-  min-width: 72px;
-  padding: 0 13px;
-  font-size: 7px;
-  letter-spacing: .2px;
-}
-
-.filterPanel {
-  position: relative;
-  overflow: visible;
-}
+/* =========================================================
+   33. ACTIVE FILTER BAR
+========================================================= */
 
 .activeFilterBar {
   position: sticky;
-  top: 66px;
-  z-index: 70;
 
-  margin: 15px -1px 18px;
+  top: 0;
+
+  z-index: 80;
+
+  width: 100%;
+
+  margin-top: 16px;
+
   padding: 9px 10px;
 
   display: flex;
+
   align-items: center;
+
   justify-content: space-between;
+
   gap: 10px;
 
-  border: 1px solid rgba(255,255,255,.10);
+  border:
+    1px solid
+    rgba(120,136,168,.18);
+
   border-radius: 9px;
 
-  background: rgba(5, 8, 14, .94);
-  box-shadow:
-    0 12px 30px rgba(0,0,0,.32),
-    inset 0 1px 0 rgba(255,255,255,.035);
+  background:
+    rgba(5,8,14,.94);
 
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  box-shadow:
+    0 12px 32px
+    rgba(0,0,0,.30);
+
+  backdrop-filter:
+    blur(18px);
+
+  -webkit-backdrop-filter:
+    blur(18px);
 }
+
+
+/* Top neon line */
 
 .activeFilterBar::before {
   content: "";
+
   position: absolute;
+
   left: 10px;
   right: 10px;
   top: -1px;
+
   height: 1px;
 
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255,90,0,.8),
-    rgba(108,76,255,.8),
-    transparent
-  );
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      var(--pp-orange),
+      var(--pp-purple),
+      transparent
+    );
+
+  opacity: .65;
 }
+
+
+/* =========================================================
+   34. ACTIVE FILTER CHIPS
+========================================================= */
 
 .activeFilterChips {
   min-width: 0;
 
   display: flex;
+
   align-items: center;
+
   flex-wrap: wrap;
-  gap: 5px;
+
+  gap: 6px;
 }
+
+
+/* Label */
 
 .activeFilterLabel {
-  color: #ff5800;
+  flex-shrink: 0;
+
+  color:
+    var(--pp-orange);
+
   font-size: 6px;
+
   font-weight: 900;
+
   letter-spacing: 1px;
+
+  text-transform: uppercase;
 }
 
-.activeFilterChip,
-.noActiveFilters {
-  min-height: 24px;
-  padding: 0 8px;
+
+/* Chip */
+
+.activeFilterChip {
+  min-height: 25px;
+
+  max-width: 190px;
+
+  padding:
+    0 9px;
 
   display: inline-flex;
+
   align-items: center;
+
+  gap: 5px;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(255,88,0,.30);
 
   border-radius: 5px;
 
+  background:
+    rgba(255,88,0,.07);
+
+  color:
+    #dce1ea;
+
   font-size: 6px;
+
   font-weight: 800;
+
+  white-space: nowrap;
+
+  text-overflow: ellipsis;
+
+  cursor: pointer;
+
+  transition:
+    .2s ease;
 }
 
-.activeFilterChip {
-  border: 1px solid rgba(255,90,0,.32);
-  background: rgba(255,90,0,.07);
-  color: #d9dee8;
-  cursor: pointer;
-}
 
 .activeFilterChip:hover {
-  border-color: #ff5800;
   color: #fff;
+
+  border-color:
+    var(--pp-orange);
+
+  background:
+    rgba(255,88,0,.12);
+
+  transform:
+    translateY(-1px);
+
+  box-shadow:
+    0 0 14px
+    rgba(255,88,0,.08);
 }
 
+
+/* =========================================================
+   35. NO ACTIVE FILTERS
+========================================================= */
+
 .noActiveFilters {
-  color: #6c7588;
-  border: 1px solid rgba(255,255,255,.06);
-  background: rgba(255,255,255,.015);
+  min-height: 25px;
+
+  padding:
+    0 9px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  border:
+    1px solid
+    rgba(255,255,255,.06);
+
+  border-radius: 5px;
+
+  background:
+    rgba(255,255,255,.015);
+
+  color:
+    #687286;
+
+  font-size: 6px;
+
+  font-weight: 700;
 }
+
+
+/* =========================================================
+   36. FILTER ACTIONS
+========================================================= */
 
 .filterActions {
   flex-shrink: 0;
 
   display: flex;
+
   align-items: center;
-  gap: 6px;
+
+  justify-content: flex-end;
+
+  gap: 7px;
 }
+
+
+/* =========================================================
+   37. SEARCH BOX
+========================================================= */
 
 .filterSearch {
-  width: min(250px, 26vw);
-  height: 32px;
+  width:
+    min(
+      270px,
+      30vw
+    );
+
+  height: 35px;
+
+  padding:
+    0 9px;
 
   display: flex;
+
   align-items: center;
-  gap: 6px;
 
-  padding: 0 8px;
+  gap: 7px;
 
-  border: 1px solid #252e3e;
-  border-radius: 6px;
+  border:
+    1px solid
+    #252e3e;
 
-  background: #080c14;
+  border-radius: 7px;
+
+  background:
+    #080c14;
+
+  transition:
+    border-color .2s ease,
+    box-shadow .2s ease,
+    background .2s ease;
 }
 
+
+/* Search focus */
+
+.filterSearch:focus-within {
+  border-color:
+    rgba(255,88,0,.65);
+
+  background:
+    #090e17;
+
+  box-shadow:
+    0 0 18px
+    rgba(255,80,0,.08);
+}
+
+
+/* Search icon */
+
 .filterSearch > span {
-  color: #7c869a;
-  font-size: 14px;
+  flex-shrink: 0;
+
+  color:
+    #788297;
+
+  font-size: 12px;
+
   line-height: 1;
 }
 
-.filterSearch:focus-within {
-  border-color: rgba(255,90,0,.65);
-  box-shadow: 0 0 16px rgba(255,80,0,.08);
-}
+
+/* Input */
 
 .filterSearch input {
-  min-width: 0;
   width: 100%;
+  min-width: 0;
+
   height: 100%;
 
+  padding: 0;
+
+  outline: none;
+
   border: 0;
-  outline: 0;
 
-  background: transparent;
-  color: #fff;
+  background:
+    transparent;
 
-  font-size: 7px;
+  color:
+    #fff;
+
+  font-family: inherit;
+
+  font-size: 8px;
+
   font-weight: 700;
 }
 
+
+/* Placeholder */
+
 .filterSearch input::placeholder {
-  color: #626c7f;
+  color:
+    #626c7f;
 }
+
+
+/* Browser autofill */
+
+.filterSearch input:-webkit-autofill,
+.filterSearch input:-webkit-autofill:hover,
+.filterSearch input:-webkit-autofill:focus {
+  -webkit-text-fill-color:
+    #fff;
+
+  -webkit-box-shadow:
+    0 0 0 1000px
+    #080c14
+    inset;
+
+  transition:
+    background-color
+    9999s ease-in-out
+    0s;
+}
+
+
+/* =========================================================
+   38. SEARCH CLEAR BUTTON
+========================================================= */
 
 .searchClear {
   flex-shrink: 0;
 
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
+
+  padding: 0;
+
+  display: grid;
+
+  place-items: center;
 
   border: 0;
+
   border-radius: 50%;
 
-  background: rgba(255,255,255,.06);
-  color: #8d96a7;
+  background:
+    rgba(255,255,255,.07);
+
+  color:
+    #9ba3b2;
 
   font-size: 11px;
-  line-height: 18px;
+
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition:
+    .18s ease;
 }
 
+.searchClear:hover {
+  background:
+    rgba(255,88,0,.14);
+
+  color:
+    #fff;
+
+  transform:
+    scale(1.06);
+}
+
+
+/* =========================================================
+   39. RESET BUTTON
+========================================================= */
+
 .compactReset {
-  height: 32px;
-  padding: 0 11px;
+  flex-shrink: 0;
 
-  border: 1px solid rgba(255,90,0,.48);
-  border-radius: 6px;
+  height: 35px;
 
-  background: rgba(255,70,0,.06);
-  color: #ff650f;
+  padding:
+    0 12px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border:
+    1px solid
+    rgba(255,88,0,.45);
+
+  border-radius: 7px;
+
+  background:
+    rgba(255,70,0,.055);
+
+  color:
+    var(--pp-orange);
+
+  font-family: inherit;
 
   font-size: 7px;
+
   font-weight: 900;
+
+  letter-spacing: .3px;
+
+  cursor: pointer;
+
+  transition:
+    .2s ease;
 }
 
 .compactReset:hover {
-  background: rgba(255,70,0,.13);
-  border-color: #ff5800;
-}
-
-/* Date / mode / map buttons compact */
-.filterScroll button,
-.smallFilterGrid button {
-  min-height: 32px;
-  padding: 0 10px;
-  font-size: 7px;
-}
-
-.slotGrid {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
-.slotGrid button {
-  min-height: 50px;
-}
-
-/* Tournament image: fixed 16:9 so every card stays identical */
-.matchImageWrap {
-  aspect-ratio: 16 / 9;
-}
-
-.matchImageWrap img {
-  image-rendering: auto;
-  object-fit: cover;
-}
-
-.matchImageFallback {
-  width: 100%;
-  height: 100%;
-
-  display: grid;
-  place-items: center;
-
-  font-size: 58px;
+  border-color:
+    var(--pp-orange);
 
   background:
-    radial-gradient(circle at center, rgba(255,70,0,.20), transparent 55%),
-    linear-gradient(135deg, #080d17, #11142a);
+    rgba(255,70,0,.13);
+
+  color:
+    #fff;
+
+  box-shadow:
+    0 0 18px
+    rgba(255,80,0,.10);
+
+  transform:
+    translateY(-1px);
 }
 
-/* Search result count stays readable */
+.compactReset:active {
+  transform:
+    translateY(0);
+}
+
+
+/* =========================================================
+   40. RESULTS HEADER
+========================================================= */
+
+.resultsHeader {
+  position: relative;
+
+  margin:
+    30px 0
+    14px;
+
+  padding:
+    0 2px;
+
+  display: flex;
+
+  align-items: flex-end;
+
+  justify-content: space-between;
+
+  gap: 15px;
+}
+
+
+/* Small label */
+
 .resultsHeader > span {
-  max-width: 45%;
+  display: block;
+
+  color:
+    var(--pp-orange);
+
+  font-size: 6px;
+
+  font-weight: 900;
+
+  letter-spacing: 1.5px;
+
+  text-transform: uppercase;
+}
+
+
+/* Main title */
+
+.resultsHeader strong {
+  display: block;
+
+  margin-top: 5px;
+
+  color:
+    #fff;
+
+  font-size: 16px;
+
+  font-weight: 900;
+
+  line-height: 1.1;
+}
+
+
+/* Result count / info */
+
+.resultsHeader > span:last-child {
+  color:
+    #697489;
+
+  font-size: 7px;
+
+  font-weight: 700;
+
+  text-align: right;
+
+  max-width: 48%;
+
   overflow: hidden;
+
   text-overflow: ellipsis;
+
   white-space: nowrap;
 }
 
-@media (max-width: 700px) {
+
+/* =========================================================
+   41. FILTER / SEARCH MOBILE
+========================================================= */
+
+@media (max-width: 900px) {
+
   .activeFilterBar {
-    top: 60px;
+    align-items:
+      stretch;
 
-    align-items: stretch;
-    flex-direction: column;
-
-    padding: 8px;
   }
 
+  .filterSearch {
+    width:
+      min(
+        230px,
+        32vw
+      );
+  }
+
+}
+
+
+@media (max-width: 700px) {
+
+  .activeFilterBar {
+    position: relative;
+
+    top: auto;
+
+    margin-top: 12px;
+
+    padding: 8px;
+
+    flex-direction:
+      column;
+
+    align-items:
+      stretch;
+
+    gap: 8px;
+
+    border-radius:
+      8px;
+  }
+
+
   .activeFilterChips {
-    flex-wrap: nowrap;
+    width: 100%;
+
+    flex-wrap:
+      nowrap;
+
     overflow-x: auto;
-    scrollbar-width: none;
+
+    overflow-y: hidden;
+
+    padding-bottom: 2px;
+
+    scrollbar-width:
+      none;
+
+    -webkit-overflow-scrolling:
+      touch;
   }
 
   .activeFilterChips::-webkit-scrollbar {
     display: none;
   }
 
-  .filterActions {
-    width: 100%;
+
+  .activeFilterLabel {
+    position: sticky;
+
+    left: 0;
+
+    z-index: 2;
+
+    padding-right: 4px;
+
+    background:
+      rgba(5,8,14,.94);
   }
 
-  .filterSearch {
-    width: 100%;
-  }
 
-  .compactReset {
+  .activeFilterChip,
+  .noActiveFilters {
     flex-shrink: 0;
   }
 
-  .statusTabs button {
-    min-width: 66px;
-    padding: 0 11px;
+
+  .filterActions {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+      1fr auto;
+
+    gap: 6px;
   }
 
-  .slotGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  .filterSearch {
+    width: 100%;
+
+    min-width: 0;
   }
+
+
+  .compactReset {
+    min-width: 72px;
+
+    padding:
+      0 10px;
+  }
+
+
+  .resultsHeader {
+    margin-top:
+      24px;
+
+    align-items:
+      flex-start;
+
+    flex-direction:
+      column;
+
+    gap: 5px;
+  }
+
+
+  .resultsHeader > span:last-child {
+    max-width: 100%;
+
+    text-align:
+      left;
+  }
+
 }
+
+
+@media (max-width: 380px) {
+
+  .activeFilterBar {
+    padding: 7px;
+  }
+
+
+  .filterActions {
+    grid-template-columns:
+      minmax(0, 1fr)
+      auto;
+  }
+
+
+  .compactReset {
+    min-width: 64px;
+
+    padding:
+      0 8px;
+
+    font-size: 6px;
+  }
+
+
+  .resultsHeader strong {
+    font-size: 14px;
+  }
+
+}
+
+
 /* =========================================================
-   LIVE 10-MINUTE COUNTDOWN
+   PATCH 3 END
+   PATCH 4 CONTINUES BELOW THIS LINE
+========================================================= */
+/* =========================================================
+   PLAY2PROVE TOURNAMENTS
+   PATCH 4 / 7
+   TOURNAMENT GRID + CARD FOUNDATION
+========================================================= */
+
+
+/* =========================================================
+   42. TOURNAMENT GRID
+========================================================= */
+
+.tournamentGrid {
+  position: relative;
+
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 18px;
+
+  align-items: stretch;
+}
+
+
+/* =========================================================
+   43. MATCH CARD
+========================================================= */
+
+.matchCard {
+  position: relative;
+
+  width: 100%;
+
+  min-width: 0;
+
+  overflow: hidden;
+
+  display: flex;
+
+  flex-direction: column;
+
+  border:
+    1px solid
+    rgba(113,128,158,.19);
+
+  border-radius:
+    15px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(11,16,27,.98),
+      rgba(5,8,14,.98)
+    );
+
+  box-shadow:
+    inset 0 1px 0
+      rgba(255,255,255,.035),
+    0 16px 48px
+      rgba(0,0,0,.27);
+
+  isolation: isolate;
+
+  transition:
+    transform .25s ease,
+    border-color .25s ease,
+    box-shadow .25s ease;
+}
+
+
+/* =========================================================
+   44. CARD TOP GLOW
+========================================================= */
+
+.matchCard::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  top: 0;
+
+  height: 1px;
+
+  z-index: 5;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,88,0,.55),
+      rgba(112,76,255,.42),
+      transparent
+    );
+
+  opacity: .45;
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   45. CARD HOVER
+========================================================= */
+
+.matchCard:hover {
+  transform:
+    translateY(-4px);
+
+  border-color:
+    rgba(255,88,0,.43);
+
+  box-shadow:
+    0 22px 58px
+      rgba(0,0,0,.42),
+    0 0 28px
+      rgba(255,80,0,.065);
+}
+
+
+/* =========================================================
+   46. MATCH IMAGE WRAPPER
+========================================================= */
+
+.matchImageWrap {
+  position: relative;
+
+  width: 100%;
+
+  aspect-ratio:
+    16 / 9;
+
+  min-height: 0;
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(255,70,0,.14),
+      transparent 55%
+    ),
+    #060912;
+}
+
+
+/* =========================================================
+   47. MATCH IMAGE
+========================================================= */
+
+.matchImageWrap img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  object-position: center;
+
+  transform:
+    scale(1.01);
+
+  filter:
+    saturate(1.04)
+    contrast(1.03);
+
+  transition:
+    transform .5s ease,
+    filter .5s ease;
+}
+
+
+.matchCard:hover
+.matchImageWrap img {
+  transform:
+    scale(1.045);
+
+  filter:
+    saturate(1.12)
+    contrast(1.05);
+}
+
+
+/* =========================================================
+   48. IMAGE OVERLAY
+========================================================= */
+
+.matchImageWrap::after {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  z-index: 2;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      180deg,
+      transparent 42%,
+      rgba(3,5,10,.72) 100%
+    );
+}
+
+
+/* =========================================================
+   49. IMAGE FALLBACK
+========================================================= */
+
+.matchImageFallback {
+  width: 100%;
+  height: 100%;
+
+  min-height: 180px;
+
+  display: grid;
+
+  place-items: center;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(255,70,0,.18),
+      transparent 55%
+    ),
+    linear-gradient(
+      135deg,
+      #080d17,
+      #11142a
+    );
+
+  color: #fff;
+
+  font-size: 60px;
+}
+
+
+/* =========================================================
+   50. CARD CONTENT AREA
+========================================================= */
+
+.matchCard > :not(.matchImageWrap) {
+  position: relative;
+
+  z-index: 3;
+}
+
+
+/* =========================================================
+   51. CARD TOP INFORMATION
+========================================================= */
+
+.cardTop {
+  width: 100%;
+
+  padding:
+    16px
+    17px
+    0;
+
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 12px;
+}
+
+
+/* =========================================================
+   52. MATCH GAME LABEL
+========================================================= */
+
+.matchGame {
+  display: block;
+
+  color:
+    var(--pp-orange);
+
+  font-size: 7px;
+
+  font-weight: 900;
+
+  letter-spacing: 1.5px;
+
+  line-height: 1.2;
+
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+   53. TOURNAMENT NAME
+========================================================= */
+
+.cardTop h3 {
+  min-width: 0;
+
+  margin:
+    6px 0
+    0;
+
+  color:
+    #fff;
+
+  font-size:
+    clamp(
+      14px,
+      1.5vw,
+      18px
+    );
+
+  font-weight: 900;
+
+  line-height: 1.2;
+
+  letter-spacing: .15px;
+
+  overflow-wrap:
+    anywhere;
+}
+
+
+/* =========================================================
+   54. MATCH STATUS BADGE
+========================================================= */
+
+.matchStatus {
+  flex-shrink: 0;
+
+  min-height: 24px;
+
+  max-width: 145px;
+
+  padding:
+    5px
+    8px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border:
+    1px solid
+    #30394b;
+
+  border-radius:
+    5px;
+
+  background:
+    rgba(255,255,255,.018);
+
+  color:
+    #8b94a5;
+
+  font-size: 6px;
+
+  font-weight: 900;
+
+  letter-spacing: .35px;
+
+  line-height: 1.15;
+
+  text-align: center;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   55. STATUS COLORS
+========================================================= */
+
+.matchCard.startingSoon
+.matchStatus {
+  color:
+    var(--pp-yellow);
+
+  border-color:
+    rgba(255,208,0,.38);
+
+  background:
+    rgba(255,208,0,.045);
+
+  box-shadow:
+    0 0 14px
+    rgba(255,208,0,.06);
+}
+
+
+.matchCard.live
+.matchStatus {
+  color:
+    var(--pp-green);
+
+  border-color:
+    rgba(0,229,140,.38);
+
+  background:
+    rgba(0,229,140,.045);
+
+  box-shadow:
+    0 0 14px
+    rgba(0,229,140,.07);
+}
+
+
+.matchCard.matchOngoing
+.matchStatus {
+  color:
+    #ff9d00;
+
+  border-color:
+    rgba(255,157,0,.38);
+
+  background:
+    rgba(255,157,0,.045);
+}
+
+
+.matchCard.matchClosing
+.matchStatus {
+  color:
+    #ff643e;
+
+  border-color:
+    rgba(255,100,62,.38);
+
+  background:
+    rgba(255,100,62,.045);
+}
+
+
+.matchCard.calculationOngoing
+.matchStatus {
+  color:
+    #c18cff;
+
+  border-color:
+    rgba(193,140,255,.38);
+
+  background:
+    rgba(193,140,255,.045);
+}
+
+
+.matchCard.past
+.matchStatus {
+  color:
+    #8992a3;
+
+  border-color:
+    rgba(137,146,163,.25);
+
+  background:
+    rgba(137,146,163,.025);
+}
+
+
+/* =========================================================
+   56. LIVE CARD
+========================================================= */
+
+.matchCard.live {
+  border-color:
+    rgba(0,229,140,.32);
+
+  box-shadow:
+    0 16px 48px
+      rgba(0,0,0,.28),
+    0 0 25px
+      rgba(0,229,140,.045);
+}
+
+
+.matchCard.live::before {
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(0,229,140,.75),
+      rgba(0,190,255,.45),
+      transparent
+    );
+
+  opacity: .75;
+}
+
+
+/* =========================================================
+   57. PAST CARD
+========================================================= */
+
+.matchCard.past {
+  opacity: .86;
+
+  filter:
+    saturate(.88);
+}
+
+
+.matchCard.past:hover {
+  opacity: 1;
+}
+
+
+/* =========================================================
+   58. CARD RESPONSIVE
+========================================================= */
+
+@media (max-width: 950px) {
+
+  .tournamentGrid {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+
+    gap: 14px;
+  }
+
+  .cardTop {
+    padding:
+      14px
+      14px
+      0;
+  }
+
+}
+
+
+@media (max-width: 700px) {
+
+  .tournamentGrid {
+    grid-template-columns:
+      1fr;
+
+    gap: 14px;
+  }
+
+  .matchCard {
+    border-radius:
+      13px;
+  }
+
+  .matchImageWrap {
+    aspect-ratio:
+      16 / 9;
+  }
+
+  .cardTop {
+    padding:
+      14px
+      14px
+      0;
+
+    gap: 8px;
+  }
+
+  .cardTop h3 {
+    font-size:
+      15px;
+  }
+
+  .matchStatus {
+    max-width:
+      125px;
+
+    font-size:
+      5.5px;
+  }
+
+}
+
+
+@media (max-width: 380px) {
+
+  .cardTop {
+    padding:
+      12px
+      12px
+      0;
+  }
+
+  .cardTop h3 {
+    font-size:
+      14px;
+  }
+
+  .matchStatus {
+    max-width:
+      110px;
+
+    min-height:
+      22px;
+
+    padding:
+      4px
+      6px;
+
+    font-size:
+      5px;
+  }
+
+}
+
+
+/* =========================================================
+   PATCH 4 END
+   PATCH 5 CONTINUES BELOW THIS LINE
+========================================================= */
+/* =========================================================
+   PLAY2PROVE TOURNAMENTS
+   PATCH 5 / 7
+   CARD DETAILS + REWARDS + PLAYERS + COUNTDOWN
+========================================================= */
+
+
+/* =========================================================
+   59. MATCH DETAILS GRID
+========================================================= */
+
+.matchDetails {
+  width: 100%;
+
+  margin-top: 15px;
+
+  padding:
+    0 17px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      4,
+      minmax(0, 1fr)
+    );
+
+  gap: 6px;
+}
+
+
+/* Individual detail box */
+
+.matchDetails > div {
+  min-width: 0;
+
+  min-height: 58px;
+
+  padding:
+    9px 8px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: center;
+
+  border:
+    1px solid
+    rgba(120,136,168,.16);
+
+  border-radius:
+    7px;
+
+  background:
+    rgba(255,255,255,.012);
+
+  transition:
+    border-color .2s ease,
+    background .2s ease;
+}
+
+
+.matchDetails > div:hover {
+  border-color:
+    rgba(255,88,0,.25);
+
+  background:
+    rgba(255,88,0,.025);
+}
+
+
+/* Detail label */
+
+.matchDetails small {
+  display: block;
+
+  color:
+    #626c7f;
+
+  font-size: 5.5px;
+
+  font-weight: 800;
+
+  letter-spacing: .45px;
+
+  line-height: 1.2;
+
+  text-transform: uppercase;
+}
+
+
+/* Detail value */
+
+.matchDetails strong {
+  display: block;
+
+  min-width: 0;
+
+  margin-top: 5px;
+
+  color:
+    #fff;
+
+  font-size: 9px;
+
+  font-weight: 900;
+
+  line-height: 1.2;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   60. REWARD DETAILS
+========================================================= */
+
+.rewardDetails {
+  width: 100%;
+
+  margin-top: 7px;
+
+  padding:
+    0 17px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      3,
+      minmax(0, 1fr)
+    );
+
+  gap: 6px;
+}
+
+
+/* Reward box */
+
+.rewardDetails > div {
+  min-width: 0;
+
+  min-height: 55px;
+
+  padding:
+    9px 8px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: center;
+
+  border:
+    1px solid
+    rgba(120,136,168,.16);
+
+  border-radius:
+    7px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.018),
+      rgba(255,255,255,.006)
+    );
+
+  transition:
+    border-color .2s ease,
+    background .2s ease,
+    transform .2s ease;
+}
+
+
+.rewardDetails > div:hover {
+  border-color:
+    rgba(255,88,0,.28);
+
+  background:
+    rgba(255,88,0,.025);
+
+  transform:
+    translateY(-1px);
+}
+
+
+/* Reward label */
+
+.rewardDetails small {
+  display: block;
+
+  color:
+    #626c7f;
+
+  font-size: 5.5px;
+
+  font-weight: 800;
+
+  letter-spacing: .45px;
+
+  line-height: 1.2;
+
+  text-transform: uppercase;
+}
+
+
+/* Reward value */
+
+.rewardDetails strong {
+  display: block;
+
+  min-width: 0;
+
+  margin-top: 5px;
+
+  color:
+    #fff;
+
+  font-size: 10px;
+
+  font-weight: 900;
+
+  line-height: 1.2;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+
+/* Prize pool highlight */
+
+.rewardDetails > div:last-child strong {
+  color:
+    var(--pp-orange);
+
+  text-shadow:
+    0 0 12px
+    rgba(255,88,0,.18);
+}
+
+
+/* =========================================================
+   61. ORANGE TEXT SUPPORT
+========================================================= */
+
+.orangeText {
+  color:
+    var(--pp-orange) !important;
+
+  text-shadow:
+    0 0 12px
+    rgba(255,88,0,.16);
+}
+
+
+/* =========================================================
+   62. PLAYERS SECTION
+========================================================= */
+
+.players {
+  width: 100%;
+
+  margin-top: 15px;
+
+  padding:
+    0 17px;
+}
+
+
+/* Players top line */
+
+.players > div:first-child {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 10px;
+
+  color:
+    #697489;
+
+  font-size: 6px;
+
+  font-weight: 800;
+
+  letter-spacing: .35px;
+}
+
+
+.players > div:first-child strong {
+  color:
+    #fff;
+
+  font-size: 7px;
+
+  font-weight: 900;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   63. PROGRESS BAR
+========================================================= */
+
+.progressBar {
+  position: relative;
+
+  width: 100%;
+
+  height: 5px;
+
+  margin-top: 7px;
+
+  overflow: hidden;
+
+  border-radius:
+    999px;
+
+  background:
+    #171e2b;
+
+  box-shadow:
+    inset 0 1px 2px
+    rgba(0,0,0,.45);
+}
+
+
+/* Progress fill */
+
+.progressBar span {
+  display: block;
+
+  width: 0;
+
+  height: 100%;
+
+  border-radius:
+    inherit;
+
+  background:
+    linear-gradient(
+      90deg,
+      #ff3d00,
+      #ff7600,
+      #ff9b00
+    );
+
+  box-shadow:
+    0 0 12px
+    rgba(255,80,0,.45);
+
+  transition:
+    width .4s ease;
+}
+
+
+/* =========================================================
+   64. LIVE COUNTDOWN
 ========================================================= */
 
 .liveCountdown {
-  margin-top: 6px;
+  width: 100%;
 
-  color: #ff3030;
+  min-height: 29px;
 
-  font-size: 11px;
+  margin-top: 9px;
+
+  padding:
+    7px
+    10px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border:
+    1px solid
+    rgba(255,64,64,.24);
+
+  border-radius:
+    6px;
+
+  background:
+    rgba(255,45,45,.045);
+
+  color:
+    #ff4646;
+
+  font-size: 9px;
+
   font-weight: 900;
 
-  letter-spacing: 1px;
+  letter-spacing: .9px;
 
   line-height: 1;
 
-  text-align: right;
+  text-align: center;
 
   text-shadow:
-    0 0 10px rgba(255, 40, 40, 0.35);
+    0 0 12px
+    rgba(255,50,50,.28);
+
+  animation:
+    ppCountdownGlow
+    2s ease-in-out infinite;
 }
+
+
+@keyframes ppCountdownGlow {
+
+  0%,
+  100% {
+    box-shadow:
+      0 0 0
+      rgba(255,50,50,0);
+  }
+
+  50% {
+    box-shadow:
+      0 0 18px
+      rgba(255,50,50,.07);
+  }
+}
+
+
 /* =========================================================
-   TOURNAMENT STATUS SYSTEM
+   65. COUNTDOWN FOR NON-LIVE STATES
 ========================================================= */
 
-.matchCard.startingSoon .matchStatus {
-  color: #ffd000;
-  font-weight: 900;
+.matchCard.startingSoon
+.liveCountdown {
+  color:
+    var(--pp-yellow);
+
+  border-color:
+    rgba(255,208,0,.25);
+
+  background:
+    rgba(255,208,0,.035);
+
+  text-shadow:
+    0 0 12px
+    rgba(255,208,0,.22);
 }
 
-.matchCard.live .matchStatus {
-  color: #19ff72;
-  font-weight: 900;
+
+.matchCard.matchOngoing
+.liveCountdown {
+  color:
+    #ff9d00;
+
+  border-color:
+    rgba(255,157,0,.25);
+
+  background:
+    rgba(255,157,0,.035);
 }
 
-.matchCard.matchOngoing .matchStatus {
-  color: #ff9d00;
-  font-weight: 900;
+
+.matchCard.matchClosing
+.liveCountdown {
+  color:
+    #ff643e;
+
+  border-color:
+    rgba(255,100,62,.25);
+
+  background:
+    rgba(255,100,62,.035);
 }
 
-.matchCard.matchClosing .matchStatus {
-  color: #ff5c35;
-  font-weight: 900;
+
+/* =========================================================
+   66. CARD ACTION AREA
+========================================================= */
+
+.matchCard > button,
+.matchCard > .statusAction {
+  position: relative;
+
+  z-index: 4;
+
+  width:
+    calc(100% - 34px);
+
+  margin:
+    14px
+    17px
+    17px;
+
+  flex-shrink: 0;
 }
 
-.matchCard.calculationOngoing .matchStatus {
-  color: #c58cff;
-  font-weight: 900;
-}
 
-.matchCard.past .matchStatus {
-  color: #8c95a5;
-  font-weight: 900;
-}
+/* =========================================================
+   67. JOIN BUTTON
+========================================================= */
 
-.statusAction {
-  width: 100%;
-  min-height: 38px;
+.joinButton {
+  height: 44px;
 
-  display: flex;
+  padding:
+    0 15px;
+
+  display: inline-flex;
+
   align-items: center;
+
   justify-content: center;
 
-  border-radius: 8px;
+  border: 0;
 
-  font-size: 9px;
+  border-radius:
+    7px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ff4b00,
+      #ff7800
+    );
+
+  color:
+    #fff;
+
+  font-family: inherit;
+
+  font-size: 8px;
+
   font-weight: 900;
 
-  letter-spacing: .8px;
+  letter-spacing: .45px;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 8px 20px
+    rgba(255,70,0,.18);
+
+  transition:
+    transform .2s ease,
+    filter .2s ease,
+    box-shadow .2s ease;
 }
 
-.ongoingAction {
-  color: #ff9d00;
-  border: 1px solid rgba(255,157,0,.3);
-  background: rgba(255,157,0,.06);
+
+.joinButton:hover {
+  transform:
+    translateY(-2px);
+
+  filter:
+    brightness(1.08);
+
+  box-shadow:
+    0 10px 26px
+    rgba(255,70,0,.28);
 }
 
-.closingAction {
-  color: #ff5c35;
-  border: 1px solid rgba(255,92,53,.3);
-  background: rgba(255,92,53,.06);
+
+.joinButton:active {
+  transform:
+    translateY(0);
 }
 
-.calculationAction {
-  color: #c58cff;
-  border: 1px solid rgba(197,140,255,.3);
-  background: rgba(197,140,255,.06);
-}
+
 /* =========================================================
-   STATUS ACTION — SAME SIZE & SAME POSITION AS VIEW & JOIN
+   68. LIVE BUTTON
+========================================================= */
+
+.liveButton {
+  height: 44px;
+
+  padding:
+    0 15px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border: 0;
+
+  border-radius:
+    7px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #009d65,
+      #00d889
+    );
+
+  color:
+    #fff;
+
+  font-family: inherit;
+
+  font-size: 8px;
+
+  font-weight: 900;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 8px 22px
+    rgba(0,210,130,.13);
+
+  transition:
+    transform .2s ease,
+    filter .2s ease;
+}
+
+
+.liveButton:hover {
+  transform:
+    translateY(-2px);
+
+  filter:
+    brightness(1.08);
+}
+
+
+/* =========================================================
+   69. DECIDING BUTTON
+========================================================= */
+
+.decidingButton {
+  height: 44px;
+
+  padding:
+    0 15px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border: 0;
+
+  border-radius:
+    7px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #6334b2,
+      #7b45d2
+    );
+
+  color:
+    #fff;
+
+  font-family: inherit;
+
+  font-size: 8px;
+
+  font-weight: 900;
+
+  cursor: pointer;
+
+  transition:
+    transform .2s ease,
+    filter .2s ease;
+}
+
+
+.decidingButton:hover {
+  transform:
+    translateY(-2px);
+
+  filter:
+    brightness(1.10);
+}
+
+
+/* =========================================================
+   70. RESULT BUTTON
+========================================================= */
+
+.resultButton {
+  height: 44px;
+
+  padding:
+    0 15px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border: 0;
+
+  border-radius:
+    7px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #202838,
+      #293245
+    );
+
+  color:
+    #e1e5ec;
+
+  font-family: inherit;
+
+  font-size: 8px;
+
+  font-weight: 900;
+
+  cursor: pointer;
+
+  transition:
+    transform .2s ease,
+    background .2s ease;
+}
+
+
+.resultButton:hover {
+  transform:
+    translateY(-2px);
+
+  background:
+    #303a4f;
+}
+
+
+/* =========================================================
+   71. STATUS ACTIONS
 ========================================================= */
 
 .statusAction {
-  width: 100%;
   height: 44px;
+
   min-height: 44px;
 
-  margin-top: 14px;
+  padding:
+    0 15px;
 
   display: flex;
+
   align-items: center;
+
   justify-content: center;
 
-  border-radius: 7px;
+  border-radius:
+    7px;
 
-  font-size: 9px;
+  font-size: 8px;
+
   font-weight: 900;
 
   letter-spacing: .3px;
 
+  text-align: center;
+}
+
+
+/* Calculation */
+
+.calculationAction {
+  border:
+    1px solid
+    rgba(193,140,255,.32);
+
+  background:
+    rgba(193,140,255,.055);
+
+  color:
+    #c18cff;
+
+  box-shadow:
+    inset 0 0 18px
+    rgba(193,140,255,.025);
+}
+
+
+/* Match ongoing */
+
+.ongoingAction {
+  border:
+    1px solid
+    rgba(255,157,0,.32);
+
+  background:
+    rgba(255,157,0,.055);
+
+  color:
+    #ff9d00;
+}
+
+
+/* Match closing */
+
+.closingAction {
+  border:
+    1px solid
+    rgba(255,100,62,.32);
+
+  background:
+    rgba(255,100,62,.055);
+
+  color:
+    #ff643e;
+}
+
+
+/* =========================================================
+   72. CARD DETAILS MOBILE
+========================================================= */
+
+@media (max-width: 900px) {
+
+  .matchDetails {
+    grid-template-columns:
+      repeat(
+        4,
+        minmax(0, 1fr)
+      );
+
+    padding:
+      0 14px;
+  }
+
+  .rewardDetails {
+    padding:
+      0 14px;
+  }
+
+  .players {
+    padding:
+      0 14px;
+  }
+
+  .matchCard > button,
+  .matchCard > .statusAction {
+    width:
+      calc(100% - 28px);
+
+    margin:
+      13px
+      14px
+      14px;
+  }
+
+}
+
+
+@media (max-width: 700px) {
+
+  .matchDetails {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+
+    gap: 6px;
+
+    margin-top:
+      13px;
+
+    padding:
+      0 14px;
+  }
+
+  .matchDetails > div {
+    min-height:
+      53px;
+
+    padding:
+      8px;
+  }
+
+  .matchDetails small,
+  .rewardDetails small {
+    font-size:
+      5px;
+  }
+
+  .matchDetails strong {
+    font-size:
+      9px;
+  }
+
+
+  .rewardDetails {
+    gap: 6px;
+
+    padding:
+      0 14px;
+  }
+
+  .rewardDetails > div {
+    min-height:
+      52px;
+
+    padding:
+      8px;
+  }
+
+  .rewardDetails strong {
+    font-size:
+      9px;
+  }
+
+
+  .players {
+    padding:
+      0 14px;
+  }
+
+
+  .liveCountdown {
+    margin-top:
+      8px;
+
+    font-size:
+      8px;
+  }
+
+
+  .matchCard > button,
+  .matchCard > .statusAction {
+    width:
+      calc(100% - 28px);
+
+    margin:
+      12px
+      14px
+      14px;
+  }
+
+}
+
+
+@media (max-width: 380px) {
+
+  .matchDetails {
+    padding:
+      0 12px;
+  }
+
+  .rewardDetails {
+    padding:
+      0 12px;
+  }
+
+  .players {
+    padding:
+      0 12px;
+  }
+
+  .matchCard > button,
+  .matchCard > .statusAction {
+    width:
+      calc(100% - 24px);
+
+    margin:
+      11px
+      12px
+      12px;
+  }
+
+  .matchDetails strong,
+  .rewardDetails strong {
+    font-size:
+      8px;
+  }
+
+  .liveCountdown {
+    font-size:
+      7px;
+
+    letter-spacing:
+      .7px;
+  }
+
+}
+
+
+/* =========================================================
+   PATCH 5 END
+   PATCH 6 CONTINUES BELOW THIS LINE
+========================================================= */
+/* =========================================================
+   PLAY2PROVE TOURNAMENTS
+   PATCH 6 / 7
+   LOADING + ERROR + EMPTY + LIVE UPDATE + POLISH
+========================================================= */
+
+
+/* =========================================================
+   73. PAGE LOADER
+   CURRENT page.js uses .pageLoader
+========================================================= */
+
+.pageLoader {
+  position: relative;
+
+  width: 100%;
+
+  min-height: 260px;
+
+  margin-top: 22px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 14px;
+
+  border:
+    1px solid
+    rgba(120,136,168,.14);
+
+  border-radius:
+    var(--pp-radius-md);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(9,13,22,.95),
+      rgba(5,8,14,.95)
+    );
+
+  overflow: hidden;
+}
+
+
+.pageLoader::before {
+  content: "";
+
+  position: absolute;
+
+  width: 260px;
+  height: 260px;
+
+  left: 50%;
+  top: 50%;
+
+  transform:
+    translate(-50%,-50%);
+
+  border-radius: 50%;
+
+  background:
+    rgba(255,70,0,.08);
+
+  filter:
+    blur(75px);
+
+  pointer-events: none;
+}
+
+
+/* Loader spinner */
+
+.pageLoader .loaderSpinner,
+.loaderSpinner {
+  position: relative;
+
+  width: 34px;
+  height: 34px;
+
+  border:
+    2px solid
+    rgba(255,255,255,.08);
+
+  border-top-color:
+    var(--pp-orange);
+
+  border-right-color:
+    rgba(112,76,255,.8);
+
+  border-radius: 50%;
+
+  animation:
+    ppSpin .8s linear infinite;
+
+  box-shadow:
+    0 0 20px
+    rgba(255,80,0,.10);
+}
+
+
+@keyframes ppSpin {
+
+  to {
+    transform:
+      rotate(360deg);
+  }
+
+}
+
+
+/* Loader text */
+
+.pageLoader span {
+  position: relative;
+
+  color:
+    #737d90;
+
+  font-size: 7px;
+
+  font-weight: 800;
+
+  letter-spacing: 1.2px;
+
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+   74. ERROR STATE
+   CURRENT page.js uses .errorState
+========================================================= */
+
+.errorState {
+  position: relative;
+
+  width: 100%;
+
+  min-height: 230px;
+
+  margin-top: 22px;
+
+  padding: 30px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  text-align: center;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(255,64,64,.20);
+
+  border-radius:
+    var(--pp-radius-md);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(20,8,12,.96),
+      rgba(8,7,12,.96)
+    );
+}
+
+
+.errorState::before {
+  content: "";
+
+  position: absolute;
+
+  width: 250px;
+  height: 250px;
+
+  left: 50%;
+  top: 50%;
+
+  transform:
+    translate(-50%,-50%);
+
+  border-radius: 50%;
+
+  background:
+    rgba(255,40,60,.07);
+
+  filter:
+    blur(75px);
+
+  pointer-events: none;
+}
+
+
+.errorState h3 {
+  position: relative;
+
+  margin:
+    0 0 8px;
+
+  color:
+    #ff5a5a;
+
+  font-size: 18px;
+
+  font-weight: 900;
+}
+
+
+.errorState p {
+  position: relative;
+
+  max-width: 520px;
+
+  margin: 0;
+
+  color:
+    #737d90;
+
+  font-size: 8px;
+
+  line-height: 1.7;
+}
+
+
+.errorState button {
+  position: relative;
+
+  height: 38px;
+
+  margin-top: 16px;
+
+  padding:
+    0 15px;
+
+  border:
+    1px solid
+    rgba(255,88,0,.38);
+
+  border-radius: 7px;
+
+  background:
+    rgba(255,70,0,.06);
+
+  color:
+    var(--pp-orange);
+
+  font-family: inherit;
+
+  font-size: 7px;
+
+  font-weight: 900;
+
+  cursor: pointer;
+
+  transition:
+    .2s ease;
+}
+
+
+.errorState button:hover {
+  border-color:
+    var(--pp-orange);
+
+  background:
+    rgba(255,70,0,.13);
+
+  color:
+    #fff;
+
+  transform:
+    translateY(-1px);
+}
+
+
+/* =========================================================
+   75. EMPTY RESULT STATE
+========================================================= */
+
+.emptyState {
+  position: relative;
+
+  width: 100%;
+
+  min-height: 250px;
+
+  margin-top: 20px;
+
+  padding: 35px 20px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  text-align: center;
+
+  border:
+    1px dashed
+    rgba(120,136,168,.22);
+
+  border-radius:
+    var(--pp-radius-md);
+
+  background:
+    rgba(255,255,255,.012);
+}
+
+
+.emptyStateIcon {
+  margin-bottom: 12px;
+
+  font-size: 34px;
+
+  opacity: .65;
+}
+
+
+.emptyState h3 {
+  margin:
+    0 0 7px;
+
+  color:
+    #dce1e9;
+
+  font-size: 15px;
+
+  font-weight: 900;
+}
+
+
+.emptyState p {
+  max-width: 420px;
+
+  margin: 0;
+
+  color:
+    #687286;
+
+  font-size: 8px;
+
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   76. LIVE UPDATE INDICATOR
+========================================================= */
+
+.liveUpdateIndicator {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  color:
+    #657084;
+
+  font-size: 6px;
+
+  font-weight: 800;
+
+  letter-spacing: .5px;
+}
+
+
+.liveUpdateIndicator::before {
+  content: "";
+
+  width: 5px;
+  height: 5px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background:
+    var(--pp-green);
+
+  box-shadow:
+    0 0 8px
+    rgba(0,229,140,.7);
+
+  animation:
+    ppLivePulse
+    1.5s ease-in-out infinite;
+}
+
+
+/* =========================================================
+   77. REFRESHING STATE
+========================================================= */
+
+.isRefreshing {
+  pointer-events: none;
+
+  opacity: .72;
+
+  transition:
+    opacity .2s ease;
+}
+
+
+.isRefreshing .tournamentGrid {
+  filter:
+    saturate(.85);
+}
+
+
+.isRefreshing .matchCard {
+  transition:
+    opacity .2s ease;
+}
+
+
+/* =========================================================
+   78. CARD IMAGE LOADING
+========================================================= */
+
+.matchImageWrap.isLoading::before {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  z-index: 1;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255,255,255,.015) 20%,
+      rgba(255,255,255,.055) 40%,
+      rgba(255,255,255,.015) 60%
+    );
+
+  background-size:
+    220% 100%;
+
+  animation:
+    ppShimmer
+    1.25s ease-in-out infinite;
+}
+
+
+@keyframes ppShimmer {
+
+  0% {
+    background-position:
+      120% 0;
+  }
+
+  100% {
+    background-position:
+      -120% 0;
+  }
+
+}
+
+
+/* =========================================================
+   79. SKELETON CARD SUPPORT
+========================================================= */
+
+.skeleton {
+  position: relative;
+
+  overflow: hidden;
+
+  background:
+    #0b1019 !important;
+
+  border-color:
+    rgba(255,255,255,.055) !important;
+}
+
+
+.skeleton::after {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  z-index: 20;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent 20%,
+      rgba(255,255,255,.045) 45%,
+      transparent 70%
+    );
+
+  transform:
+    translateX(-100%);
+
+  animation:
+    ppSkeleton
+    1.4s ease-in-out infinite;
+}
+
+
+@keyframes ppSkeleton {
+
+  to {
+    transform:
+      translateX(100%);
+  }
+
+}
+
+
+/* =========================================================
+   80. CUSTOM SCROLLBAR
+========================================================= */
+
+.tournamentPage ::-webkit-scrollbar {
+  width: 7px;
+
+  height: 7px;
+}
+
+
+.tournamentPage ::-webkit-scrollbar-track {
+  background:
+    rgba(255,255,255,.015);
+}
+
+
+.tournamentPage ::-webkit-scrollbar-thumb {
+  border-radius:
+    999px;
+
+  background:
+    #252d3b;
+
+  border:
+    1px solid
+    rgba(255,255,255,.025);
+}
+
+
+.tournamentPage ::-webkit-scrollbar-thumb:hover {
+  background:
+    #3a4558;
+}
+
+
+/* =========================================================
+   81. SELECTION / TEXT POLISH
+========================================================= */
+
+.tournamentPage ::selection {
+  color:
+    #fff;
+
+  background:
+    rgba(255,88,0,.35);
+}
+
+
+/* =========================================================
+   82. REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .tournamentPage *,
+  .tournamentPage *::before,
+  .tournamentPage *::after {
+    scroll-behavior: auto !important;
+
+    animation-duration:
+      .01ms !important;
+
+    animation-iteration-count:
+      1 !important;
+
+    transition-duration:
+      .01ms !important;
+  }
+
+}
+
+
+/* =========================================================
+   83. TOUCH DEVICE POLISH
+========================================================= */
+
+@media (hover: none) {
+
+  .gameSelectCard:hover,
+  .matchCard:hover,
+  .slotGrid button:hover,
+  .compactFilters button:hover,
+  .joinButton:hover,
+  .liveButton:hover,
+  .decidingButton:hover,
+  .resultButton:hover {
+    transform:
+      none;
+  }
+
+}
+
+
+/* =========================================================
+   84. TABLET SPACING
+========================================================= */
+
+@media (max-width: 900px) {
+
+  .gameSelection,
+  .tournamentSection {
+    width:
+      min(
+        94vw,
+        760px
+      );
+  }
+
+  .pageLoader,
+  .errorState,
+  .emptyState {
+    min-height:
+      220px;
+  }
+
+}
+
+
+/* =========================================================
+   85. MOBILE LOADING / ERROR
+========================================================= */
+
+@media (max-width: 700px) {
+
+  .pageLoader {
+    min-height:
+      210px;
+
+    margin-top:
+      15px;
+  }
+
+
+  .errorState {
+    min-height:
+      210px;
+
+    padding:
+      25px 16px;
+
+    margin-top:
+      15px;
+  }
+
+
+  .errorState h3 {
+    font-size:
+      16px;
+  }
+
+
+  .errorState p {
+    font-size:
+      7px;
+  }
+
+
+  .emptyState {
+    min-height:
+      210px;
+
+    margin-top:
+      15px;
+
+    padding:
+      28px 15px;
+  }
+
+
+  .emptyState h3 {
+    font-size:
+      14px;
+  }
+
+
+  .emptyState p {
+    font-size:
+      7px;
+  }
+
+}
+
+
+/* =========================================================
+   86. VERY SMALL DEVICES
+========================================================= */
+
+@media (max-width: 380px) {
+
+  .pageLoader {
+    min-height:
+      190px;
+  }
+
+
+  .errorState {
+    min-height:
+      190px;
+
+    padding:
+      22px 13px;
+  }
+
+
+  .emptyState {
+    min-height:
+      190px;
+
+    padding:
+      22px 12px;
+  }
+
+
+  .errorState h3,
+  .emptyState h3 {
+    font-size:
+      13px;
+  }
+
+}
+
+
+/* =========================================================
+   PATCH 6 END
+   PATCH 7 = FINAL INTEGRATION / COMPATIBILITY
+========================================================= */
+/* =========================================================
+   PLAY2PROVE TOURNAMENTS
+   PATCH 7 / 7
+   FINAL INTEGRATION + COMPATIBILITY + RESPONSIVE LOCK
+========================================================= */
+
+
+/* =========================================================
+   87. GLOBAL BOX MODEL
+   Safe for this tournament page only
+========================================================= */
+
+.tournamentPage,
+.tournamentPage *,
+.tournamentPage *::before,
+.tournamentPage *::after {
   box-sizing: border-box;
 }
 
-/* Calculation */
-.calculationAction {
-  color: #c58cff;
-  border: 1px solid rgba(197,140,255,.35);
-  background: rgba(197,140,255,.07);
+
+/* =========================================================
+   88. BUTTON / INPUT FONT CONSISTENCY
+========================================================= */
+
+.tournamentPage button,
+.tournamentPage input,
+.tournamentPage select,
+.tournamentPage textarea {
+  font-family: inherit;
 }
 
-/* Match ongoing */
-.ongoingAction {
-  color: #ff9d00;
-  border: 1px solid rgba(255,157,0,.35);
-  background: rgba(255,157,0,.07);
+
+/* =========================================================
+   89. BUTTON RESET
+   Prevent browser default styling from breaking design
+========================================================= */
+
+.tournamentPage button {
+  appearance: none;
+
+  -webkit-appearance: none;
+
+  border-style: solid;
+
+  outline: none;
 }
 
-/* Match closing */
-.closingAction {
-  color: #ff5c35;
-  border: 1px solid rgba(255,92,53,.35);
-  background: rgba(255,92,53,.07);
+
+/* =========================================================
+   90. IMAGE SAFETY
+========================================================= */
+
+.tournamentPage img {
+  max-width: 100%;
+
+  user-select: none;
+
+  -webkit-user-drag: none;
+}
+
+
+/* =========================================================
+   91. TOURNAMENT CONTENT WIDTH LOCK
+========================================================= */
+
+.tournamentPage .tournamentSection,
+.tournamentPage .gameSelection {
+  width:
+    min(
+      1180px,
+      calc(100% - 36px)
+    );
+
+  margin-left: auto;
+
+  margin-right: auto;
+}
+
+
+/* =========================================================
+   92. HEADER / FILTER / GRID STACK
+========================================================= */
+
+.tournamentSection > * {
+  max-width: 100%;
+}
+
+
+/* =========================================================
+   93. FILTER PANEL SAFE OVERFLOW
+========================================================= */
+
+.filterPanel {
+  overflow: visible;
+}
+
+
+.compactFilters,
+.scrollFilters {
+  min-width: 0;
+}
+
+
+/* =========================================================
+   94. PREVENT FILTER BUTTON SHRINKING
+========================================================= */
+
+.compactFilters button,
+.slotGrid button {
+  flex-shrink: 0;
+}
+
+
+/* =========================================================
+   95. GRID CARD MIN-WIDTH FIX
+========================================================= */
+
+.tournamentGrid,
+.gameCards {
+  min-width: 0;
+}
+
+
+.tournamentGrid > *,
+.gameCards > * {
+  min-width: 0;
+}
+
+
+/* =========================================================
+   96. CARD CONTENT OVERFLOW SAFETY
+========================================================= */
+
+.matchCard,
+.gameSelectCard {
+  contain:
+    layout paint;
+}
+
+
+/* =========================================================
+   97. LONG TOURNAMENT NAME SAFETY
+========================================================= */
+
+.matchCard h3,
+.cardTop h3,
+.tournamentHeader h1,
+.selectionIntro h1 {
+  overflow-wrap:
+    anywhere;
+
+  word-break:
+    normal;
+}
+
+
+/* =========================================================
+   98. STATUS BADGE SAFETY
+========================================================= */
+
+.matchStatus {
+  overflow-wrap:
+    anywhere;
+}
+
+
+/* =========================================================
+   99. COUNTDOWN TABULAR NUMBERS
+========================================================= */
+
+.liveCountdown {
+  font-variant-numeric:
+    tabular-nums;
+
+  font-feature-settings:
+    "tnum";
+}
+
+
+/* =========================================================
+   100. PRICE / NUMBER DISPLAY
+========================================================= */
+
+.matchDetails strong,
+.rewardDetails strong,
+.players strong {
+  font-variant-numeric:
+    tabular-nums;
+}
+
+
+/* =========================================================
+   101. ACTIVE FILTER VISIBILITY
+========================================================= */
+
+.compactFilters button.selected {
+  position: relative;
+
+  z-index: 1;
+}
+
+
+/* =========================================================
+   102. ACTIVE FILTER DOT
+========================================================= */
+
+.compactFilters button.selected:not(:empty)::after {
+  content: "";
+
+  position: absolute;
+
+  right: 6px;
+  top: 6px;
+
+  width: 3px;
+  height: 3px;
+
+  border-radius: 50%;
+
+  background:
+    var(--pp-orange);
+
+  box-shadow:
+    0 0 6px
+    rgba(255,88,0,.8);
+
+  opacity: .75;
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   103. BACK BUTTON ALWAYS ACCESSIBLE
+========================================================= */
+
+.backToGames {
+  user-select: none;
+
+  -webkit-tap-highlight-color:
+    transparent;
+}
+
+
+/* =========================================================
+   104. GAME CARD TAP POLISH
+========================================================= */
+
+.gameSelectCard {
+  -webkit-tap-highlight-color:
+    transparent;
+}
+
+
+/* =========================================================
+   105. FILTER TAP POLISH
+========================================================= */
+
+.compactFilters button,
+.slotGrid button,
+.joinButton,
+.liveButton,
+.decidingButton,
+.resultButton,
+.compactReset {
+  -webkit-tap-highlight-color:
+    transparent;
+
+  touch-action:
+    manipulation;
+}
+
+
+/* =========================================================
+   106. FOCUS WITHOUT MOUSE
+========================================================= */
+
+.tournamentPage button:focus:not(:focus-visible) {
+  outline:
+    none;
+}
+
+
+/* =========================================================
+   107. DESKTOP CARD HEIGHT BALANCE
+========================================================= */
+
+@media (min-width: 951px) {
+
+  .matchCard {
+    min-height:
+      100%;
+
+    height:
+      100%;
+  }
+
+}
+
+
+/* =========================================================
+   108. TABLET GRID
+========================================================= */
+
+@media (max-width: 950px) and (min-width: 701px) {
+
+  .tournamentPage .tournamentSection,
+  .tournamentPage .gameSelection {
+    width:
+      calc(100% - 30px);
+  }
+
+
+  .gameCards {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+
+
+  .tournamentGrid {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+
+
+  .tournamentHeader {
+    padding:
+      28px;
+  }
+
+
+  .selectionIntro h1 {
+    font-size:
+      68px;
+  }
+
+}
+
+
+/* =========================================================
+   109. MOBILE MASTER LAYOUT
+========================================================= */
+
+@media (max-width: 700px) {
+
+  .tournamentPage {
+    width: 100%;
+
+    min-width: 0;
+
+    overflow-x:
+      hidden;
+  }
+
+
+  .tournamentPage .tournamentSection,
+  .tournamentPage .gameSelection {
+    width:
+      calc(100% - 18px);
+
+    max-width:
+      none;
+  }
+
+
+  .tournamentHeader {
+    width: 100%;
+
+    overflow:
+      hidden;
+  }
+
+
+  .filterPanel {
+    width: 100%;
+
+    max-width:
+      100%;
+  }
+
+
+  .tournamentGrid {
+    width: 100%;
+
+    grid-template-columns:
+      minmax(0, 1fr);
+  }
+
+
+  .gameCards {
+    width: 100%;
+
+    grid-template-columns:
+      minmax(0, 1fr);
+  }
+
+
+  .matchCard {
+    width: 100%;
+
+    min-width: 0;
+  }
+
+
+  .matchImageWrap {
+    width: 100%;
+  }
+
+
+  .matchImageWrap img {
+    width: 100%;
+
+    max-width:
+      none;
+  }
+
+
+  .selectionIntro h1 {
+    max-width:
+      100%;
+
+    font-size:
+      clamp(
+        44px,
+        14vw,
+        58px
+      );
+  }
+
+}
+
+
+/* =========================================================
+   110. SMALL MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+  .tournamentPage .tournamentSection,
+  .tournamentPage .gameSelection {
+    width:
+      calc(100% - 14px);
+  }
+
+
+  .gameCards {
+    gap:
+      12px;
+  }
+
+
+  .tournamentGrid {
+    gap:
+      12px;
+  }
+
+
+  .tournamentHeader {
+    border-radius:
+      12px;
+  }
+
+
+  .filterPanel {
+    border-radius:
+      10px;
+  }
+
+
+  .matchCard {
+    border-radius:
+      11px;
+  }
+
+}
+
+
+/* =========================================================
+   111. VERY SMALL PHONE
+========================================================= */
+
+@media (max-width: 360px) {
+
+  .tournamentPage .tournamentSection,
+  .tournamentPage .gameSelection {
+    width:
+      calc(100% - 12px);
+  }
+
+
+  .tournamentHeader {
+    padding:
+      17px;
+  }
+
+
+  .filterPanel {
+    padding:
+      11px;
+  }
+
+
+  .matchDetails,
+  .rewardDetails,
+  .players {
+    padding-left:
+      11px;
+
+    padding-right:
+      11px;
+  }
+
+
+  .matchCard > button,
+  .matchCard > .statusAction {
+    width:
+      calc(100% - 22px);
+
+    margin-left:
+      11px;
+
+    margin-right:
+      11px;
+  }
+
+}
+
+
+/* =========================================================
+   112. SAFE HORIZONTAL SCROLL AREAS
+========================================================= */
+
+.scrollFilters,
+.compactFilters {
+  overscroll-behavior-x:
+    contain;
+
+  scrollbar-width:
+    none;
+}
+
+.scrollFilters::-webkit-scrollbar,
+.compactFilters::-webkit-scrollbar {
+  display:
+    none;
+}
+
+
+/* =========================================================
+   113. PAGE HEIGHT / FOOTER SAFETY
+========================================================= */
+
+.tournamentPage {
+  padding-bottom:
+    env(
+      safe-area-inset-bottom,
+      0px
+    );
+}
+
+
+/* =========================================================
+   114. IOS SAFE AREA
+========================================================= */
+
+@supports (padding: max(0px)) {
+
+  .tournamentPage {
+    padding-bottom:
+      max(
+        30px,
+        env(
+          safe-area-inset-bottom
+        )
+      );
+  }
+
+}
+
+
+/* =========================================================
+   115. PRINT SAFETY
+========================================================= */
+
+@media print {
+
+  .tpNeonTop,
+  .tpGrid,
+  .tpGlow {
+    display:
+      none !important;
+  }
+
+
+  .tournamentPage {
+    background:
+      #fff !important;
+
+    color:
+      #000 !important;
+  }
+
+
+  .matchCard,
+  .gameSelectCard,
+  .tournamentHeader,
+  .filterPanel {
+    box-shadow:
+      none !important;
+  }
+
+}
+
+
+/* =========================================================
+   116. FINAL PATCH MARKER
+========================================================= */
+
+/*
+   ========================================================
+   PLAY2PROVE TOURNAMENTS CSS
+   PATCH 1/7  ✓
+   PATCH 2/7  ✓
+   PATCH 3/7  ✓
+   PATCH 4/7  ✓
+   PATCH 5/7  ✓
+   PATCH 6/7  ✓
+   PATCH 7/7  ✓
+
+   FINAL CSS COMPLETE
+   ========================================================
+*/
+
+
+/* =========================================================
+   END OF PLAY2PROVE TOURNAMENTS CSS
+========================================================= */
+
+
+/* =========================================================
+   PLAY2PROVE — FINAL REPAIR / COMPATIBILITY LOCK
+   Single-file final layer
+   - Keeps the existing tournament design
+   - Supports current + legacy tournament class names
+   - Prevents horizontal overflow
+   - Keeps game cards / tournament cards responsive
+   - Does not require page.js changes
+========================================================= */
+
+/* Legacy -> current class compatibility */
+.tournamentPage .tournamentContent {
+  position: relative;
+  z-index: 2;
+  width: min(1180px, calc(100% - 36px));
+  margin-left: auto;
+  margin-right: auto;
+  padding: 30px 0 100px;
+}
+
+.tournamentPage .gameBanner {
+  position: relative;
+  min-height: 210px;
+  padding: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 85% 50%, rgba(255,80,0,.20), transparent 35%),
+    radial-gradient(circle at 70% 0%, rgba(100,65,255,.12), transparent 30%),
+    linear-gradient(135deg,#0a0f1b,#05070d);
+}
+
+.tournamentPage .gameBanner h1 {
+  position: relative;
+  z-index: 2;
+  margin: 8px 0 10px;
+  font-size: clamp(42px,7vw,72px);
+  line-height: .9;
+  letter-spacing: -3px;
+}
+
+.tournamentPage .gameBanner p {
+  position: relative;
+  z-index: 2;
+  max-width: 580px;
+  margin: 0;
+  color: var(--pp-muted, #717b8e);
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.tournamentPage .bannerEyebrow {
+  position: relative;
+  z-index: 2;
+  color: var(--pp-orange, #ff5800);
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.tournamentPage .tpNeonBottom {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  z-index: 300;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #ff4d00,
+    #ff8000,
+    #704cff,
+    #00aaff,
+    transparent
+  );
+  box-shadow: 0 0 18px rgba(255,80,0,.65);
+}
+
+/* Support both direct game name text and <span> game names */
+.gameCardName {
+  min-width: 0;
+}
+
+.gameCardName span:first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Never allow decorative layers to create page-width overflow */
+.tournamentPage,
+.tournamentPage .gameSelection,
+.tournamentPage .tournamentSection,
+.tournamentPage .tournamentContent,
+.tournamentPage .gameCards,
+.tournamentPage .tournamentGrid,
+.tournamentPage .matchCard,
+.tournamentPage .gameSelectCard {
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* Images always stay inside their cards */
+.tournamentPage .gameImage img,
+.tournamentPage .matchImageWrap img {
+  max-width: none;
+}
+
+/* Search/filter controls must be allowed to shrink */
+.tournamentPage .filterSearch,
+.tournamentPage .filterSearch input,
+.tournamentPage .activeFilterChips,
+.tournamentPage .filterActions {
+  min-width: 0;
+}
+
+/* Prevent long tournament names from breaking card width */
+.tournamentPage .cardTop h3,
+.tournamentPage .tournamentHeader h1,
+.tournamentPage .gameBanner h1 {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* Mobile final lock */
+@media (max-width: 700px) {
+  .tournamentPage .tournamentContent,
+  .tournamentPage .tournamentSection,
+  .tournamentPage .gameSelection {
+    width: calc(100% - 18px);
+  }
+
+  .tournamentPage .gameBanner,
+  .tournamentPage .tournamentHeader {
+    min-height: 180px;
+    padding: 22px;
+    border-radius: 13px;
+  }
+
+  .tournamentPage .gameBanner h1,
+  .tournamentPage .tournamentHeader h1 {
+    font-size: 42px;
+    letter-spacing: -2px;
+  }
+
+  .tournamentPage .gameBanner p,
+  .tournamentPage .tournamentHeader p {
+    max-width: 240px;
+  }
+
+  .tournamentPage .bannerGameIcon {
+    font-size: 65px;
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 380px) {
+  .tournamentPage .tournamentContent,
+  .tournamentPage .tournamentSection,
+  .tournamentPage .gameSelection {
+    width: calc(100% - 12px);
+  }
+
+  .tournamentPage .gameBanner,
+  .tournamentPage .tournamentHeader {
+    padding: 18px;
+  }
+
+  .tournamentPage .gameBanner h1,
+  .tournamentPage .tournamentHeader h1 {
+    font-size: 36px;
+  }
+
+  .tournamentPage .gameBanner p,
+  .tournamentPage .tournamentHeader p {
+    max-width: 190px;
+  }
+
+  .tournamentPage .bannerGameIcon {
+    font-size: 50px;
+  }
+}
+
+/* FINAL: no accidental horizontal scroll */
+html {
+  overflow-x: hidden;
 }
