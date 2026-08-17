@@ -488,11 +488,11 @@ export default function GamesPage() {
     {game.device}
   </span>
 
-  <b className="gamesStatusBadge">
-    {String(
-      game.status
-    ).toUpperCase()}
-  </b>
+  <b
+  className={`gamesStatusBadge ${slugify(game.status)}`}
+>
+  {String(game.status).toUpperCase()}
+</b>
 
 </div>
 
