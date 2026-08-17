@@ -3852,34 +3852,34 @@ a:focus-visible {
   }
 }
 /* ============================================================
-   GAME STATUS COLORS
-   ============================================================ */
-
-/* ============================================================
-   GAME CARD INFO
+   HOME GAME CARD — STATUS RIGHT + ARROW BELOW
    ============================================================ */
 
 .gameCardInfo {
-  position: relative;
+  width: 100%;
   padding: 12px 2px 5px;
 }
 
 
-/* ============================================================
-   STATUS BADGE — RIGHT SIDE
-   ============================================================ */
+/* STATUS ROW */
+
+.gameStatusRowHome {
+  width: 100%;
+
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  min-height: 24px;
+}
+
+
+/* STATUS BADGE */
 
 .gameStatus {
-  position: absolute;
-
-  top: 10px;
-  right: 0;
-
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  width: fit-content;
 
   padding: 5px 10px;
 
@@ -3893,14 +3893,11 @@ a:focus-visible {
   letter-spacing: 0.08em;
   text-transform: uppercase;
 
-  background: rgba(0, 0, 0, 0.28);
-
   white-space: nowrap;
 
-  transition:
-    color 0.25s ease,
-    border-color 0.25s ease,
-    box-shadow 0.25s ease;
+  background: rgba(0, 0, 0, 0.28);
+
+  box-sizing: border-box;
 }
 
 
@@ -3908,9 +3905,13 @@ a:focus-visible {
 
 .gameStatus.live {
   color: #00dc88 !important;
+
   border-color: rgba(0, 220, 136, 0.65);
+
   background: rgba(0, 220, 136, 0.07);
-  box-shadow: 0 0 12px rgba(0, 220, 136, 0.12);
+
+  box-shadow:
+    0 0 12px rgba(0, 220, 136, 0.12);
 }
 
 
@@ -3918,9 +3919,13 @@ a:focus-visible {
 
 .gameStatus.upcoming {
   color: #5c8cff !important;
+
   border-color: rgba(92, 140, 255, 0.65);
+
   background: rgba(92, 140, 255, 0.07);
-  box-shadow: 0 0 12px rgba(92, 140, 255, 0.12);
+
+  box-shadow:
+    0 0 12px rgba(92, 140, 255, 0.12);
 }
 
 
@@ -3928,24 +3933,32 @@ a:focus-visible {
 
 .gameStatus.deciding {
   color: #ff7800 !important;
+
   border-color: rgba(255, 120, 0, 0.65);
+
   background: rgba(255, 120, 0, 0.07);
-  box-shadow: 0 0 12px rgba(255, 120, 0, 0.12);
+
+  box-shadow:
+    0 0 12px rgba(255, 120, 0, 0.12);
 }
 
 
 /* ============================================================
-   TITLE + ARROW
+   GAME NAME + ARROW
    ============================================================ */
 
 .gameTitleRow {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-
   width: 100%;
 
-  padding-top: 22px;
+  display: flex;
+
+  align-items: flex-end;
+
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin-top: 5px;
 }
 
 
@@ -3956,20 +3969,23 @@ a:focus-visible {
 }
 
 
-/* ARROW — THODA NICHE */
+/* ARROW — TITLE KE RIGHT, THODA NICHE */
 
 .gameArrowNew {
+  flex-shrink: 0;
+
   display: flex;
+
   align-items: center;
   justify-content: center;
 
-  margin-top: 7px;
-  margin-bottom: 0;
-
-  font-size: 22px;
-  line-height: 1;
+  margin-bottom: -2px;
 
   color: #ff5a00;
+
+  font-size: 22px;
+
+  line-height: 1;
 
   transition:
     transform 0.25s ease,
@@ -3980,3 +3996,4 @@ a:focus-visible {
 .newGameCard:hover .gameArrowNew {
   transform: translateX(5px);
 }
+
