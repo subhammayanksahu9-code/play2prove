@@ -2079,7 +2079,7 @@ useEffect(() => {
               BACK BUTTON
           =============================================== */}
 
-          <div className="tournamentNavButtons">
+         <div className="tournamentNavButtons">
 
   <button
     className="arenaNavButton"
@@ -2087,7 +2087,8 @@ useEffect(() => {
       window.location.href = "/";
     }}
   >
-    HOME
+    <span className="navArrow">←</span>
+    <span>HOME</span>
   </button>
 
   <button
@@ -2096,7 +2097,8 @@ useEffect(() => {
       window.location.href = "/games";
     }}
   >
-    ALL GAMES
+    <span className="navArrow">←</span>
+    <span>ALL GAMES</span>
   </button>
 
 </div>
