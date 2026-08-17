@@ -687,6 +687,18 @@ function formatDate(
 ========================================================= */
 
 export default function TournamentsPage() {
+  useEffect(() => {
+  if (
+    typeof window !== "undefined" &&
+    window.location.pathname === "/tournaments" &&
+    !window.location.search
+  ) {
+    window.location.replace(
+      "/all-tournaments"
+    );
+  }
+}, []);
+  
 
   const [games, setGames] =
     useState([]);
@@ -702,6 +714,9 @@ export default function TournamentsPage() {
 
   const [selectedGame, setSelectedGame] =
     useState(null);
+  
+  const [allTournamentsMode, setAllTournamentsMode] =
+  useState(false);
 
   /* =======================================================
      FILTER STATE
@@ -1313,43 +1328,27 @@ export default function TournamentsPage() {
      It will NOT jump to top on every 10-sec refresh.
   ======================================================= */
 
-  const autoOpenedGameRef =
-    useRef(false);
+  const autoOpenedGameRef = useRef(false);
 
-  useEffect(() => {
-
-    const params =
-      new URLSearchParams(
-        window.location.search
-      );
-
-    const gameSlug =
-      params.get("game");
-
-    if (
-      autoOpenedGameRef.current ||
-      !gameSlug ||
-      games.length === 0
-    ) {
-      return;
-    }
-
-    const matchedGame =
-      games.find(
-        (game) =>
-          game.id === gameSlug
-      );
-
-    if (!matchedGame) {
-      return;
-    }
-
-    autoOpenedGameRef.current =
-      true;
-
-    setSelectedGame(
-      matchedGame.id
+useEffect(() => {
+  const params =
+    new URLSearchParams(
+      window.location.search
     );
+
+  const gameSlug =
+    params.get("game");
+
+  const allMode =
+    params.get("all") === "true";
+
+  /* =========================================
+     ALL TOURNAMENTS MODE
+  ========================================= */
+
+  if (allMode) {
+    setAllTournamentsMode(true);
+    setSelectedGame(null);
 
     setStatus("All");
     setDate("All");
@@ -1358,19 +1357,57 @@ export default function TournamentsPage() {
     setMap("All");
     setSearch("");
 
-    /*
-      Only the initial game opening
-      can move to the top.
-      Background refresh can NEVER
-      do this again.
-    */
-
     window.scrollTo({
       top: 0,
       behavior: "auto",
     });
 
-  }, [games]);
+    return;
+  }
+
+  /* =========================================
+     SPECIFIC GAME MODE
+  ========================================= */
+
+  if (
+    autoOpenedGameRef.current ||
+    !gameSlug ||
+    games.length === 0
+  ) {
+    return;
+  }
+
+  const matchedGame =
+    games.find(
+      (game) =>
+        game.id === gameSlug
+    );
+
+  if (!matchedGame) {
+    return;
+  }
+
+  autoOpenedGameRef.current = true;
+
+  setAllTournamentsMode(false);
+
+  setSelectedGame(
+    matchedGame.id
+  );
+
+  setStatus("All");
+  setDate("All");
+  setSlot("All");
+  setMode("All");
+  setMap("All");
+  setSearch("");
+
+  window.scrollTo({
+    top: 0,
+    behavior: "auto",
+  });
+
+}, [games]);
 
 
   /* =======================================================
@@ -1390,22 +1427,30 @@ export default function TournamentsPage() {
   ======================================================= */
 
   const gameTournaments =
-    useMemo(() => {
+  useMemo(() => {
 
-      if (!selectedGame) {
-        return [];
-      }
+    /* ALL TOURNAMENTS */
 
-      return tournaments.filter(
-        (item) =>
-          item.game ===
-          selectedGame
-      );
+    if (allTournamentsMode) {
+      return tournaments;
+    }
 
-    }, [
-      tournaments,
-      selectedGame,
-    ]);
+    /* SPECIFIC GAME */
+
+    if (!selectedGame) {
+      return [];
+    }
+
+    return tournaments.filter(
+      (item) =>
+        item.game === selectedGame
+    );
+
+  }, [
+    tournaments,
+    selectedGame,
+    allTournamentsMode,
+  ]);
 
 
   /* =======================================================
@@ -1502,243 +1547,157 @@ export default function TournamentsPage() {
   ======================================================= */
 
   const filteredTournaments =
-    useMemo(() => {
+  useMemo(() => {
 
-      if (!selectedGame) {
-        return [];
-      }
+    if (
+      !selectedGame &&
+      !allTournamentsMode
+    ) {
+      return [];
+    }
 
-      const query =
-        search
-          .trim()
-          .toLowerCase();
+    const query =
+      search
+        .trim()
+        .toLowerCase();
 
+    return gameTournaments.filter(
+      (item) => {
 
-      return gameTournaments.filter(
-        (item) => {
+        const itemStatus =
+          getTournamentAutomaticStatus(
+            item,
+            getMasterNow()
+          );
 
-          /* =================================================
-             AUTOMATIC MASTER-CLOCK STATUS
-          ================================================= */
-
-          const itemStatus =
-            getTournamentAutomaticStatus(
-              item,
-              getMasterNow()
-            );
-
-
-          /* =================================================
-             STATUS FILTER
-          ================================================= */
+        if (
+          status === "All"
+        ) {
 
           if (
-            status === "All"
+            itemStatus === "Past"
           ) {
-
-            /*
-              All = show everything
-              except completed Past matches.
-            */
-
-            if (
-              itemStatus === "Past"
-            ) {
-
-              return false;
-
-            }
-
-          }
-
-
-          if (
-            status === "Upcoming"
-          ) {
-
-            if (
-              ![
-                "Upcoming",
-                "Starting Soon",
-              ].includes(
-                itemStatus
-              )
-            ) {
-
-              return false;
-
-            }
-
-          }
-
-
-          if (
-            status === "Live"
-          ) {
-
-            /*
-              Live section includes
-              all currently active phases.
-            */
-
-            if (
-              ![
-                "Live",
-                "Match Ongoing",
-                "Match Closing",
-              ].includes(
-                itemStatus
-              )
-            ) {
-
-              return false;
-
-            }
-
-          }
-
-
-          if (
-            status === "Past"
-          ) {
-
-            if (
-              itemStatus !== "Past"
-            ) {
-
-              return false;
-
-            }
-
-          }
-
-
-          /* =================================================
-             DATE FILTER
-          ================================================= */
-
-          if (
-            date !== "All" &&
-            item.date !== date
-          ) {
-
             return false;
-
           }
-
-
-          /* =================================================
-             SLOT FILTER
-          ================================================= */
-
-          if (
-            slot !== "All" &&
-            clean(
-              item.slot
-            ).toLowerCase() !==
-              clean(
-                slot
-              ).toLowerCase()
-          ) {
-
-            return false;
-
-          }
-
-
-          /* =================================================
-             MODE FILTER
-          ================================================= */
-
-          if (
-            mode !== "All" &&
-            clean(
-              item.mode
-            ).toLowerCase() !==
-              clean(
-                mode
-              ).toLowerCase()
-          ) {
-
-            return false;
-
-          }
-
-
-          /* =================================================
-             MAP FILTER
-          ================================================= */
-
-          if (
-            map !== "All" &&
-            clean(
-              item.map
-            ).toLowerCase() !==
-              clean(
-                map
-              ).toLowerCase()
-          ) {
-
-            return false;
-
-          }
-
-
-          /* =================================================
-             SEARCH
-          ================================================= */
-
-          if (query) {
-
-            const searchable = [
-
-              item.title,
-
-              item.game,
-
-              item.map,
-
-              item.mode,
-
-              item.time,
-
-              item.date,
-
-              item.status,
-
-            ]
-              .join(" ")
-              .toLowerCase();
-
-
-            if (
-              !searchable.includes(
-                query
-              )
-            ) {
-
-              return false;
-
-            }
-
-          }
-
-
-          return true;
 
         }
-      );
 
-    }, [
-      gameTournaments,
-      status,
-      date,
-      slot,
-      mode,
-      map,
-      search,
-      clockTick,
-    ]);
+        if (
+          status === "Upcoming"
+        ) {
+
+          if (
+            ![
+              "Upcoming",
+              "Starting Soon",
+            ].includes(
+              itemStatus
+            )
+          ) {
+            return false;
+          }
+
+        }
+
+        if (
+          status === "Live"
+        ) {
+
+          if (
+            ![
+              "Live",
+              "Match Ongoing",
+              "Match Closing",
+            ].includes(
+              itemStatus
+            )
+          ) {
+            return false;
+          }
+
+        }
+
+        if (
+          status === "Past"
+        ) {
+
+          if (
+            itemStatus !== "Past"
+          ) {
+            return false;
+          }
+
+        }
+
+        if (
+          date !== "All" &&
+          item.date !== date
+        ) {
+          return false;
+        }
+
+        if (
+          slot !== "All" &&
+          clean(item.slot).toLowerCase() !==
+            clean(slot).toLowerCase()
+        ) {
+          return false;
+        }
+
+        if (
+          mode !== "All" &&
+          clean(item.mode).toLowerCase() !==
+            clean(mode).toLowerCase()
+        ) {
+          return false;
+        }
+
+        if (
+          map !== "All" &&
+          clean(item.map).toLowerCase() !==
+            clean(map).toLowerCase()
+        ) {
+          return false;
+        }
+
+        if (query) {
+
+          const searchable = [
+            item.title,
+            item.game,
+            item.map,
+            item.mode,
+            item.time,
+            item.date,
+            item.status,
+          ]
+            .join(" ")
+            .toLowerCase();
+
+          if (
+            !searchable.includes(query)
+          ) {
+            return false;
+          }
+
+        }
+
+        return true;
+
+      }
+    );
+
+  }, [
+    gameTournaments,
+    status,
+    date,
+    slot,
+    mode,
+    map,
+    search,
+    clockTick,
+    allTournamentsMode,
+  ]);
 
 
   /* =======================================================
@@ -1916,7 +1875,7 @@ export default function TournamentsPage() {
           GAME SELECTION
       =================================================== */}
 
-      {!selectedGame && (
+      {!selectedGame && !allTournamentsMode ? (
 
         <section
           className="gameSelection"
@@ -2110,7 +2069,7 @@ export default function TournamentsPage() {
           TOURNAMENT SECTION
       =================================================== */}
 
-      {selectedGame && (
+      {(selectedGame || allTournamentsMode) && (
 
         <section
           className="tournamentSection"
@@ -2120,16 +2079,27 @@ export default function TournamentsPage() {
               BACK BUTTON
           =============================================== */}
 
-          <button
-            className="backToGames"
-            onClick={
-              handleBackToGames
-            }
-          >
+          <div className="tournamentNavButtons">
 
-            ← BACK TO GAMES
+  <button
+    className="arenaNavButton"
+    onClick={() => {
+      window.location.href = "/";
+    }}
+  >
+    HOME
+  </button>
 
-          </button>
+  <button
+    className="arenaNavButton"
+    onClick={() => {
+      window.location.href = "/games";
+    }}
+  >
+    ALL GAMES
+  </button>
+
+</div>
 
 
           {/* ===============================================
@@ -2150,16 +2120,20 @@ export default function TournamentsPage() {
               </span>
 
               <h1>
-                TOURNAMENT{" "}
-                <em>
-                  ARENA
-                </em>
-              </h1>
+  {
+    selectedGameData
+      ? selectedGameData.name
+      : "ALL TOURNAMENTS"
+  }
+</h1>
 
-              <p>
-                Choose your match
-                and enter the battle.
-              </p>
+<p>
+  {
+    selectedGameData
+      ? "Choose your match and enter the battle."
+      : "Explore every tournament across the Play2Prove arena."
+  }
+</p>
 
             </div>
 
@@ -2528,16 +2502,16 @@ export default function TournamentsPage() {
                 (item) => (
 
                   <TournamentCard
-                    key={
-                      item.id
-                    }
-                    tournament={
-                      item
-                    }
-                    game={
-                      selectedGameData
-                    }
-                  />
+  key={item.id}
+  tournament={item}
+  game={
+    selectedGameData ||
+    games.find(
+      (g) =>
+        g.id === item.game
+    )
+  }
+/>
 
                 )
               )}
