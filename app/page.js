@@ -303,7 +303,7 @@ const featuredTournaments = useMemo(() => {
 
             <button
               className="heroPrimary"
-              onClick={() => go("/tournaments")}
+              onClick={() => go("/all-tournaments")}
             >
               FIND TOURNAMENT
               <span>→</span>
@@ -440,9 +440,9 @@ const featuredTournaments = useMemo(() => {
           Competitive gaming starts here.
         </strong>
 
-        <button onClick={() => go("/tournaments")}>
-          VIEW TOURNAMENTS →
-        </button>
+        <button onClick={() => go("/all-tournaments")}>
+  VIEW TOURNAMENTS →
+</button>
 
       </section>
 
@@ -524,7 +524,7 @@ const featuredTournaments = useMemo(() => {
 
           <button
             className="outlineButton"
-            onClick={() => go("/tournaments")}
+            onClick={() => go("/all-tournaments")}
           >
             EXPLORE ALL TOURNAMENTS →
           </button>
@@ -781,7 +781,7 @@ const featuredTournaments = useMemo(() => {
 
           <button
             className="heroSecondary"
-            onClick={() => go("/tournaments")}
+            onClick={() => go("/all-tournaments")}
           >
             VIEW TOURNAMENTS
           </button>
@@ -815,9 +815,9 @@ const featuredTournaments = useMemo(() => {
 
         <div className="footerLinks">
 
-          <button onClick={() => go("/tournaments")}>
-            Tournaments
-          </button>
+          <button onClick={() => go("/all-tournaments")}>
+  Tournaments
+</button>
 
           <button onClick={() => go("/matches")}>
             Matches
@@ -1025,8 +1025,25 @@ function GameCard({
   type,
   image,
 }) {
+
+  const gameSlug = String(
+    game ?? ""
+  )
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
   return (
-  <article className="newGameCard">
+    <article
+      className="newGameCard"
+      onClick={() => {
+        window.location.href =
+          `/tournaments?game=${encodeURIComponent(gameSlug)}`;
+      }}
+      role="button"
+      tabIndex={0}
+    >
 
     <div className="gameImageNew">
       {image ? (
