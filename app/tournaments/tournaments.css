@@ -5926,6 +5926,9 @@ html {
   display: flex;
   align-items: center;
   gap: 10px;
+  margin-top: 4px;
+  margin-bottom: 22px;
+  padding-left: 0;
 }
 
 .arenaNavButton {
