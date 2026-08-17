@@ -1061,15 +1061,20 @@ function GameCard({
 
     <div className="gameCardInfo">
 
-      <span>
-        {type}
-      </span>
+  <span
+    className={`gameStatus ${String(type)
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "-")}`}
+  >
+    {type}
+  </span>
 
-      <h3>
-        {game}
-      </h3>
+  <h3>
+    {game}
+  </h3>
 
-    </div>
+</div>
 
     <strong className="gameArrowNew">
       →
