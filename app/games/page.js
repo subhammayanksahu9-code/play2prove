@@ -484,17 +484,17 @@ export default function GamesPage() {
 
                     <div className="gamesCardBottom">
 
-                      <span>
-  {game.device}
-</span>
+  <span>
+    {game.device}
+  </span>
 
-                      <b>
-                        {String(
-                          game.status
-                        ).toUpperCase()}
-                      </b>
+  <b className="gamesStatusBadge">
+    {String(
+      game.status
+    ).toUpperCase()}
+  </b>
 
-                    </div>
+</div>
 
                   </button>
 
