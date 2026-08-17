@@ -26,9 +26,9 @@ export async function GET() {
     return Response.json(data, {
       status: 200,
       headers: {
-        "Cache-Control":
-          "public, s-maxage=10, stale-while-revalidate=60",
-      },
+  "Cache-Control":
+    "no-store, no-cache, must-revalidate",
+},
     });
 
   } catch (error) {
