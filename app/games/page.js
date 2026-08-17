@@ -108,7 +108,7 @@ export default function GamesPage() {
 
         const response =
           await fetch(
-            API_URL,
+            `${API_URL}?t=${Date.now()}`,
             {
               method: "GET",
 
@@ -118,7 +118,7 @@ export default function GamesPage() {
               },
 
               cache:
-                "default",
+  "no-store",
 
               redirect:
                 "follow",
