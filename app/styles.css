@@ -3855,24 +3855,128 @@ a:focus-visible {
    GAME STATUS COLORS
    ============================================================ */
 
-.gameStatus {
-  display: block;
-  font-weight: 900;
-  transition: 0.25s;
+/* ============================================================
+   GAME CARD INFO
+   ============================================================ */
+
+.gameCardInfo {
+  position: relative;
+  padding: 12px 2px 5px;
 }
+
+
+/* ============================================================
+   STATUS BADGE — RIGHT SIDE
+   ============================================================ */
+
+.gameStatus {
+  position: absolute;
+
+  top: 10px;
+  right: 0;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: fit-content;
+
+  padding: 5px 10px;
+
+  border: 1px solid currentColor;
+  border-radius: 6px;
+
+  font-size: 9px;
+  font-weight: 900;
+  line-height: 1;
+
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  background: rgba(0, 0, 0, 0.28);
+
+  white-space: nowrap;
+
+  transition:
+    color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+
+/* LIVE */
 
 .gameStatus.live {
   color: #00dc88 !important;
-  text-shadow: 0 0 10px rgba(0, 220, 136, 0.25);
+  border-color: rgba(0, 220, 136, 0.65);
+  background: rgba(0, 220, 136, 0.07);
+  box-shadow: 0 0 12px rgba(0, 220, 136, 0.12);
 }
 
+
+/* UPCOMING */
+
 .gameStatus.upcoming {
-  color: #00aaff !important;
-  text-shadow: 0 0 10px rgba(0, 170, 255, 0.25);
+  color: #5c8cff !important;
+  border-color: rgba(92, 140, 255, 0.65);
+  background: rgba(92, 140, 255, 0.07);
+  box-shadow: 0 0 12px rgba(92, 140, 255, 0.12);
 }
+
+
+/* DECIDING */
 
 .gameStatus.deciding {
   color: #ff7800 !important;
-  text-shadow: 0 0 10px rgba(255, 120, 0, 0.25);
+  border-color: rgba(255, 120, 0, 0.65);
+  background: rgba(255, 120, 0, 0.07);
+  box-shadow: 0 0 12px rgba(255, 120, 0, 0.12);
 }
 
+
+/* ============================================================
+   TITLE + ARROW
+   ============================================================ */
+
+.gameTitleRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  width: 100%;
+
+  padding-top: 22px;
+}
+
+
+.gameTitleRow h3 {
+  margin: 0;
+
+  line-height: 1.05;
+}
+
+
+/* ARROW — THODA NICHE */
+
+.gameArrowNew {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-top: 7px;
+  margin-bottom: 0;
+
+  font-size: 22px;
+  line-height: 1;
+
+  color: #ff5a00;
+
+  transition:
+    transform 0.25s ease,
+    color 0.25s ease;
+}
+
+
+.newGameCard:hover .gameArrowNew {
+  transform: translateX(5px);
+}
