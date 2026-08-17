@@ -5918,3 +5918,28 @@ html {
   border-color: #ff5a00;
   color: #ff5a00;
 }
+/* =========================================================
+   TOURNAMENT NAVIGATION — HOME / ALL GAMES
+========================================================= */
+
+.tournamentNavButtons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.arenaNavButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+}
+
+.arenaNavButton .navArrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  font-size: 16px;
+  font-weight: 700;
+}
