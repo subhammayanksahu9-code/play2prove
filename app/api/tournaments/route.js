@@ -1,5 +1,5 @@
 const GOOGLE_API =
-  "https://script.google.com/macros/s/AKfycbxGglnJPiagsdfU59AipkGBKJcfM6IS15fe9JceTrC1HcX0oLly5SJbcRSPTVFPvqJk/exec";
+  "https://script.google.com/macros/s/AKfycbzNNt2zqRoANZD7rLROrzRDisn58ZvOTZCYy8tsErmtt1YeLU-OvCXzde2GzW_xC_Mo/exec";
 
 export const dynamic = "force-dynamic";
 
