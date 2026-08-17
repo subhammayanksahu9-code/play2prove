@@ -485,9 +485,8 @@ export default function GamesPage() {
                     <div className="gamesCardBottom">
 
                       <span>
-                        📱{" "}
-                        {game.device}
-                      </span>
+  {game.device}
+</span>
 
                       <b>
                         {String(
