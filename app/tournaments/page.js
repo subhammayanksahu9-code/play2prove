@@ -3107,12 +3107,7 @@ const joinTimer =
           PLAYERS / CAPACITY
       ================================================= */}
 
-      {tournament.capacity >
-        0 && (
-
-        <div
-          className="players"
-        >
+      <div className="players">
 
           <div className="playersBottomRow">
 
@@ -3160,7 +3155,7 @@ const joinTimer =
 
         </div>
 
-      )}
+      
 
 
       {/* =================================================
