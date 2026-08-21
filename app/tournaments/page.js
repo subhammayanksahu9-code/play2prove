@@ -2649,66 +2649,167 @@ function TournamentCard({
      Countdown uses Master Clock.
   ======================================================= */
 
-  let liveSecondsLeft =
-    0;
 
+  /* =======================================================
+   PLAY2PROVE MATCH TIMING
+   -------------------------------------------------------
+   BEFORE MATCH:
+   MATCH BEGINS IN = full countdown
+
+   AT MATCH TIME:
+   10 minute JOINING WINDOW starts
+
+   AFTER 10 MINUTES:
+   JOINING WINDOW disappears
+
+   IMPORTANT:
+   Uses existing MASTER CLOCK.
+   No browser clock.
+======================================================= */
 
   const tournamentStart =
-    getTournamentStartTimestamp(
-      tournament
+  getTournamentStartTimestamp(
+    tournament
+  );
+  
+let matchBeginsSecondsLeft = 0;
+let joinSecondsLeft = 0;
+
+const JOIN_WAIT_MS =
+  10 * 60 * 1000;
+
+
+/* =========================
+   BEFORE MATCH
+========================= */
+
+if (
+  status === "Upcoming" &&
+  Number.isFinite(tournamentStart)
+) {
+
+  matchBeginsSecondsLeft =
+    Math.max(
+      0,
+      Math.ceil(
+        (
+          tournamentStart -
+          masterNow
+        ) / 1000
+      )
     );
 
-
-  if (
-    status === "Live" &&
-    Number.isFinite(
-      tournamentStart
-    )
-  ) {
-
-    const liveEnd =
-      tournamentStart +
-      10 * 60 * 1000;
+}
 
 
-    liveSecondsLeft =
-      Math.max(
-        0,
-        Math.ceil(
-          (
-            liveEnd -
-            masterNow
-          ) / 1000
-        )
-      );
+/* =========================
+   AFTER MATCH TIME
 
-  }
+   10 minute joining window
+========================= */
+
+if (
+  status === "Live" &&
+  Number.isFinite(tournamentStart)
+) {
+
+  joinSecondsLeft =
+    Math.max(
+      0,
+      Math.ceil(
+        (
+          tournamentStart +
+          JOIN_WAIT_MS -
+          masterNow
+        ) / 1000
+      )
+    );
+
+}
 
 
-  const liveMinutes =
+/* =========================
+   DAY / HR / MIN / SEC
+========================= */
+
+function formatMatchBeginsTimer(
+  totalSeconds
+) {
+
+  const safe =
+    Math.max(
+      0,
+      Number(totalSeconds) || 0
+    );
+
+  const days =
     Math.floor(
-      liveSecondsLeft /
-      60
+      safe / 86400
     );
 
+  const hours =
+    Math.floor(
+      (safe % 86400) / 3600
+    );
 
-  const liveSeconds =
-    liveSecondsLeft %
-    60;
+  const minutes =
+    Math.floor(
+      (safe % 3600) / 60
+    );
+
+  const seconds =
+    safe % 60;
+
+  return (
+    `${days}D ` +
+    `${String(hours).padStart(2, "0")}HR:` +
+    `${String(minutes).padStart(2, "0")}MIN:` +
+    `${String(seconds).padStart(2, "0")}SEC`
+  );
+
+}
 
 
-  const liveCountdown =
-    `${String(
-      liveMinutes
-    ).padStart(
-      2,
-      "0"
-    )}:${String(
-      liveSeconds
-    ).padStart(
-      2,
-      "0"
-    )}`;
+/* =========================
+   10 MINUTE COUNTDOWN
+========================= */
+
+function formatJoinTimer(
+  totalSeconds
+) {
+
+  const safe =
+    Math.max(
+      0,
+      Number(totalSeconds) || 0
+    );
+
+  const minutes =
+    Math.floor(
+      safe / 60
+    );
+
+  const seconds =
+    safe % 60;
+
+  return (
+    `${String(minutes).padStart(2, "0")}:` +
+    `${String(seconds).padStart(2, "0")}`
+  );
+
+}
+
+
+const matchBeginsTimer =
+  formatMatchBeginsTimer(
+    matchBeginsSecondsLeft
+  );
+
+
+const joinTimer =
+  formatJoinTimer(
+    joinSecondsLeft
+  );
 
 
   /* =======================================================
@@ -2846,21 +2947,26 @@ function TournamentCard({
           LIVE COUNTDOWN
       ================================================= */}
 
-      {status ===
-        "Live" && (
+      {status === "Live" && (
+  <div
+    className="liveCountdown"
+    aria-live="polite"
+  >
 
-        <div
-          className="liveCountdown"
-        >
+    <span className="joinMatchText">
+      JOIN MATCH
+    </span>
 
-          LIVE •{" "}
-          {
-            liveCountdown
-          }
+    <strong className="joinTimer">
+      {joinTimer}
+    </strong>
 
-        </div>
+    <span className="joinBeforeText">
+      BEFORE TIMER ENDS
+    </span>
 
-      )}
+  </div>
+)}
 
 
       {/* =================================================
@@ -3008,27 +3114,35 @@ function TournamentCard({
           className="players"
         >
 
-          <div>
+          <div className="playersBottomRow">
 
-            <span>
-              PLAYERS
-            </span>
+  <div>
+    <span>
+      PLAYERS
+    </span>
 
-            <strong>
+    <strong>
+      {tournament.joined}
+      /
+      {tournament.capacity}
+    </strong>
+  </div>
 
-              {
-                tournament.joined
-              }
+  {status === "Upcoming" && (
+    <div className="matchBeginsCountdown">
 
-              /
+      <span>
+        MATCH BEGINS IN
+      </span>
 
-              {
-                tournament.capacity
-              }
+      <strong>
+        {matchBeginsTimer}
+      </strong>
 
-            </strong>
+    </div>
+  )}
 
-          </div>
+</div>
 
 
           <div
