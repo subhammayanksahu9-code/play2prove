@@ -5946,3 +5946,129 @@ html {
   font-size: 16px;
   font-weight: 700;
 }
+/* =========================================================
+   PLAY2PROVE MATCH TIMER
+   FINAL CARD TIMER STRUCTURE
+========================================================= */
+
+.liveCountdown {
+  width: 100%;
+  min-height: 42px;
+
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+
+  align-items: center;
+
+  gap: 12px;
+
+  box-sizing: border-box;
+}
+
+.joinMatchText {
+  justify-self: start;
+  text-align: left;
+}
+
+.joinTimer {
+  justify-self: center;
+  text-align: center;
+
+  white-space: nowrap;
+
+  font-variant-numeric:
+    tabular-nums;
+}
+
+.joinBeforeText {
+  justify-self: end;
+  text-align: right;
+}
+
+
+/* =========================================
+   PLAYERS + UPCOMING COUNTDOWN
+========================================= */
+
+.playersBottomRow {
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 14px;
+}
+
+
+.matchBeginsCountdown {
+  margin-left: auto;
+
+  text-align: right;
+
+  min-width: 0;
+}
+
+
+.matchBeginsCountdown span {
+  display: block;
+
+  font-size: 11px;
+
+  line-height: 1.2;
+}
+
+
+.matchBeginsCountdown strong {
+  display: block;
+
+  margin-top: 2px;
+
+  white-space: nowrap;
+
+  font-variant-numeric:
+    tabular-nums;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 640px) {
+
+  .liveCountdown {
+    grid-template-columns:
+      1fr auto 1fr;
+
+    gap: 7px;
+
+    font-size: 11px;
+  }
+
+  .joinTimer {
+    font-size: 13px;
+  }
+
+  .joinMatchText,
+  .joinBeforeText {
+    font-size: 10px;
+  }
+
+  .playersBottomRow {
+    gap: 8px;
+  }
+
+  .matchBeginsCountdown {
+    max-width: 65%;
+  }
+
+  .matchBeginsCountdown strong {
+    white-space: normal;
+
+    line-height: 1.2;
+  }
+
+}
