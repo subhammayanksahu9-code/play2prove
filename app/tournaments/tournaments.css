@@ -6084,3 +6084,624 @@ html {
 }
 
 }
+/* =========================================================
+   PLAY2PROVE — ADVANCED TOURNAMENT CARD REFINEMENT
+   Clear image + readable typography + premium hierarchy
+========================================================= */
+
+.matchCard {
+  position: relative;
+  overflow: hidden;
+
+  border-radius: 18px;
+
+  background: #090b10;
+
+  border: 1px solid rgba(255, 255, 255, 0.10);
+
+  box-shadow:
+    0 14px 35px rgba(0, 0, 0, 0.35);
+
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.matchCard:hover {
+  transform: translateY(-3px);
+
+  border-color: rgba(255, 255, 255, 0.18);
+
+  box-shadow:
+    0 20px 45px rgba(0, 0, 0, 0.45);
+}
+
+
+/* =========================================================
+   IMAGE
+========================================================= */
+
+.matchImageWrap {
+  position: relative;
+
+  width: 100%;
+
+  aspect-ratio: 16 / 9;
+
+  min-height: 0;
+
+  overflow: hidden;
+
+  background: #101319;
+}
+
+.matchImageWrap img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  opacity: 1 !important;
+
+  filter:
+    saturate(1.05)
+    contrast(1.03)
+    brightness(1.04);
+
+  transform: scale(1.001);
+
+  transition:
+    transform 350ms ease,
+    filter 350ms ease;
+}
+
+.matchCard:hover .matchImageWrap img {
+  transform: scale(1.025);
+
+  filter:
+    saturate(1.08)
+    contrast(1.04)
+    brightness(1.06);
+}
+
+
+/* VERY LIGHT GRADIENT
+   Image ko faded nahi karega */
+.matchImageShade {
+  position: absolute;
+
+  inset: 0;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 55%,
+      rgba(0, 0, 0, 0.08) 72%,
+      rgba(0, 0, 0, 0.42) 100%
+    );
+
+  opacity: 1;
+}
+
+
+/* =========================================================
+   CARD HEADER
+========================================================= */
+
+.cardTop {
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 16px;
+
+  padding: 18px 20px 14px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,0.015),
+      rgba(255,255,255,0)
+    );
+}
+
+.cardTop > div {
+  min-width: 0;
+}
+
+
+/* GAME NAME */
+
+.matchGame {
+  display: inline-flex;
+
+  align-items: center;
+
+  width: fit-content;
+
+  margin-bottom: 7px;
+
+  padding: 5px 9px;
+
+  border-radius: 7px;
+
+  background: rgba(255, 82, 0, 0.10);
+
+  border: 1px solid rgba(255, 82, 0, 0.20);
+
+  font-size: 10px;
+
+  line-height: 1;
+
+  font-weight: 900;
+
+  letter-spacing: 0.09em;
+
+  text-transform: uppercase;
+
+  white-space: nowrap;
+}
+
+
+/* TOURNAMENT TITLE */
+
+.cardTop h3 {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: clamp(19px, 2vw, 24px);
+
+  line-height: 1.16;
+
+  font-weight: 900;
+
+  letter-spacing: -0.025em;
+
+  overflow-wrap: anywhere;
+}
+
+
+/* STATUS */
+
+.matchStatus {
+  flex-shrink: 0;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  min-height: 30px;
+
+  padding: 7px 11px;
+
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.06);
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  color: #f5f5f5;
+
+  font-size: 10px;
+
+  line-height: 1;
+
+  font-weight: 900;
+
+  letter-spacing: 0.06em;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   LIVE / JOIN TIMER
+========================================================= */
+
+.liveCountdown {
+  margin:
+    0 20px 14px;
+
+  min-height: 54px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 12px;
+
+  padding: 10px 14px;
+
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 82, 0, 0.12),
+      rgba(255, 82, 0, 0.04)
+    );
+
+  border: 1px solid rgba(255, 82, 0, 0.25);
+}
+
+.joinMatchText,
+.joinBeforeText {
+  font-size: 10px;
+
+  font-weight: 900;
+
+  letter-spacing: 0.07em;
+
+  white-space: nowrap;
+}
+
+.joinMatchText {
+  color: #ff6424;
+}
+
+.joinBeforeText {
+  color: rgba(255,255,255,0.50);
+}
+
+.joinTimer {
+  margin-left: auto;
+
+  color: #ffffff;
+
+  font-size: 20px;
+
+  line-height: 1;
+
+  font-weight: 950;
+
+  font-variant-numeric: tabular-nums;
+
+  letter-spacing: 0.03em;
+}
+
+
+/* =========================================================
+   DETAILS
+========================================================= */
+
+.matchDetails {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 8px;
+
+  padding: 0 20px 10px;
+}
+
+.matchDetails > div {
+  min-width: 0;
+
+  padding: 12px 12px 11px;
+
+  border-radius: 11px;
+
+  background: #101319;
+
+  border: 1px solid rgba(255,255,255,0.07);
+}
+
+.matchDetails small,
+.rewardDetails small {
+  display: block;
+
+  margin: 0 0 6px;
+
+  color: rgba(255,255,255,0.45);
+
+  font-size: 9px;
+
+  line-height: 1;
+
+  font-weight: 900;
+
+  letter-spacing: 0.09em;
+
+  text-transform: uppercase;
+}
+
+.matchDetails strong {
+  display: block;
+
+  color: #ffffff;
+
+  font-size: 14px;
+
+  line-height: 1.2;
+
+  font-weight: 850;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   REWARD / MONEY
+========================================================= */
+
+.rewardDetails {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 8px;
+
+  padding: 0 20px 14px;
+}
+
+.rewardDetails > div {
+  min-width: 0;
+
+  padding: 13px 14px;
+
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #12151b,
+      #0e1015
+    );
+
+  border: 1px solid rgba(255,255,255,0.07);
+}
+
+.rewardDetails strong {
+  display: block;
+
+  color: #ffffff;
+
+  font-size: 18px;
+
+  line-height: 1;
+
+  font-weight: 950;
+
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* PRIZE — stronger visual priority */
+
+.rewardDetails > div:last-child {
+  border-color: rgba(255, 82, 0, 0.25);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,82,0,0.10),
+      #101217
+    );
+}
+
+.rewardDetails > div:last-child strong {
+  color: #ff6424;
+
+  font-size: 20px;
+}
+
+
+/* =========================================================
+   PLAYERS
+========================================================= */
+
+.players {
+  margin: 0 20px;
+
+  padding: 14px 0 15px;
+
+  border-top:
+    1px solid rgba(255,255,255,0.07);
+}
+
+.playersBottomRow {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 18px;
+}
+
+.playersBottomRow > div:first-child {
+  display: flex;
+
+  align-items: baseline;
+
+  gap: 7px;
+}
+
+.playersBottomRow > div:first-child span {
+  color: rgba(255,255,255,0.48);
+
+  font-size: 10px;
+
+  line-height: 1;
+
+  font-weight: 900;
+
+  letter-spacing: 0.08em;
+}
+
+.playersBottomRow > div:first-child strong {
+  color: #ffffff;
+
+  font-size: 18px;
+
+  line-height: 1;
+
+  font-weight: 950;
+}
+
+
+/* =========================================================
+   MATCH BEGINS / COUNTDOWN
+========================================================= */
+
+.matchBeginsCountdown {
+  margin-left: auto;
+
+  text-align: right;
+}
+
+.matchBeginsCountdown span {
+  display: block;
+
+  color: rgba(255,255,255,0.48);
+
+  font-size: 9px;
+
+  line-height: 1;
+
+  font-weight: 900;
+
+  letter-spacing: 0.08em;
+
+  text-transform: uppercase;
+}
+
+.matchBeginsCountdown strong {
+  display: block;
+
+  margin-top: 5px;
+
+  color: #ffffff;
+
+  font-size: 13px;
+
+  line-height: 1;
+
+  font-weight: 900;
+
+  font-variant-numeric: tabular-nums;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   PROGRESS BAR
+========================================================= */
+
+.players + .progressBar,
+.players ~ .progressBar {
+  height: 5px;
+
+  margin:
+    0 20px 16px;
+
+  border-radius: 999px;
+
+  overflow: hidden;
+
+  background: rgba(255,255,255,0.08);
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+  .cardTop {
+    padding: 15px 16px 13px;
+
+    gap: 10px;
+  }
+
+  .cardTop h3 {
+    font-size: 18px;
+  }
+
+  .matchStatus {
+    min-height: 27px;
+
+    padding: 6px 9px;
+
+    font-size: 9px;
+  }
+
+  .matchDetails {
+    padding:
+      0 16px 9px;
+
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .rewardDetails {
+    padding:
+      0 16px 13px;
+  }
+
+  .players {
+    margin: 0 16px;
+  }
+
+  .liveCountdown {
+    margin:
+      0 16px 12px;
+  }
+}
+
+
+@media (max-width: 430px) {
+
+  .matchImageWrap {
+    aspect-ratio: 16 / 10;
+  }
+
+  .cardTop h3 {
+    font-size: 17px;
+  }
+
+  .matchDetails > div {
+    padding: 10px;
+  }
+
+  .matchDetails strong {
+    font-size: 13px;
+  }
+
+  .rewardDetails > div {
+    padding: 11px;
+  }
+
+  .rewardDetails strong {
+    font-size: 16px;
+  }
+
+  .rewardDetails > div:last-child strong {
+    font-size: 18px;
+  }
+
+  .joinTimer {
+    font-size: 17px;
+  }
+
+}
