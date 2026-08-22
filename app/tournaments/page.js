@@ -2960,40 +2960,23 @@ function TournamentCard({
           ONLY DURING 10-MINUTE LIVE WINDOW
       ================================================= */}
 
-      {automaticStatus ===
-        "Live" && (
+      {automaticStatus === "Live" && (
+  <div className="liveCountdown">
 
-        <div
-          className="liveCountdown"
-        >
+    <span className="joinMatchText">
+      JOIN MATCH
+    </span>
 
-          <span
-            className="joinMatchText"
-          >
-            JOIN MATCH
-          </span>
+    <strong className="joinTimer">
+      {formatJoinTimer(joinSecondsLeft)}
+    </strong>
 
+    <span className="joinBeforeText">
+      BEFORE TIMER ENDS
+    </span>
 
-          <strong
-            className="joinTimer"
-          >
-            {
-              formatJoinTimer(
-                joinSecondsLeft
-              )
-            }
-          </strong>
-
-
-          <span
-            className="joinBeforeText"
-          >
-            BEFORE TIMER ENDS
-          </span>
-
-        </div>
-
-      )}
+  </div>
+)}
 
 
       {/* =================================================
@@ -3129,6 +3112,69 @@ function TournamentCard({
 
       </div>
 
+{/* ================= PLAYER STATUS ================= */}
+
+{Number(tournament.capacity) > 0 && (
+  <div className="players">
+
+    <div className="playersRow">
+
+      <div className="playersInfo">
+        <span>PLAYERS</span>
+        <strong>
+          {Number(tournament.joined) || 0}/
+          {Number(tournament.capacity) || 0}
+        </strong>
+      </div>
+
+      <strong className="slotsLeft">
+        {Math.max(
+          (Number(tournament.capacity) || 0) -
+          (Number(tournament.joined) || 0),
+          0
+        )} LEFT
+      </strong>
+
+    </div>
+
+    <div className="progressBar">
+      <span
+        style={{
+          width: `${
+            Number(tournament.capacity) > 0
+              ? Math.min(
+                  ((Number(tournament.joined) || 0) /
+                    Number(tournament.capacity)) * 100,
+                  100
+                )
+              : 0
+          }%`
+        }}
+      />
+    </div>
+
+    {/* UPCOMING TIMER */}
+    {automaticStatus !== "Live" &&
+      automaticStatus !== "Match Ongoing" &&
+      automaticStatus !== "Past" &&
+      Number(matchBeginsSecondsLeft) > 0 && (
+
+      <div className="matchBeginsCountdown">
+
+        <span>MATCH BEGINS IN</span>
+
+        <strong>
+          {formatMatchBeginsTimer(
+            matchBeginsSecondsLeft
+          )}
+        </strong>
+
+      </div>
+
+    )}
+
+  </div>
+)}
 
       {/* =================================================
           PLAYERS
