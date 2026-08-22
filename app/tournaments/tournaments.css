@@ -8820,3 +8820,1025 @@ and (min-width: 701px) {
    END — FINAL VISUAL REPAIR
 ========================================================= */
 
+/* =========================================================
+   PLAY2PROVE — ACTUAL CARD FINAL VISUAL FIX
+   ---------------------------------------------------------
+   IMPORTANT:
+   Paste at VERY END of tournaments CSS.
+   Do not delete existing CSS.
+   This targets the REAL JSX structure.
+========================================================= */
+
+
+/* =========================================================
+   1. GRID — NORMAL PROFESSIONAL CARD SIZE
+========================================================= */
+
+.tournamentPage .tournamentGrid {
+  width: 100% !important;
+
+  display: grid !important;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr)) !important;
+
+  gap: 20px !important;
+
+  align-items: start !important;
+}
+
+
+/* =========================================================
+   2. CARD
+========================================================= */
+
+.tournamentPage .matchCard {
+  width: 100% !important;
+
+  min-width: 0 !important;
+
+  height: auto !important;
+
+  min-height: 0 !important;
+
+  overflow: hidden !important;
+
+  padding: 0 !important;
+
+  border-radius: 16px !important;
+
+  box-sizing: border-box !important;
+}
+
+
+/* =========================================================
+   3. IMAGE
+   SAME CARD STRUCTURE — clean 16:9
+========================================================= */
+
+.tournamentPage .matchCard .matchImageWrap {
+  position: relative !important;
+
+  width: 100% !important;
+
+  height: auto !important;
+
+  aspect-ratio: 16 / 9 !important;
+
+  margin: 0 !important;
+
+  padding: 0 !important;
+
+  overflow: hidden !important;
+
+  border-radius: 0 !important;
+}
+
+
+.tournamentPage .matchCard .matchImageWrap img {
+  display: block !important;
+
+  width: 100% !important;
+
+  height: 100% !important;
+
+  max-width: none !important;
+
+  object-fit: cover !important;
+
+  object-position: center !important;
+
+  transform: none !important;
+}
+
+
+/* =========================================================
+   4. HEADER
+========================================================= */
+
+.tournamentPage .matchCard .cardTop {
+  width: 100% !important;
+
+  min-width: 0 !important;
+
+  padding:
+    15px 18px 0 !important;
+
+  display: flex !important;
+
+  align-items: flex-start !important;
+
+  justify-content: space-between !important;
+
+  gap: 14px !important;
+}
+
+
+.tournamentPage .matchCard .cardTop > div {
+  min-width: 0 !important;
+
+  flex: 1 1 auto !important;
+}
+
+
+.tournamentPage .matchCard .matchGame {
+  display: block !important;
+
+  font-size: 9px !important;
+
+  line-height: 1.2 !important;
+
+  letter-spacing: 1px !important;
+
+  font-weight: 900 !important;
+}
+
+
+.tournamentPage .matchCard .cardTop h3 {
+  display: block !important;
+
+  width: 100% !important;
+
+  max-width: none !important;
+
+  margin:
+    6px 0 0 !important;
+
+  font-size: 18px !important;
+
+  line-height: 1.2 !important;
+
+  font-weight: 900 !important;
+
+  overflow: hidden !important;
+
+  text-overflow: ellipsis !important;
+
+  white-space: nowrap !important;
+}
+
+
+/* =========================================================
+   5. STATUS BADGE
+========================================================= */
+
+.tournamentPage .matchCard .matchStatus {
+  flex: 0 0 auto !important;
+
+  min-width: 0 !important;
+
+  max-width: 150px !important;
+
+  white-space: nowrap !important;
+
+  overflow: hidden !important;
+
+  text-overflow: ellipsis !important;
+
+  padding:
+    6px 9px !important;
+
+  font-size: 8px !important;
+
+  line-height: 1 !important;
+}
+
+
+/* =========================================================
+   6. LIVE JOIN STRIP
+   EXACT POSITION:
+   HEADER → STRIP → DETAILS
+========================================================= */
+
+.tournamentPage .matchCard .liveCountdown {
+  width:
+    calc(100% - 36px) !important;
+
+  min-width: 0 !important;
+
+  min-height: 46px !important;
+
+  margin:
+    11px 18px 0 !important;
+
+  padding:
+    9px 12px !important;
+
+  display: grid !important;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto
+    minmax(0, 1fr) !important;
+
+  align-items: center !important;
+
+  gap: 10px !important;
+
+  box-sizing: border-box !important;
+
+  overflow: hidden !important;
+
+  border-radius: 9px !important;
+
+  text-align: center !important;
+}
+
+
+/* LEFT */
+
+.tournamentPage .matchCard .joinMatchText {
+  justify-self: start !important;
+
+  min-width: 0 !important;
+
+  max-width: 100% !important;
+
+  overflow: hidden !important;
+
+  text-overflow: ellipsis !important;
+
+  white-space: nowrap !important;
+
+  text-align: left !important;
+
+  font-size: 10px !important;
+
+  font-weight: 900 !important;
+}
+
+
+/* CENTER */
+
+.tournamentPage .matchCard .joinTimer {
+  justify-self: center !important;
+
+  min-width: 62px !important;
+
+  text-align: center !important;
+
+  white-space: nowrap !important;
+
+  font-size: 20px !important;
+
+  line-height: 1 !important;
+
+  font-weight: 950 !important;
+
+  font-variant-numeric:
+    tabular-nums !important;
+}
+
+
+/* RIGHT */
+
+.tournamentPage .matchCard .joinBeforeText {
+  justify-self: end !important;
+
+  min-width: 0 !important;
+
+  max-width: 100% !important;
+
+  overflow: hidden !important;
+
+  text-overflow: ellipsis !important;
+
+  white-space: nowrap !important;
+
+  text-align: right !important;
+
+  font-size: 8px !important;
+
+  font-weight: 800 !important;
+}
+
+
+/* =========================================================
+   7. DATE / TIME / MODE / MAP
+========================================================= */
+
+.tournamentPage .matchCard .matchDetails {
+  width: 100% !important;
+
+  min-width: 0 !important;
+
+  margin-top: 15px !important;
+
+  padding:
+    0 18px !important;
+
+  display: grid !important;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr)) !important;
+
+  gap: 8px !important;
+}
+
+
+.tournamentPage .matchCard .matchDetails > div {
+  min-width: 0 !important;
+
+  min-height: 64px !important;
+
+  padding:
+    11px 10px !important;
+
+  overflow: hidden !important;
+
+  border-radius: 9px !important;
+
+  box-sizing: border-box !important;
+}
+
+
+.tournamentPage .matchCard .matchDetails small {
+  display: block !important;
+
+  font-size: 8px !important;
+
+  line-height: 1.15 !important;
+
+  font-weight: 800 !important;
+
+  letter-spacing: .6px !important;
+}
+
+
+.tournamentPage .matchCard .matchDetails strong {
+  display: block !important;
+
+  margin-top: 7px !important;
+
+  min-width: 0 !important;
+
+  font-size: 11px !important;
+
+  line-height: 1.2 !important;
+
+  font-weight: 900 !important;
+
+  white-space: nowrap !important;
+
+  overflow: hidden !important;
+
+  text-overflow: ellipsis !important;
+}
+
+
+/* =========================================================
+   8. ENTRY / KILL / PRIZE
+========================================================= */
+
+.tournamentPage .matchCard .rewardDetails {
+  width: 100% !important;
+
+  min-width: 0 !important;
+
+  margin-top: 8px !important;
+
+  padding:
+    0 18px !important;
+
+  display: grid !important;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr)) !important;
+
+  gap: 8px !important;
+}
+
+
+.tournamentPage .matchCard .rewardDetails > div {
+  min-width: 0 !important;
+
+  min-height: 64px !important;
+
+  padding:
+    11px 10px !important;
+
+  overflow: hidden !important;
+
+  border-radius: 9px !important;
+
+  box-sizing: border-box !important;
+}
+
+
+.tournamentPage .matchCard .rewardDetails small {
+  display: block !important;
+
+  font-size: 8px !important;
+
+  line-height: 1.15 !important;
+
+  font-weight: 800 !important;
+
+  letter-spacing: .6px !important;
+}
+
+
+.tournamentPage .matchCard .rewardDetails strong {
+  display: block !important;
+
+  margin-top: 7px !important;
+
+  min-width: 0 !important;
+
+  font-size: 12px !important;
+
+  line-height: 1.2 !important;
+
+  font-weight: 900 !important;
+
+  white-space: nowrap !important;
+
+  overflow: hidden !important;
+
+  text-overflow: ellipsis !important;
+}
+
+
+.tournamentPage .matchCard
+.rewardDetails > div:last-child strong {
+  font-size: 15px !important;
+}
+
+
+/* =========================================================
+   9. PLAYERS — REAL JSX FIX
+   THIS IS THE IMPORTANT ONE.
+========================================================= */
+
+.tournamentPage .matchCard .players {
+  width: 100% !important;
+
+  min-width: 0 !important;
+
+  margin-top: 13px !important;
+
+  padding:
+    0 18px !important;
+
+  box-sizing: border-box !important;
+}
+
+
+/*
+   REAL JSX:
+
+   .players
+      ├── first div
+      │     ├── PLAYERS
+      │     ├── 18/32
+      │     └── MATCH BEGINS IN
+      │
+      └── progressBar
+
+   So DON'T target playersBottomRow.
+*/
+
+.tournamentPage .matchCard .players > div:first-child {
+  width: 100% !important;
+
+  min-width: 0 !important;
+
+  display: grid !important;
+
+  grid-template-columns:
+    auto
+    auto
+    minmax(0, 1fr) !important;
+
+  align-items: center !important;
+
+  column-gap: 8px !important;
+
+  box-sizing: border-box !important;
+}
+
+
+/* PLAYERS */
+
+.tournamentPage .matchCard
+.players > div:first-child > span {
+  min-width: 0 !important;
+
+  white-space: nowrap !important;
+
+  font-size: 10px !important;
+
+  line-height: 1 !important;
+
+  font-weight: 900 !important;
+
+  letter-spacing: .6px !important;
+}
+
+
+/* 18/32 */
+
+.tournamentPage .matchCard
+.players > div:first-child > strong {
+  min-width: 0 !important;
+
+  white-space: nowrap !important;
+
+  font-size: 11px !important;
+
+  line-height: 1 !important;
+
+  font-weight: 950 !important;
+}
+
+
+/* =========================================================
+   10. UPCOMING MATCH BEGINS
+========================================================= */
+
+.tournamentPage .matchCard
+.matchBeginsCountdown {
+  min-width: 0 !important;
+
+  width: 100% !important;
+
+  margin-left: 0 !important;
+
+  text-align: right !important;
+
+  overflow: hidden !important;
+}
+
+
+.tournamentPage .matchCard
+.matchBeginsCountdown span {
+  display: block !important;
+
+  width: 100% !important;
+
+  min-width: 0 !important;
+
+  font-size: 8px !important;
+
+  line-height: 1.1 !important;
+
+  font-weight: 900 !important;
+
+  letter-spacing: .7px !important;
+
+  white-space: nowrap !important;
+
+  overflow: hidden !important;
+
+  text-overflow: ellipsis !important;
+}
+
+
+.tournamentPage .matchCard
+.matchBeginsCountdown strong {
+  display: block !important;
+
+  width: 100% !important;
+
+  min-width: 0 !important;
+
+  margin-top: 4px !important;
+
+  font-size: 11px !important;
+
+  line-height: 1.1 !important;
+
+  font-weight: 950 !important;
+
+  white-space: nowrap !important;
+
+  overflow: hidden !important;
+
+  text-overflow: ellipsis !important;
+
+  font-variant-numeric:
+    tabular-nums !important;
+}
+
+
+/* =========================================================
+   11. PROGRESS BAR
+========================================================= */
+
+.tournamentPage .matchCard .progressBar {
+  width: 100% !important;
+
+  height: 6px !important;
+
+  margin-top: 9px !important;
+
+  overflow: hidden !important;
+
+  border-radius: 999px !important;
+}
+
+
+.tournamentPage .matchCard
+.progressBar span {
+  display: block !important;
+
+  height: 100% !important;
+
+  min-width: 0 !important;
+
+  border-radius: inherit !important;
+
+  transition:
+    width .35s ease !important;
+}
+
+
+/* =========================================================
+   12. ACTION BUTTON
+========================================================= */
+
+.tournamentPage .matchCard
+.joinButton,
+.tournamentPage .matchCard
+.liveButton,
+.tournamentPage .matchCard
+.decidingButton,
+.tournamentPage .matchCard
+.resultButton,
+.tournamentPage .matchCard
+.statusAction {
+  width:
+    calc(100% - 36px) !important;
+
+  min-width: 0 !important;
+
+  min-height: 46px !important;
+
+  margin:
+    14px 18px 18px !important;
+
+  box-sizing: border-box !important;
+
+  border-radius: 9px !important;
+
+  font-size: 10px !important;
+
+  font-weight: 950 !important;
+
+  overflow: hidden !important;
+
+  white-space: nowrap !important;
+
+  text-overflow: ellipsis !important;
+}
+
+
+/* =========================================================
+   13. DESKTOP
+========================================================= */
+
+@media (min-width: 901px) {
+
+  .tournamentPage .tournamentGrid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr)) !important;
+
+    gap: 20px !important;
+  }
+
+}
+
+
+/* =========================================================
+   14. TABLET
+========================================================= */
+
+@media (max-width: 900px)
+and (min-width: 601px) {
+
+  .tournamentPage .tournamentGrid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr)) !important;
+
+    gap: 14px !important;
+  }
+
+
+  .tournamentPage .matchCard
+  .cardTop h3 {
+    font-size: 16px !important;
+  }
+
+}
+
+
+/* =========================================================
+   15. MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+  .tournamentPage .tournamentGrid {
+    grid-template-columns:
+      minmax(0, 1fr) !important;
+
+    gap: 14px !important;
+  }
+
+
+  .tournamentPage .matchCard
+  .cardTop {
+    padding:
+      13px 14px 0 !important;
+
+    gap: 8px !important;
+  }
+
+
+  .tournamentPage .matchCard
+  .cardTop h3 {
+    font-size: 17px !important;
+
+    white-space: nowrap !important;
+  }
+
+
+  .tournamentPage .matchCard
+  .matchStatus {
+    max-width: 105px !important;
+
+    font-size: 7px !important;
+
+    padding:
+      6px 8px !important;
+  }
+
+
+  .tournamentPage .matchCard
+  .liveCountdown {
+    width:
+      calc(100% - 28px) !important;
+
+    margin:
+      10px 14px 0 !important;
+
+    min-height: 44px !important;
+
+    padding:
+      8px 8px !important;
+
+    gap: 5px !important;
+  }
+
+
+  .tournamentPage .matchCard
+  .joinMatchText {
+    font-size: 8px !important;
+  }
+
+
+  .tournamentPage .matchCard
+  .joinTimer {
+    min-width: 54px !important;
+
+    font-size: 17px !important;
+  }
+
+
+  .tournamentPage .matchCard
+  .joinBeforeText {
+    font-size: 7px !important;
+  }
+
+
+  .tournamentPage .matchCard
+  .matchDetails {
+    padding:
+      0 14px !important;
+
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr)) !important;
+
+    gap: 6px !important;
+  }
+
+
+  .tournamentPage .matchCard
+  .matchDetails > div {
+    min-height: 58px !important;
+
+    padding:
+      9px !important;
+  }
+
+
+  .tournamentPage .matchCard
+  .matchDetails small {
+    font-size: 7px !important;
+  }
+
+
+  .tournamentPage .matchCard
+  .matchDetails strong {
+    font-size: 10px !important;
+  }
+
+
+  .tournamentPage .matchCard
+  .rewardDetails {
+    padding:
+      0 14px !important;
+
+    gap: 6px !important;
+  }
+
+
+  .tournamentPage .matchCard
+  .rewardDetails > div {
+    min-height: 58px !important;
+
+    padding:
+      9px !important;
+  }
+
+
+  .tournamentPage .matchCard
+  .rewardDetails small {
+    font-size: 7px !important;
+  }
+
+
+  .tournamentPage .matchCard
+  .rewardDetails strong {
+    font-size: 11px !important;
+  }
+
+
+  .tournamentPage .matchCard
+  .rewardDetails > div:last-child strong {
+    font-size: 13px !important;
+  }
+
+
+  /* REAL PLAYER ROW */
+
+  .tournamentPage .matchCard
+  .players {
+    padding:
+      0 14px !important;
+
+    margin-top: 12px !important;
+  }
+
+
+  .tournamentPage .matchCard
+  .players > div:first-child {
+    grid-template-columns:
+      auto
+      auto
+      minmax(0, 1fr) !important;
+
+    column-gap: 6px !important;
+  }
+
+
+  .tournamentPage .matchCard
+  .players > div:first-child > span {
+    font-size: 9px !important;
+  }
+
+
+  .tournamentPage .matchCard
+  .players > div:first-child > strong {
+    font-size: 10px !important;
+  }
+
+
+  .tournamentPage .matchCard
+  .matchBeginsCountdown span {
+    font-size: 6.5px !important;
+  }
+
+
+  .tournamentPage .matchCard
+  .matchBeginsCountdown strong {
+    font-size: 8px !important;
+  }
+
+
+  .tournamentPage .matchCard
+  .progressBar {
+    height: 6px !important;
+
+    margin-top: 8px !important;
+  }
+
+
+  .tournamentPage .matchCard
+  .joinButton,
+  .tournamentPage .matchCard
+  .liveButton,
+  .tournamentPage .matchCard
+  .decidingButton,
+  .tournamentPage .matchCard
+  .resultButton,
+  .tournamentPage .matchCard
+  .statusAction {
+    width:
+      calc(100% - 28px) !important;
+
+    min-height: 44px !important;
+
+    margin:
+      13px 14px 14px !important;
+  }
+
+}
+
+
+/* =========================================================
+   16. VERY SMALL PHONE
+========================================================= */
+
+@media (max-width: 380px) {
+
+  .tournamentPage .matchCard
+  .cardTop {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+
+  .tournamentPage .matchCard
+  .matchDetails,
+  .tournamentPage .matchCard
+  .rewardDetails,
+  .tournamentPage .matchCard
+  .players {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+
+  .tournamentPage .matchCard
+  .liveCountdown {
+    width:
+      calc(100% - 24px) !important;
+
+    margin-left: 12px !important;
+    margin-right: 12px !important;
+  }
+
+
+  .tournamentPage .matchCard
+  .joinTimer {
+    font-size: 16px !important;
+  }
+
+
+  .tournamentPage .matchCard
+  .joinMatchText,
+  .tournamentPage .matchCard
+  .joinBeforeText {
+    font-size: 6.5px !important;
+  }
+
+
+  .tournamentPage .matchCard
+  .matchBeginsCountdown strong {
+    font-size: 7px !important;
+  }
+
+
+  .tournamentPage .matchCard
+  .joinButton,
+  .tournamentPage .matchCard
+  .liveButton,
+  .tournamentPage .matchCard
+  .decidingButton,
+  .tournamentPage .matchCard
+  .resultButton,
+  .tournamentPage .matchCard
+  .statusAction {
+    width:
+      calc(100% - 24px) !important;
+
+    margin-left: 12px !important;
+    margin-right: 12px !important;
+  }
+
+}
+
+
+/* =========================================================
+   17. FINAL OVERFLOW PROTECTION
+========================================================= */
+
+.tournamentPage .matchCard,
+.tournamentPage .matchCard * {
+  max-width: 100%;
+}
+
+.tournamentPage .matchCard {
+  overflow: hidden !important;
+}
