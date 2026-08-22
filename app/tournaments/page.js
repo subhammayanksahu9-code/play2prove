@@ -951,17 +951,10 @@ export default function TournamentsPage() {
               ),
 
         joined:
-          numberValue(
-            row?.joined ??
-            row?.playersJoined
-          ),
+  18,
 
-        capacity:
-          numberValue(
-            row?.capacity ??
-            row?.maxPlayers ??
-            row?.slots
-          ),
+capacity:
+  32,
 
       };
 
@@ -3110,104 +3103,39 @@ function TournamentCard({
 
         </div>
 
-      </div>
+           </div>
 
-{/* ================= PLAYER STATUS ================= */}
-
-{Number(tournament.capacity) > 0 && (
-  <div className="players">
-
-    <div className="playersRow">
-
-      <div className="playersInfo">
-        <span>PLAYERS</span>
-        <strong>
-          {Number(tournament.joined) || 0}/
-          {Number(tournament.capacity) || 0}
-        </strong>
-      </div>
-
-      <strong className="slotsLeft">
-        {Math.max(
-          (Number(tournament.capacity) || 0) -
-          (Number(tournament.joined) || 0),
-          0
-        )} LEFT
-      </strong>
-
-    </div>
-
-    <div className="progressBar">
-      <span
-        style={{
-          width: `${
-            Number(tournament.capacity) > 0
-              ? Math.min(
-                  ((Number(tournament.joined) || 0) /
-                    Number(tournament.capacity)) * 100,
-                  100
-                )
-              : 0
-          }%`
-        }}
-      />
-    </div>
-
-    {/* UPCOMING TIMER */}
-    {automaticStatus !== "Live" &&
-      automaticStatus !== "Match Ongoing" &&
-      automaticStatus !== "Past" &&
-      Number(matchBeginsSecondsLeft) > 0 && (
-
-      <div className="matchBeginsCountdown">
-
-        <span>MATCH BEGINS IN</span>
-
-        <strong>
-          {formatMatchBeginsTimer(
-            matchBeginsSecondsLeft
-          )}
-        </strong>
-
-      </div>
-
-    )}
-
-  </div>
-)}
 
       {/* =================================================
-          PLAYERS
+          PLAYERS + PROGRESS + UPCOMING COUNTDOWN
       ================================================= */}
 
       {capacity > 0 && (
 
-        <div
-          className="players"
-        >
+        <div className="players">
 
-          <div>
+          <div className="playersRow">
 
-            <span>
-              PLAYERS
-            </span>
+            <div className="playersInfo">
 
-            <strong>
-              {joined}/{capacity}
-            </strong>
+              <span>
+                PLAYERS
+              </span>
 
-            <span
-              className="slotsLeft"
-            >
+              <strong>
+                {joined}/{capacity}
+              </strong>
+
+            </div>
+
+            <strong className="slotsLeft">
               {left} LEFT
-            </span>
+            </strong>
 
           </div>
 
 
-          <div
-            className="progressBar"
-          >
+          <div className="progressBar">
 
             <span
               style={{
@@ -3219,43 +3147,29 @@ function TournamentCard({
           </div>
 
 
-          {/* =============================================
-              UPCOMING TIMER
-              DISAPPEARS AUTOMATICALLY AT MATCH START
-          ============================================= */}
+          {(
+            automaticStatus === "Upcoming" ||
+            automaticStatus === "Starting Soon"
+          ) &&
+            matchBeginsSecondsLeft > 0 && (
 
-          {
-            (
-              automaticStatus ===
-                "Upcoming" ||
-              automaticStatus ===
-                "Starting Soon"
-            ) &&
+            <div className="matchBeginsCountdown">
 
-            matchBeginsSecondsLeft >
-              0 && (
+              <span>
+                MATCH BEGINS IN
+              </span>
 
-              <div
-                className=
-                  "matchBeginsCountdown"
-              >
+              <strong>
+                {
+                  formatMatchBeginsTimer(
+                    matchBeginsSecondsLeft
+                  )
+                }
+              </strong>
 
-                <span>
-                  MATCH BEGINS IN
-                </span>
+            </div>
 
-                <strong>
-                  {
-                    formatMatchBeginsTimer(
-                      matchBeginsSecondsLeft
-                    )
-                  }
-                </strong>
-
-              </div>
-
-            )
-          }
+          )}
 
         </div>
 
@@ -3267,46 +3181,29 @@ function TournamentCard({
       ================================================= */}
 
       {
-        automaticStatus ===
-          "Past" &&
-        tournament
-          .calculationStatus
-          ?.toLowerCase() ===
-          "completed" ? (
+        automaticStatus === "Past" &&
+        tournament.calculationStatus
+          ?.toLowerCase() === "completed" ? (
 
-          <button
-            className="resultButton"
-          >
+          <button className="resultButton">
             CHECK MATCH RESULTS →
           </button>
 
-        ) : automaticStatus ===
-            "Calculation Ongoing" ? (
+        ) : automaticStatus === "Calculation Ongoing" ? (
 
-          <div
-            className=
-              "statusAction calculationAction"
-          >
+          <div className="statusAction calculationAction">
             CALCULATION ONGOING
           </div>
 
-        ) : automaticStatus ===
-            "Match Closing" ? (
+        ) : automaticStatus === "Match Closing" ? (
 
-          <div
-            className=
-              "statusAction closingAction"
-          >
+          <div className="statusAction closingAction">
             MATCH CLOSING
           </div>
 
-        ) : automaticStatus ===
-            "Match Ongoing" ? (
+        ) : automaticStatus === "Match Ongoing" ? (
 
-          <div
-            className=
-              "statusAction ongoingAction"
-          >
+          <div className="statusAction ongoingAction">
             MATCH ONGOING
           </div>
 
@@ -3314,8 +3211,7 @@ function TournamentCard({
 
           <button
             className={
-              automaticStatus ===
-                "Live"
+              automaticStatus === "Live"
                 ? "liveButton"
                 : "joinButton"
             }
@@ -3325,12 +3221,10 @@ function TournamentCard({
 
         )
       }
-
     </article>
-
   );
-
 }
+      
 
 /* =========================================================
    AUTOMATIC SLOT FALLBACK
