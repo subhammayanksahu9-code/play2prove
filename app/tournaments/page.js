@@ -2580,22 +2580,38 @@ function TournamentCard({
 }) {
 
   /* =======================================================
-     LIVE SCREEN REFRESH
-     UI every second refreshes.
-     Time itself comes from Master Clock.
+     REFRESH CARD EVERY SECOND
+     TIME STILL COMES FROM MASTER CLOCK
   ======================================================= */
 
+  const [, setClockTick] =
+    useState(0);
+
+  useEffect(() => {
+
+    const timer =
+      setInterval(() => {
+
+        setClockTick(
+          value => value + 1
+        );
+
+      }, 1000);
+
+    return () =>
+      clearInterval(timer);
+
+  }, []);
 
 
   /* =======================================================
-     CURRENT MASTER STATUS
+     MASTER STATUS
   ======================================================= */
 
   const masterNow =
     getMasterNow();
 
-
-  const status =
+  const automaticStatus =
     getTournamentAutomaticStatus(
       tournament,
       masterNow
@@ -2603,25 +2619,47 @@ function TournamentCard({
 
 
   /* =======================================================
-     CARD STATUS CLASS
+     USER-FACING CARD STATUS
+     Starting Soon is visually still UPCOMING.
   ======================================================= */
 
+  const status =
+    automaticStatus ===
+      "Starting Soon"
+      ? "Upcoming"
+      : automaticStatus;
+
+
   const cardStatusClass =
-    statusClass(status);
+    statusClass(
+      automaticStatus
+    );
 
 
   /* =======================================================
-     PLAYER PERCENTAGE
+     PLAYER %
   ======================================================= */
 
+  const joined =
+    Number(
+      tournament.joined
+    ) || 0;
+
+  const capacity =
+    Number(
+      tournament.capacity
+    ) || 0;
+
+  const left =
+    Math.max(
+      capacity - joined,
+      0
+    );
+
   const percentage =
-    tournament.capacity >
-    0
+    capacity > 0
       ? Math.min(
-          (
-            tournament.joined /
-            tournament.capacity
-          ) * 100,
+          (joined / capacity) * 100,
           100
         )
       : 0;
@@ -2629,11 +2667,6 @@ function TournamentCard({
 
   /* =======================================================
      IMAGE
-     
-     IMPORTANT:
-     Tournament image first.
-     Game image fallback second.
-     Existing alignment preserved.
   ======================================================= */
 
   const image =
@@ -2643,173 +2676,167 @@ function TournamentCard({
 
 
   /* =======================================================
-     LIVE COUNTDOWN
-     
-     LIVE = exactly 10 minutes
-     Countdown uses Master Clock.
+     MASTER TOURNAMENT START
   ======================================================= */
+
+  const tournamentStart =
+    getTournamentStartTimestamp(
+      tournament
+    );
 
 
   /* =======================================================
-   PLAY2PROVE MATCH TIMING
-   -------------------------------------------------------
-   BEFORE MATCH:
-   MATCH BEGINS IN = full countdown
+     UPCOMING COUNTDOWN
+  ======================================================= */
 
-   AT MATCH TIME:
-   10 minute JOINING WINDOW starts
+  let matchBeginsSecondsLeft =
+    0;
 
-   AFTER 10 MINUTES:
-   JOINING WINDOW disappears
+  if (
+    automaticStatus ===
+      "Upcoming" ||
+    automaticStatus ===
+      "Starting Soon"
+  ) {
 
-   IMPORTANT:
-   Uses existing MASTER CLOCK.
-   No browser clock.
-======================================================= */
-
-  const tournamentStart =
-  getTournamentStartTimestamp(
-    tournament
-  );
-  
-let matchBeginsSecondsLeft = 0;
-let joinSecondsLeft = 0;
-
-const JOIN_WAIT_MS =
-  10 * 60 * 1000;
-
-
-/* =========================
-   BEFORE MATCH
-========================= */
-
-if (
-  status === "Upcoming" &&
-  Number.isFinite(tournamentStart)
-) {
-
-  matchBeginsSecondsLeft =
-    Math.max(
-      0,
-      Math.ceil(
-        (
-          tournamentStart -
-          masterNow
-        ) / 1000
+    if (
+      Number.isFinite(
+        tournamentStart
       )
+    ) {
+
+      matchBeginsSecondsLeft =
+        Math.max(
+          0,
+          Math.ceil(
+            (
+              tournamentStart -
+              masterNow
+            ) / 1000
+          )
+        );
+
+    }
+
+  }
+
+
+  /* =======================================================
+     LIVE 10-MINUTE JOIN WINDOW
+  ======================================================= */
+
+  let joinSecondsLeft =
+    0;
+
+  if (
+    automaticStatus ===
+      "Live" &&
+    Number.isFinite(
+      tournamentStart
+    )
+  ) {
+
+    joinSecondsLeft =
+      Math.max(
+        0,
+        Math.ceil(
+          (
+            tournamentStart +
+            10 * 60 * 1000 -
+            masterNow
+          ) / 1000
+        )
+      );
+
+  }
+
+
+  /* =======================================================
+     UPCOMING TIMER FORMAT
+
+     Example:
+     1D 01HR:23MIN:45SEC
+  ======================================================= */
+
+  function formatMatchBeginsTimer(
+    totalSeconds
+  ) {
+
+    const safe =
+      Math.max(
+        0,
+        Number(
+          totalSeconds
+        ) || 0
+      );
+
+    const days =
+      Math.floor(
+        safe / 86400
+      );
+
+    const hours =
+      Math.floor(
+        (safe % 86400) /
+        3600
+      );
+
+    const minutes =
+      Math.floor(
+        (safe % 3600) /
+        60
+      );
+
+    const seconds =
+      safe % 60;
+
+    return (
+      `${days}D ` +
+      `${String(hours).padStart(2, "0")}HR:` +
+      `${String(minutes).padStart(2, "0")}MIN:` +
+      `${String(seconds).padStart(2, "0")}SEC`
     );
 
-}
+  }
 
 
-/* =========================
-   AFTER MATCH TIME
+  /* =======================================================
+     LIVE JOIN TIMER
 
-   10 minute joining window
-========================= */
+     Example:
+     09:59
+  ======================================================= */
 
-if (
-  status === "Live" &&
-  Number.isFinite(tournamentStart)
-) {
+  function formatJoinTimer(
+    totalSeconds
+  ) {
 
-  joinSecondsLeft =
-    Math.max(
-      0,
-      Math.ceil(
-        (
-          tournamentStart +
-          JOIN_WAIT_MS -
-          masterNow
-        ) / 1000
-      )
+    const safe =
+      Math.max(
+        0,
+        Number(
+          totalSeconds
+        ) || 0
+      );
+
+    const minutes =
+      Math.floor(
+        safe / 60
+      );
+
+    const seconds =
+      safe % 60;
+
+    return (
+      `${String(
+        minutes
+      ).padStart(2, "0")}:` +
+      `${String(
+        seconds
+      ).padStart(2, "0")}`
     );
 
-}
-
-
-/* =========================
-   DAY / HR / MIN / SEC
-========================= */
-
-function formatMatchBeginsTimer(
-  totalSeconds
-) {
-
-  const safe =
-    Math.max(
-      0,
-      Number(totalSeconds) || 0
-    );
-
-  const days =
-    Math.floor(
-      safe / 86400
-    );
-
-  const hours =
-    Math.floor(
-      (safe % 86400) / 3600
-    );
-
-  const minutes =
-    Math.floor(
-      (safe % 3600) / 60
-    );
-
-  const seconds =
-    safe % 60;
-
-  return (
-    `${days}D ` +
-    `${String(hours).padStart(2, "0")}HR:` +
-    `${String(minutes).padStart(2, "0")}MIN:` +
-    `${String(seconds).padStart(2, "0")}SEC`
-  );
-
-}
-
-
-/* =========================
-   10 MINUTE COUNTDOWN
-========================= */
-
-function formatJoinTimer(
-  totalSeconds
-) {
-
-  const safe =
-    Math.max(
-      0,
-      Number(totalSeconds) || 0
-    );
-
-  const minutes =
-    Math.floor(
-      safe / 60
-    );
-
-  const seconds =
-    safe % 60;
-
-  return (
-    `${String(minutes).padStart(2, "0")}:` +
-    `${String(seconds).padStart(2, "0")}`
-  );
-
-}
-
-
-const matchBeginsTimer =
-  formatMatchBeginsTimer(
-    matchBeginsSecondsLeft
-  );
-
-
-const joinTimer =
-  formatJoinTimer(
-    joinSecondsLeft
-  );
+  }
 
 
   /* =======================================================
@@ -2825,7 +2852,7 @@ const joinTimer =
     >
 
       {/* =================================================
-          16:9 IMAGE
+          IMAGE
       ================================================= */}
 
       <div
@@ -2841,17 +2868,10 @@ const joinTimer =
             }
             loading="lazy"
             decoding="async"
-            fetchPriority="low"
             onError={(e) => {
 
               const img =
                 e.currentTarget;
-
-
-              /*
-                If tournament image
-                fails, use game image.
-              */
 
               if (
                 game?.image &&
@@ -2877,15 +2897,7 @@ const joinTimer =
           <div
             className="matchImageFallback"
           >
-
-            {game?.name
-              ?.toLowerCase()
-              .includes(
-                "free"
-              )
-              ? "🔥"
-              : "🎮"}
-
+            🎮
           </div>
 
         )}
@@ -2898,7 +2910,7 @@ const joinTimer =
 
 
       {/* =================================================
-          CARD HEADER
+          HEADER
       ================================================= */}
 
       <div
@@ -2916,7 +2928,6 @@ const joinTimer =
             }
           </span>
 
-
           <h3>
             {
               tournament.title
@@ -2930,7 +2941,7 @@ const joinTimer =
           className="matchStatus"
         >
 
-          {status ===
+          {automaticStatus ===
             "Live" &&
             "● "}
 
@@ -2944,33 +2955,49 @@ const joinTimer =
 
 
       {/* =================================================
-          LIVE COUNTDOWN
+          LIVE JOIN STRIP
+
+          ONLY DURING 10-MINUTE LIVE WINDOW
       ================================================= */}
 
-      {status === "Live" && (
-  <div
-    className="liveCountdown"
-    aria-live="polite"
-  >
+      {automaticStatus ===
+        "Live" && (
 
-    <span className="joinMatchText">
-      JOIN MATCH
-    </span>
+        <div
+          className="liveCountdown"
+        >
 
-    <strong className="joinTimer">
-      {joinTimer}
-    </strong>
+          <span
+            className="joinMatchText"
+          >
+            JOIN MATCH
+          </span>
 
-    <span className="joinBeforeText">
-      BEFORE TIMER ENDS
-    </span>
 
-  </div>
-)}
+          <strong
+            className="joinTimer"
+          >
+            {
+              formatJoinTimer(
+                joinSecondsLeft
+              )
+            }
+          </strong>
+
+
+          <span
+            className="joinBeforeText"
+          >
+            BEFORE TIMER ENDS
+          </span>
+
+        </div>
+
+      )}
 
 
       {/* =================================================
-          DETAILS
+          DATE / TIME / MODE / MAP
       ================================================= */}
 
       <div
@@ -3044,7 +3071,7 @@ const joinTimer =
 
 
       {/* =================================================
-          REWARD / MONEY
+          ENTRY / KILL / PRIZE
       ================================================= */}
 
       <div
@@ -3104,40 +3131,32 @@ const joinTimer =
 
 
       {/* =================================================
-          PLAYERS / CAPACITY
+          PLAYERS
       ================================================= */}
 
-      <div className="players">
+      {capacity > 0 && (
 
-          <div className="playersBottomRow">
+        <div
+          className="players"
+        >
 
-  <div>
-    <span>
-      PLAYERS
-    </span>
+          <div>
 
-    <strong>
-      {tournament.joined}
-      /
-      {tournament.capacity}
-    </strong>
-  </div>
+            <span>
+              PLAYERS
+            </span>
 
-  {status === "Upcoming" && (
-    <div className="matchBeginsCountdown">
+            <strong>
+              {joined}/{capacity}
+            </strong>
 
-      <span>
-        MATCH BEGINS IN
-      </span>
+            <span
+              className="slotsLeft"
+            >
+              {left} LEFT
+            </span>
 
-      <strong>
-        {matchBeginsTimer}
-      </strong>
-
-    </div>
-  )}
-
-</div>
+          </div>
 
 
           <div
@@ -3153,92 +3172,119 @@ const joinTimer =
 
           </div>
 
+
+          {/* =============================================
+              UPCOMING TIMER
+              DISAPPEARS AUTOMATICALLY AT MATCH START
+          ============================================= */}
+
+          {
+            (
+              automaticStatus ===
+                "Upcoming" ||
+              automaticStatus ===
+                "Starting Soon"
+            ) &&
+
+            matchBeginsSecondsLeft >
+              0 && (
+
+              <div
+                className=
+                  "matchBeginsCountdown"
+              >
+
+                <span>
+                  MATCH BEGINS IN
+                </span>
+
+                <strong>
+                  {
+                    formatMatchBeginsTimer(
+                      matchBeginsSecondsLeft
+                    )
+                  }
+                </strong>
+
+              </div>
+
+            )
+          }
+
         </div>
 
-      
+      )}
 
 
       {/* =================================================
           ACTION
-          
-          IMPORTANT:
-          Button is controlled by
-          automatic tournament status.
       ================================================= */}
 
       {
-        status ===
+        automaticStatus ===
           "Past" &&
-        clean(
-          tournament.calculationStatus
-        ).toLowerCase() ===
+        tournament
+          .calculationStatus
+          ?.toLowerCase() ===
           "completed" ? (
 
-        <button
-          className="resultButton"
-        >
-          CHECK MATCH RESULTS →
-        </button>
+          <button
+            className="resultButton"
+          >
+            CHECK MATCH RESULTS →
+          </button>
 
-      ) : status ===
-        "Calculation Ongoing" ? (
+        ) : automaticStatus ===
+            "Calculation Ongoing" ? (
 
-        <div
-          className={
-            "statusAction " +
-            "calculationAction"
-          }
-        >
-          CALCULATION ONGOING
-        </div>
+          <div
+            className=
+              "statusAction calculationAction"
+          >
+            CALCULATION ONGOING
+          </div>
 
-      ) : status ===
-        "Match Closing" ? (
+        ) : automaticStatus ===
+            "Match Closing" ? (
 
-        <div
-          className={
-            "statusAction " +
-            "closingAction"
-          }
-        >
-          MATCH CLOSING
-        </div>
+          <div
+            className=
+              "statusAction closingAction"
+          >
+            MATCH CLOSING
+          </div>
 
-      ) : status ===
-        "Match Ongoing" ? (
+        ) : automaticStatus ===
+            "Match Ongoing" ? (
 
-        <div
-          className={
-            "statusAction " +
-            "ongoingAction"
-          }
-        >
-          MATCH ONGOING
-        </div>
+          <div
+            className=
+              "statusAction ongoingAction"
+          >
+            MATCH ONGOING
+          </div>
 
-      ) : (
+        ) : (
 
-        <button
-          className={
-            status ===
-            "Live"
-              ? "liveButton"
-              : "joinButton"
-          }
-        >
+          <button
+            className={
+              automaticStatus ===
+                "Live"
+                ? "liveButton"
+                : "joinButton"
+            }
+          >
+            VIEW & JOIN →
+          </button>
 
-          VIEW & JOIN →
-
-        </button>
-
-      )}
+        )
+      }
 
     </article>
 
   );
 
 }
-
 
 /* =========================================================
    AUTOMATIC SLOT FALLBACK
