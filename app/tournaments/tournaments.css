@@ -5053,715 +5053,669 @@ span.statusPast {
 
 }
 
-function TournamentCard({
-  tournament,
-  game,
-}) {
+/* =========================================================
+   PLAY2PROVE — FINAL TOURNAMENT CARD
+   CLEAN SINGLE CARD SYSTEM
+========================================================= */
 
-  /* =======================================================
-     REFRESH CARD EVERY SECOND
-     TIME STILL COMES FROM MASTER CLOCK
-  ======================================================= */
-
-  const [, setClockTick] =
-    useState(0);
-
-  useEffect(() => {
-
-    const timer =
-      setInterval(() => {
-
-        setClockTick(
-          value => value + 1
-        );
-
-      }, 1000);
-
-    return () =>
-      clearInterval(timer);
-
-  }, []);
+.tournamentPage,
+.tournamentPage * {
+  box-sizing: border-box;
+}
 
 
-  /* =======================================================
-     MASTER STATUS
-  ======================================================= */
+/* =========================
+   PAGE / GRID
+========================= */
 
-  const masterNow =
-    getMasterNow();
+.tournamentPage .tournamentSection {
+  width: min(1320px, calc(100% - 40px));
+  margin: 0 auto;
+  min-width: 0;
+}
 
-  const automaticStatus =
-    getTournamentAutomaticStatus(
-      tournament,
-      masterNow
-    );
+.tournamentPage .tournamentGrid {
+  width: 100%;
+  min-width: 0;
 
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 
-  /* =======================================================
-     USER-FACING CARD STATUS
-     Starting Soon is visually still UPCOMING.
-  ======================================================= */
+  gap: 20px;
 
-  const status =
-    automaticStatus ===
-      "Starting Soon"
-      ? "Upcoming"
-      : automaticStatus;
+  align-items: start;
+}
 
 
-  const cardStatusClass =
-    statusClass(
-      automaticStatus
-    );
+/* =========================
+   CARD
+========================= */
+
+.tournamentPage .matchCard {
+  width: 100%;
+  min-width: 0;
+
+  height: auto !important;
+  min-height: 0 !important;
+
+  padding: 0 !important;
+  margin: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+
+  border-radius: 16px;
+}
 
 
-  /* =======================================================
-     PLAYER %
-  ======================================================= */
+/* =========================
+   IMAGE — TRUE 16:9
+========================= */
 
-  const joined =
-    Number(
-      tournament.joined
-    ) || 0;
+.tournamentPage .matchImageWrap {
+  position: relative;
 
-  const capacity =
-    Number(
-      tournament.capacity
-    ) || 0;
+  width: 100%;
+  aspect-ratio: 16 / 9;
 
-  const left =
-    Math.max(
-      capacity - joined,
-      0
-    );
+  height: auto !important;
 
-  const percentage =
-    capacity > 0
-      ? Math.min(
-          (joined / capacity) * 100,
-          100
-        )
-      : 0;
+  margin: 0 !important;
+  padding: 0 !important;
 
+  overflow: hidden;
 
-  /* =======================================================
-     IMAGE
-  ======================================================= */
+  flex-shrink: 0;
+}
 
-  const image =
-    tournament.image ||
-    game?.image ||
-    "";
+.tournamentPage .matchImageWrap img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+  object-position: center;
+
+  transform: none !important;
+}
 
 
-  /* =======================================================
-     MASTER TOURNAMENT START
-  ======================================================= */
+/* =========================
+   HEADER
+========================= */
 
-  const tournamentStart =
-    getTournamentStartTimestamp(
-      tournament
-    );
+.tournamentPage .matchCard .cardTop {
+  width: 100%;
+  min-width: 0;
+
+  padding: 15px 18px 0;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 14px;
+}
+
+.tournamentPage .matchCard .cardTop > div {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.tournamentPage .matchGame {
+  display: block;
+
+  font-size: 9px;
+  line-height: 1.2;
+
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.tournamentPage .matchCard .cardTop h3 {
+  width: 100%;
+  min-width: 0;
+
+  margin: 6px 0 0;
+
+  font-size: 18px;
+  line-height: 1.2;
+
+  font-weight: 900;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 
-  /* =======================================================
-     UPCOMING COUNTDOWN
-  ======================================================= */
+/* =========================
+   STATUS
+========================= */
 
-  let matchBeginsSecondsLeft =
-    0;
+.tournamentPage .matchStatus {
+  flex: 0 0 auto;
 
-  if (
-    automaticStatus ===
-      "Upcoming" ||
-    automaticStatus ===
-      "Starting Soon"
-  ) {
+  max-width: 130px;
+  min-width: 0;
 
-    if (
-      Number.isFinite(
-        tournamentStart
-      )
-    ) {
+  padding: 7px 10px;
 
-      matchBeginsSecondsLeft =
-        Math.max(
-          0,
-          Math.ceil(
-            (
-              tournamentStart -
-              masterNow
-            ) / 1000
-          )
-        );
+  border-radius: 999px;
 
-    }
+  font-size: 8px;
+  line-height: 1;
 
+  font-weight: 900;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* =========================
+   LIVE JOIN STRIP
+========================= */
+
+.tournamentPage .liveCountdown {
+  width: calc(100% - 36px);
+
+  min-height: 46px;
+
+  margin: 11px 18px 0;
+
+  padding: 8px 12px;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto
+    minmax(0, 1fr);
+
+  align-items: center;
+
+  gap: 8px;
+
+  overflow: hidden;
+
+  border-radius: 9px;
+
+  text-align: center;
+
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* LEFT */
+
+.tournamentPage .joinMatchText {
+  min-width: 0;
+
+  text-align: left;
+
+  font-size: 9px;
+  font-weight: 900;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* CENTER */
+
+.tournamentPage .joinTimer {
+  min-width: 58px;
+
+  text-align: center;
+
+  font-size: 18px;
+  line-height: 1;
+
+  font-weight: 950;
+
+  white-space: nowrap;
+}
+
+
+/* RIGHT */
+
+.tournamentPage .joinBeforeText {
+  min-width: 0;
+
+  text-align: right;
+
+  font-size: 8px;
+  font-weight: 900;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* =========================
+   DETAILS
+========================= */
+
+.tournamentPage .matchDetails {
+  width: 100%;
+  min-width: 0;
+
+  margin-top: 15px;
+  padding: 0 18px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 8px;
+}
+
+.tournamentPage .matchDetails > div {
+  min-width: 0;
+  min-height: 64px;
+
+  padding: 11px 10px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  overflow: hidden;
+
+  border-radius: 9px;
+}
+
+.tournamentPage .matchDetails small,
+.tournamentPage .rewardDetails small {
+  display: block;
+
+  font-size: 8px;
+  line-height: 1.15;
+
+  font-weight: 800;
+
+  letter-spacing: .6px;
+}
+
+.tournamentPage .matchDetails strong {
+  display: block;
+
+  min-width: 0;
+
+  margin-top: 7px;
+
+  font-size: 11px;
+  line-height: 1.2;
+
+  font-weight: 900;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* =========================
+   REWARDS
+========================= */
+
+.tournamentPage .rewardDetails {
+  width: 100%;
+  min-width: 0;
+
+  margin-top: 8px;
+  padding: 0 18px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 8px;
+}
+
+.tournamentPage .rewardDetails > div {
+  min-width: 0;
+  min-height: 64px;
+
+  padding: 11px 10px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  overflow: hidden;
+
+  border-radius: 9px;
+}
+
+.tournamentPage .rewardDetails strong {
+  display: block;
+
+  min-width: 0;
+
+  margin-top: 7px;
+
+  font-size: 12px;
+  line-height: 1.2;
+
+  font-weight: 900;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tournamentPage .rewardDetails > div:last-child strong {
+  font-size: 15px;
+}
+
+
+/* =========================
+   PLAYERS ROW
+========================= */
+
+.tournamentPage .players {
+  width: 100%;
+  min-width: 0;
+
+  margin-top: 13px;
+  padding: 0 18px;
+}
+
+.tournamentPage .players > div:first-child {
+  width: 100%;
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+}
+
+.tournamentPage .players > div:first-child span {
+  flex: 0 0 auto;
+
+  font-size: 9px;
+  line-height: 1;
+
+  font-weight: 900;
+
+  white-space: nowrap;
+}
+
+.tournamentPage .players > div:first-child strong {
+  flex: 0 0 auto;
+
+  font-size: 10px;
+  line-height: 1;
+
+  font-weight: 950;
+
+  white-space: nowrap;
+}
+
+
+/* LEFT SLOTS */
+
+.tournamentPage .players .slotsLeft {
+  margin-left: auto;
+
+  font-size: 9px;
+  line-height: 1;
+
+  font-weight: 900;
+
+  white-space: nowrap;
+}
+
+
+/* =========================
+   UPCOMING COUNTDOWN
+========================= */
+
+.tournamentPage .matchBeginsCountdown {
+  width: 100%;
+  min-width: 0;
+
+  margin-top: 10px;
+
+  text-align: center;
+
+  overflow: hidden;
+}
+
+.tournamentPage .matchBeginsCountdown span {
+  display: block;
+
+  font-size: 8px;
+  line-height: 1.2;
+
+  font-weight: 900;
+
+  letter-spacing: .7px;
+}
+
+.tournamentPage .matchBeginsCountdown strong {
+  display: block;
+
+  margin-top: 4px;
+
+  font-size: 12px;
+  line-height: 1.15;
+
+  font-weight: 950;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* =========================
+   PROGRESS BAR
+========================= */
+
+.tournamentPage .progressBar {
+  width: 100%;
+
+  height: 6px;
+
+  margin-top: 9px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+}
+
+.tournamentPage .progressBar span {
+  display: block;
+
+  height: 100%;
+
+  border-radius: inherit;
+
+  transition: width .3s ease;
+}
+
+
+/* =========================
+   ACTION
+========================= */
+
+.tournamentPage .matchCard .joinButton,
+.tournamentPage .matchCard .liveButton,
+.tournamentPage .matchCard .resultButton,
+.tournamentPage .matchCard .statusAction {
+  width: calc(100% - 36px);
+
+  min-height: 46px;
+
+  margin: 14px 18px 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 9px;
+
+  font-size: 9px;
+  font-weight: 950;
+
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 900px) {
+
+  .tournamentPage .tournamentGrid {
+    grid-template-columns: 1fr;
   }
 
+}
 
-  /* =======================================================
-     LIVE 10-MINUTE JOIN WINDOW
-  ======================================================= */
 
-  let joinSecondsLeft =
-    0;
+@media (max-width: 700px) {
 
-  if (
-    automaticStatus ===
-      "Live" &&
-    Number.isFinite(
-      tournamentStart
-    )
-  ) {
-
-    joinSecondsLeft =
-      Math.max(
-        0,
-        Math.ceil(
-          (
-            tournamentStart +
-            10 * 60 * 1000 -
-            masterNow
-          ) / 1000
-        )
-      );
-
+  .tournamentPage .tournamentSection {
+    width: calc(100% - 20px);
   }
 
-
-  /* =======================================================
-     UPCOMING TIMER FORMAT
-
-     Example:
-     1D 01HR:23MIN:45SEC
-  ======================================================= */
-
-  function formatMatchBeginsTimer(
-    totalSeconds
-  ) {
-
-    const safe =
-      Math.max(
-        0,
-        Number(
-          totalSeconds
-        ) || 0
-      );
-
-    const days =
-      Math.floor(
-        safe / 86400
-      );
-
-    const hours =
-      Math.floor(
-        (safe % 86400) /
-        3600
-      );
-
-    const minutes =
-      Math.floor(
-        (safe % 3600) /
-        60
-      );
-
-    const seconds =
-      safe % 60;
-
-    return (
-      `${days}D ` +
-      `${String(hours).padStart(2, "0")}HR:` +
-      `${String(minutes).padStart(2, "0")}MIN:` +
-      `${String(seconds).padStart(2, "0")}SEC`
-    );
-
+  .tournamentPage .matchCard .cardTop {
+    padding: 13px 14px 0;
   }
 
-
-  /* =======================================================
-     LIVE JOIN TIMER
-
-     Example:
-     09:59
-  ======================================================= */
-
-  function formatJoinTimer(
-    totalSeconds
-  ) {
-
-    const safe =
-      Math.max(
-        0,
-        Number(
-          totalSeconds
-        ) || 0
-      );
-
-    const minutes =
-      Math.floor(
-        safe / 60
-      );
-
-    const seconds =
-      safe % 60;
-
-    return (
-      `${String(
-        minutes
-      ).padStart(2, "0")}:` +
-      `${String(
-        seconds
-      ).padStart(2, "0")}`
-    );
-
+  .tournamentPage .matchCard .cardTop h3 {
+    font-size: 16px;
   }
 
+  .tournamentPage .matchStatus {
+    max-width: 105px;
+    font-size: 7px;
+  }
 
-  /* =======================================================
-     CARD
-  ======================================================= */
+  .tournamentPage .liveCountdown {
+    width: calc(100% - 28px);
 
-  return (
+    margin-left: 14px;
+    margin-right: 14px;
 
-    <article
-      className={
-        `matchCard ${cardStatusClass}`
-      }
-    >
+    min-height: 44px;
 
-      {/* =================================================
-          IMAGE
-      ================================================= */}
+    gap: 5px;
+  }
 
-      <div
-        className="matchImageWrap"
-      >
+  .tournamentPage .joinMatchText {
+    font-size: 8px;
+  }
 
-        {image ? (
+  .tournamentPage .joinTimer {
+    min-width: 52px;
+    font-size: 16px;
+  }
 
-          <img
-            src={image}
-            alt={
-              tournament.title
-            }
-            loading="lazy"
-            decoding="async"
-            onError={(e) => {
+  .tournamentPage .joinBeforeText {
+    font-size: 7px;
+  }
 
-              const img =
-                e.currentTarget;
+  .tournamentPage .matchDetails {
+    padding: 0 14px;
 
-              if (
-                game?.image &&
-                img.src !==
-                  game.image
-              ) {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
 
-                img.src =
-                  game.image;
+    gap: 6px;
+  }
 
-              } else {
+  .tournamentPage .matchDetails > div {
+    min-height: 58px;
+    padding: 9px;
+  }
 
-                img.style.display =
-                  "none";
+  .tournamentPage .matchDetails small,
+  .tournamentPage .rewardDetails small {
+    font-size: 7px;
+  }
 
-              }
+  .tournamentPage .matchDetails strong {
+    font-size: 10px;
+  }
 
-            }}
-          />
+  .tournamentPage .rewardDetails {
+    padding: 0 14px;
+    gap: 6px;
+  }
 
-        ) : (
+  .tournamentPage .rewardDetails > div {
+    min-height: 58px;
+    padding: 9px;
+  }
 
-          <div
-            className="matchImageFallback"
-          >
-            🎮
-          </div>
+  .tournamentPage .rewardDetails strong {
+    font-size: 11px;
+  }
 
-        )}
+  .tournamentPage .players {
+    padding: 0 14px;
+  }
 
-        <div
-          className="matchImageShade"
-        />
+  .tournamentPage .players .slotsLeft {
+    font-size: 8px;
+  }
 
-      </div>
+  .tournamentPage .matchBeginsCountdown strong {
+    font-size: 10px;
+  }
 
+  .tournamentPage .matchCard .joinButton,
+  .tournamentPage .matchCard .liveButton,
+  .tournamentPage .matchCard .resultButton,
+  .tournamentPage .matchCard .statusAction {
+    width: calc(100% - 28px);
 
-      {/* =================================================
-          HEADER
-      ================================================= */}
+    margin-left: 14px;
+    margin-right: 14px;
+  }
 
-      <div
-        className="cardTop"
-      >
+}
 
-        <div>
 
-          <span
-            className="matchGame"
-          >
-            {
-              game?.name ||
-              "TOURNAMENT"
-            }
-          </span>
+@media (max-width: 380px) {
 
-          <h3>
-            {
-              tournament.title
-            }
-          </h3>
+  .tournamentPage .matchCard .cardTop {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
 
-        </div>
-
-
-        <span
-          className="matchStatus"
-        >
-
-          {automaticStatus ===
-            "Live" &&
-            "● "}
-
-          {
-            status.toUpperCase()
-          }
-
-        </span>
-
-      </div>
-
-
-      {/* =================================================
-          LIVE JOIN STRIP
-
-          ONLY DURING 10-MINUTE LIVE WINDOW
-      ================================================= */}
-
-      {automaticStatus ===
-        "Live" && (
-
-        <div
-          className="liveCountdown"
-        >
-
-          <span
-            className="joinMatchText"
-          >
-            JOIN MATCH
-          </span>
-
-
-          <strong
-            className="joinTimer"
-          >
-            {
-              formatJoinTimer(
-                joinSecondsLeft
-              )
-            }
-          </strong>
-
-
-          <span
-            className="joinBeforeText"
-          >
-            BEFORE TIMER ENDS
-          </span>
-
-        </div>
-
-      )}
-
-
-      {/* =================================================
-          DATE / TIME / MODE / MAP
-      ================================================= */}
-
-      <div
-        className="matchDetails"
-      >
-
-        <div>
-
-          <small>
-            DATE
-          </small>
-
-          <strong>
-            {formatDate(
-              tournament.date,
-              tournament.year
-            )}
-          </strong>
-
-        </div>
-
-
-        <div>
-
-          <small>
-            TIME
-          </small>
-
-          <strong>
-            {
-              tournament.time ||
-              "—"
-            }
-          </strong>
-
-        </div>
-
-
-        <div>
-
-          <small>
-            MODE
-          </small>
-
-          <strong>
-            {
-              tournament.mode ||
-              "—"
-            }
-          </strong>
-
-        </div>
-
-
-        <div>
-
-          <small>
-            MAP
-          </small>
-
-          <strong>
-            {
-              tournament.map ||
-              "—"
-            }
-          </strong>
-
-        </div>
-
-      </div>
-
-
-      {/* =================================================
-          ENTRY / KILL / PRIZE
-      ================================================= */}
-
-      <div
-        className="rewardDetails"
-      >
-
-        <div>
-
-          <small>
-            ENTRY
-          </small>
-
-          <strong>
-            ₹
-            {
-              tournament.entry
-            }
-          </strong>
-
-        </div>
-
-
-        <div>
-
-          <small>
-            PER KILL
-          </small>
-
-          <strong>
-            ₹
-            {
-              tournament.kill
-            }
-          </strong>
-
-        </div>
-
-
-        <div>
-
-          <small>
-            PRIZE POOL
-          </small>
-
-          <strong
-            className="orangeText"
-          >
-            ₹
-            {
-              tournament.prize
-            }
-          </strong>
-
-        </div>
-
-      </div>
-
-
-      {/* =================================================
-          PLAYERS
-      ================================================= */}
-
-      {capacity > 0 && (
-
-        <div
-          className="players"
-        >
-
-          <div>
-
-            <span>
-              PLAYERS
-            </span>
-
-            <strong>
-              {joined}/{capacity}
-            </strong>
-
-            <span
-              className="slotsLeft"
-            >
-              {left} LEFT
-            </span>
-
-          </div>
-
-
-          <div
-            className="progressBar"
-          >
-
-            <span
-              style={{
-                width:
-                  `${percentage}%`,
-              }}
-            />
-
-          </div>
-
-
-          {/* =============================================
-              UPCOMING TIMER
-              DISAPPEARS AUTOMATICALLY AT MATCH START
-          ============================================= */}
-
-          {
-            (
-              automaticStatus ===
-                "Upcoming" ||
-              automaticStatus ===
-                "Starting Soon"
-            ) &&
-
-            matchBeginsSecondsLeft >
-              0 && (
-
-              <div
-                className=
-                  "matchBeginsCountdown"
-              >
-
-                <span>
-                  MATCH BEGINS IN
-                </span>
-
-                <strong>
-                  {
-                    formatMatchBeginsTimer(
-                      matchBeginsSecondsLeft
-                    )
-                  }
-                </strong>
-
-              </div>
-
-            )
-          }
-
-        </div>
-
-      )}
-
-
-      {/* =================================================
-          ACTION
-      ================================================= */}
-
-      {
-        automaticStatus ===
-          "Past" &&
-        tournament
-          .calculationStatus
-          ?.toLowerCase() ===
-          "completed" ? (
-
-          <button
-            className="resultButton"
-          >
-            CHECK MATCH RESULTS →
-          </button>
-
-        ) : automaticStatus ===
-            "Calculation Ongoing" ? (
-
-          <div
-            className=
-              "statusAction calculationAction"
-          >
-            CALCULATION ONGOING
-          </div>
-
-        ) : automaticStatus ===
-            "Match Closing" ? (
-
-          <div
-            className=
-              "statusAction closingAction"
-          >
-            MATCH CLOSING
-          </div>
-
-        ) : automaticStatus ===
-            "Match Ongoing" ? (
-
-          <div
-            className=
-              "statusAction ongoingAction"
-          >
-            MATCH ONGOING
-          </div>
-
-        ) : (
-
-          <button
-            className={
-              automaticStatus ===
-                "Live"
-                ? "liveButton"
-                : "joinButton"
-            }
-          >
-            VIEW & JOIN →
-          </button>
-
-        )
-      }
-
-    </article>
-
-  );
+  .tournamentPage .matchDetails,
+  .tournamentPage .rewardDetails,
+  .tournamentPage .players {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .tournamentPage .liveCountdown {
+    width: calc(100% - 24px);
+
+    margin-left: 12px;
+    margin-right: 12px;
+  }
 
 }
 
