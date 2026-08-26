@@ -3210,14 +3210,18 @@ function TournamentCard({
         ) : (
 
           <button
-            className={
-              automaticStatus === "Live"
-                ? "liveButton"
-                : "joinButton"
-            }
-          >
-            VIEW & JOIN →
-          </button>
+  className={
+    automaticStatus === "Live"
+      ? "liveButton"
+      : "joinButton"
+  }
+  onClick={() => {
+    window.location.href =
+      `/tournaments/${encodeURIComponent(tournament.id)}`;
+  }}
+>
+  VIEW & JOIN →
+</button>
 
         )
       }
