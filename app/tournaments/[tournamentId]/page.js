@@ -997,4 +997,344 @@ export default function TournamentDetailPage({
               </h2>
 
               <p>
-             
+                Please read all rules before
+                joining the tournament.
+              </p>
+
+            </div>
+
+
+            {DEFAULT_RULES.map(
+              (section, index) => {
+
+                const isOpen =
+                  openRule === index;
+
+                return (
+
+                  <article
+                    className={
+                      isOpen
+                        ? "tdRuleSection open"
+                        : "tdRuleSection"
+                    }
+                    key={section.title}
+                  >
+
+                    <button
+                      className="tdRuleHeader"
+                      onClick={() =>
+                        setOpenRule(
+                          isOpen
+                            ? null
+                            : index
+                        )
+                      }
+                    >
+
+                      <div>
+
+                        <span className="tdRuleIcon">
+                          {section.icon}
+                        </span>
+
+                        <strong>
+                          {section.title}
+                        </strong>
+
+                      </div>
+
+                      <span className="tdChevron">
+                        {isOpen
+                          ? "−"
+                          : "+"}
+                      </span>
+
+                    </button>
+
+
+                    {isOpen && (
+
+                      <div className="tdRuleBody">
+
+                        {section.rules.map(
+                          (rule, ruleIndex) => (
+
+                            <div
+                              className="tdRuleItem"
+                              key={ruleIndex}
+                            >
+
+                              <span>
+                                {ruleIndex + 1}
+                              </span>
+
+                              <p>
+                                {rule}
+                              </p>
+
+                            </div>
+
+                          )
+                        )}
+
+                      </div>
+
+                    )}
+
+                  </article>
+
+                );
+
+              }
+            )}
+
+          </section>
+
+        )}
+
+
+        {/* PRIZES */}
+
+        {activeTab === "prizes" && (
+
+          <section className="tdCard">
+
+            <div className="tdSectionIntro">
+
+              <span>
+                REWARDS
+              </span>
+
+              <h2>
+                PRIZE INFORMATION
+              </h2>
+
+            </div>
+
+
+            <div className="tdPrizeHero">
+
+              <span>
+                TOTAL PRIZE POOL
+              </span>
+
+              <strong>
+                {prizePool}
+              </strong>
+
+            </div>
+
+
+            <div className="tdPrizeGrid">
+
+              <div>
+                <span>🏆</span>
+
+                <strong>
+                  PLACEMENT PRIZES
+                </strong>
+
+                <p>
+                  Final placement rewards will
+                  be calculated according to
+                  tournament rules.
+                </p>
+              </div>
+
+
+              <div>
+                <span>🔫</span>
+
+                <strong>
+                  KILL REWARD
+                </strong>
+
+                <p>
+                  {perKill} per valid kill,
+                  subject to tournament rules.
+                </p>
+              </div>
+
+            </div>
+
+          </section>
+
+        )}
+
+
+        {/* MATCH INFO */}
+
+        {activeTab === "match" && (
+
+          <section className="tdGrid">
+
+            <section className="tdCard">
+
+              <div className="tdCardTitle">
+
+                <div>
+                  <span>
+                    MATCH
+                  </span>
+
+                  <h2>
+                    INFORMATION
+                  </h2>
+                </div>
+
+              </div>
+
+
+              <div className="tdDetailsGrid">
+
+                <div>
+                  <span>GAME</span>
+                  <strong>{game}</strong>
+                </div>
+
+                <div>
+                  <span>MODE</span>
+                  <strong>{mode}</strong>
+                </div>
+
+                <div>
+                  <span>MAP</span>
+                  <strong>{map}</strong>
+                </div>
+
+                <div>
+                  <span>START DATE</span>
+                  <strong>{date}</strong>
+                </div>
+
+                <div>
+                  <span>START TIME</span>
+                  <strong>{time}</strong>
+                </div>
+
+              </div>
+
+            </section>
+
+
+            <aside className="tdCard tdRoomCard">
+
+              <span>
+                ROOM DETAILS
+              </span>
+
+              <h2>
+                🔒 LOCKED
+              </h2>
+
+              <p>
+                Room ID and password will be
+                available to eligible registered
+                players at the scheduled room
+                release time.
+              </p>
+
+            </aside>
+
+          </section>
+
+        )}
+
+      </section>
+
+
+      {/* ===================================================
+         JOIN MODAL
+      =================================================== */}
+
+      {joinOpen && (
+
+        <div
+          className="tdModal"
+          onClick={closeJoin}
+        >
+
+          <div
+            className="tdModalBox"
+            onClick={(event) =>
+              event.stopPropagation()
+            }
+          >
+
+            <button
+              className="tdModalClose"
+              onClick={closeJoin}
+            >
+              ×
+            </button>
+
+
+            <span>
+              JOIN TOURNAMENT
+            </span>
+
+            <h2>
+              {title}
+            </h2>
+
+
+            <p>
+              Enter your player details.
+            </p>
+
+
+            <input
+              value={joinName}
+              onChange={(event) =>
+                setJoinName(
+                  event.target.value
+                )
+              }
+              placeholder="Player Name"
+            />
+
+
+            <input
+              value={joinUID}
+              onChange={(event) =>
+                setJoinUID(
+                  event.target.value
+                )
+              }
+              placeholder="Game UID"
+            />
+
+
+            {joinMessage && (
+
+              <div className="tdJoinMessage">
+                {joinMessage}
+              </div>
+
+            )}
+
+
+            <button
+              className="tdConfirmJoin"
+              onClick={confirmJoin}
+            >
+              CONTINUE →
+            </button>
+
+
+            <small>
+              Phase 1 test flow.
+              Registration database integration
+              will be added next.
+            </small>
+
+          </div>
+
+        </div>
+
+      )}
+
+    </main>
+  );
+}
