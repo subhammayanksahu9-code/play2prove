@@ -1,1 +1,867 @@
+/* =========================================================
+   PLAY2PROVE — TOURNAMENT DETAIL
+========================================================= */
 
+.tdPage {
+  min-height: 100vh;
+  background:
+    radial-gradient(
+      circle at top,
+      rgba(92, 68, 255, 0.16),
+      transparent 35%
+    ),
+    #07070b;
+  color: #ffffff;
+  padding: 24px;
+}
+
+.tdTopBar {
+  max-width: 1250px;
+  margin: 0 auto 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.tdBackButton {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,.12);
+  color: white;
+  padding: 11px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.tdBackButton:hover {
+  border-color: rgba(121, 92, 255, .8);
+}
+
+.tdId {
+  color: rgba(255,255,255,.45);
+  font-size: 12px;
+  max-width: 60%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.tdHero {
+  max-width: 1250px;
+  min-height: 430px;
+  margin: auto;
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: #11111a;
+}
+
+.tdHeroImage {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: .38;
+  transform: scale(1.03);
+}
+
+.tdHeroOverlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(8,8,13,.98),
+      rgba(8,8,13,.75),
+      rgba(8,8,13,.40)
+    ),
+    linear-gradient(
+      0deg,
+      rgba(8,8,13,.95),
+      transparent 55%
+    );
+}
+
+.tdHeroContent {
+  position: relative;
+  z-index: 2;
+  padding: 42px;
+}
+
+.tdGameRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.tdGameBadge,
+.tdStatus {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .5px;
+  padding: 8px 12px;
+  border-radius: 999px;
+}
+
+.tdGameBadge {
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.10);
+}
+
+.tdStatus {
+  background: rgba(61, 220, 132, .12);
+  color: #67f5aa;
+}
+
+.tdStatus.calculation-ongoing {
+  color: #ffd166;
+  background: rgba(255, 209, 102, .10);
+}
+
+.tdStatus.completed {
+  color: #b4b4c3;
+  background: rgba(255,255,255,.06);
+}
+
+.tdHero h1 {
+  margin: 18px 0 10px;
+  font-size: clamp(30px, 5vw, 58px);
+  line-height: 1;
+  max-width: 850px;
+}
+
+.tdMeta {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  color: rgba(255,255,255,.65);
+}
+
+.tdStats {
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.tdStat {
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(8,8,14,.60);
+  border: 1px solid rgba(255,255,255,.08);
+}
+
+.tdStat span {
+  display: block;
+  color: rgba(255,255,255,.45);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.tdStat strong {
+  display: block;
+  margin-top: 7px;
+  font-size: 19px;
+}
+
+.tdJoinArea {
+  margin-top: 28px;
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+
+.tdSlotInfo {
+  flex: 1;
+}
+
+.tdSlotInfo strong {
+  font-size: 22px;
+}
+
+.tdSlotInfo span {
+  margin-left: 8px;
+  color: rgba(255,255,255,.45);
+  font-size: 11px;
+}
+
+.tdProgress {
+  height: 7px;
+  background: rgba(255,255,255,.08);
+  border-radius: 99px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+
+.tdProgress div {
+  height: 100%;
+  background:
+    linear-gradient(
+      90deg,
+      #6f4cff,
+      #b34cff
+    );
+  border-radius: inherit;
+}
+
+.tdJoinButton,
+.tdConfirmJoin {
+  border: none;
+  cursor: pointer;
+  color: white;
+  font-weight: 900;
+  padding: 16px 24px;
+  border-radius: 14px;
+  background:
+    linear-gradient(
+      135deg,
+      #674cff,
+      #b24cff
+    );
+  box-shadow:
+    0 12px 35px
+    rgba(103,76,255,.28);
+}
+
+.tdClosed {
+  padding: 15px 20px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.08);
+  color: rgba(255,255,255,.6);
+}
+
+
+/* =========================================================
+   TABS
+========================================================= */
+
+.tdTabs {
+  max-width: 1250px;
+  margin: 22px auto;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.tdTab {
+  flex: 0 0 auto;
+  padding: 12px 18px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 10px;
+  background: rgba(255,255,255,.03);
+  color: rgba(255,255,255,.55);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .6px;
+}
+
+.tdTab.active {
+  background: rgba(108,76,255,.15);
+  border-color: rgba(108,76,255,.7);
+  color: white;
+}
+
+
+/* =========================================================
+   CONTENT
+========================================================= */
+
+.tdContent {
+  max-width: 1250px;
+  margin: auto;
+}
+
+.tdGrid {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 2fr)
+    minmax(300px, 1fr);
+  gap: 20px;
+}
+
+.tdCard {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.05),
+      rgba(255,255,255,.025)
+    );
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 22px;
+  padding: 24px;
+}
+
+.tdCardTitle,
+.tdPlayersHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tdCardTitle span,
+.tdSectionIntro > span,
+.tdPlayersHeader span {
+  display: block;
+  color: #947cff;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1.4px;
+}
+
+.tdCard h2,
+.tdSectionIntro h2 {
+  margin: 5px 0 0;
+  font-size: 25px;
+}
+
+.tdDetailsGrid {
+  margin-top: 26px;
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.tdDetailsGrid > div {
+  padding: 16px;
+  background: rgba(0,0,0,.18);
+  border-radius: 14px;
+}
+
+.tdDetailsGrid span,
+.tdQuickInfo span {
+  display: block;
+  color: rgba(255,255,255,.42);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.tdDetailsGrid strong,
+.tdQuickInfo strong {
+  display: block;
+  margin-top: 7px;
+}
+
+.tdQuickInfo {
+  margin-top: 25px;
+  display: grid;
+  gap: 16px;
+}
+
+.tdQuickInfo > div {
+  padding-bottom: 16px;
+  border-bottom:
+    1px solid
+    rgba(255,255,255,.07);
+}
+
+
+/* =========================================================
+   PLAYERS
+========================================================= */
+
+.tdPlayerCount {
+  color: #a88cff;
+  font-weight: 900;
+}
+
+.tdSearch {
+  width: 100%;
+  margin: 22px 0 16px;
+  padding: 15px;
+  background: rgba(0,0,0,.25);
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 12px;
+  color: white;
+  outline: none;
+}
+
+.tdSearch:focus {
+  border-color: rgba(125,100,255,.8);
+}
+
+.tdPlayerList {
+  display: grid;
+  gap: 10px;
+}
+
+.tdPlayer {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  background: rgba(0,0,0,.18);
+  border-radius: 14px;
+}
+
+.tdPlayerNumber {
+  color: rgba(255,255,255,.30);
+  font-size: 12px;
+  width: 25px;
+}
+
+.tdAvatar {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background:
+    linear-gradient(
+      135deg,
+      #634cff,
+      #b54cff
+    );
+  font-weight: 900;
+}
+
+.tdPlayerInfo {
+  flex: 1;
+}
+
+.tdPlayerInfo strong {
+  display: block;
+}
+
+.tdPlayerInfo span {
+  display: block;
+  margin-top: 4px;
+  color: rgba(255,255,255,.40);
+  font-size: 12px;
+}
+
+.tdJoined {
+  color: #65f3a7;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+
+/* =========================================================
+   RULES
+========================================================= */
+
+.tdRules {
+  display: grid;
+  gap: 12px;
+}
+
+.tdSectionIntro {
+  margin-bottom: 10px;
+}
+
+.tdSectionIntro p {
+  color: rgba(255,255,255,.45);
+}
+
+.tdRuleSection {
+  background: rgba(255,255,255,.035);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.tdRuleSection.open {
+  border-color: rgba(120,90,255,.45);
+}
+
+.tdRuleHeader {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: transparent;
+  border: none;
+  color: white;
+  padding: 20px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.tdRuleHeader > div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tdRuleIcon {
+  font-size: 20px;
+}
+
+.tdChevron {
+  font-size: 24px;
+  color: #a58dff;
+}
+
+.tdRuleBody {
+  padding: 0 20px 20px;
+  display: grid;
+  gap: 10px;
+}
+
+.tdRuleItem {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  background: rgba(0,0,0,.17);
+  border-radius: 12px;
+}
+
+.tdRuleItem > span {
+  min-width: 25px;
+  height: 25px;
+  display: grid;
+  place-items: center;
+  background: rgba(120,90,255,.16);
+  color: #a88cff;
+  border-radius: 7px;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.tdRuleItem p {
+  margin: 2px 0;
+  color: rgba(255,255,255,.65);
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   PRIZES
+========================================================= */
+
+.tdPrizeHero {
+  margin: 25px 0;
+  padding: 32px;
+  border-radius: 18px;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(109,75,255,.22),
+      rgba(181,75,255,.12)
+    );
+}
+
+.tdPrizeHero span {
+  display: block;
+  color: rgba(255,255,255,.55);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.tdPrizeHero strong {
+  display: block;
+  margin-top: 10px;
+  font-size: 42px;
+}
+
+.tdPrizeGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.tdPrizeGrid > div {
+  padding: 20px;
+  border-radius: 16px;
+  background: rgba(0,0,0,.18);
+}
+
+.tdPrizeGrid span {
+  font-size: 25px;
+  display: block;
+}
+
+.tdPrizeGrid strong {
+  display: block;
+  margin-top: 12px;
+}
+
+.tdPrizeGrid p {
+  color: rgba(255,255,255,.45);
+  line-height: 1.6;
+  font-size: 13px;
+}
+
+
+/* =========================================================
+   ROOM
+========================================================= */
+
+.tdRoomCard {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,180,80,.08),
+      rgba(255,255,255,.02)
+    );
+}
+
+.tdRoomCard > span {
+  color: #ffcc75;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.tdRoomCard h2 {
+  margin-top: 15px;
+}
+
+.tdRoomCard p {
+  color: rgba(255,255,255,.45);
+  line-height: 1.7;
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.tdModal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(0,0,0,.75);
+  backdrop-filter: blur(8px);
+}
+
+.tdModalBox {
+  width: min(480px, 100%);
+  position: relative;
+  background: #12121b;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 24px;
+  padding: 28px;
+}
+
+.tdModalBox > span {
+  color: #9b84ff;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.tdModalBox h2 {
+  margin: 8px 0;
+}
+
+.tdModalBox p {
+  color: rgba(255,255,255,.48);
+}
+
+.tdModalClose {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.tdModalBox input {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 12px;
+  padding: 15px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 12px;
+  color: white;
+  outline: none;
+}
+
+.tdConfirmJoin {
+  width: 100%;
+  margin-top: 18px;
+}
+
+.tdJoinMessage {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(255,190,70,.10);
+  color: #ffd277;
+  font-size: 13px;
+}
+
+.tdModalBox small {
+  display: block;
+  margin-top: 14px;
+  color: rgba(255,255,255,.28);
+  text-align: center;
+}
+
+
+/* =========================================================
+   STATES
+========================================================= */
+
+.tdLoading,
+.tdError {
+  min-height: 75vh;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.tdSpinner {
+  width: 44px;
+  height: 44px;
+  border: 3px solid rgba(255,255,255,.12);
+  border-top-color: #7b5cff;
+  border-radius: 50%;
+  animation: tdSpin .8s linear infinite;
+}
+
+@keyframes tdSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.tdLoading span,
+.tdError p {
+  color: rgba(255,255,255,.45);
+}
+
+.tdErrorIcon {
+  font-size: 45px;
+}
+
+.tdError button {
+  margin-top: 10px;
+  padding: 14px 18px;
+  background: #704cff;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 900px) {
+
+  .tdPage {
+    padding: 14px;
+  }
+
+  .tdHeroContent {
+    padding: 25px;
+  }
+
+  .tdStats {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .tdGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .tdDetailsGrid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+}
+
+@media (max-width: 600px) {
+
+  .tdTopBar {
+    margin-bottom: 12px;
+  }
+
+  .tdId {
+    display: none;
+  }
+
+  .tdHero {
+    min-height: auto;
+    border-radius: 20px;
+  }
+
+  .tdHeroContent {
+    padding: 22px 18px;
+  }
+
+  .tdHero h1 {
+    font-size: 31px;
+  }
+
+  .tdMeta {
+    font-size: 12px;
+  }
+
+  .tdStats {
+    gap: 8px;
+  }
+
+  .tdStat {
+    padding: 13px;
+  }
+
+  .tdStat strong {
+    font-size: 16px;
+  }
+
+  .tdJoinArea {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tdJoinButton,
+  .tdClosed {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+  }
+
+  .tdDetailsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .tdCard {
+    padding: 18px;
+  }
+
+  .tdPrizeGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .tdPlayer {
+    gap: 10px;
+  }
+
+  .tdJoined {
+    display: none;
+  }
+
+  .tdPlayerInfo span {
+    font-size: 10px;
+  }
+
+}
