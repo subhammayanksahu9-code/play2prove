@@ -988,8 +988,11 @@ export default function TournamentDetailPage({
                     </div>
 
 
-                    <div className="tdJoined">
-                      ✓ JOINED
-                    </div>
+                                      </article>
 
-                         </
+                )
+              )}
+
+            </div>
+
+          </section>
