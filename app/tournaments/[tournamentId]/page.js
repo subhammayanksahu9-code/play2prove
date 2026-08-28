@@ -1,33 +1,17 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useParams } from "next/navigation";
 import "./tournament-detail.css";
 
 const API_URL = "/api/tournaments";
 
 /* =========================================================
-   PLAY2PROVE — TOURNAMENT DETAIL PAGE
-   PHASE 1:
-   Existing tournament API se tournament data
-
-   PHASE 2:
-   Players / Rules / Prizes API se aayenge
+   HELPERS
 ========================================================= */
 
 function clean(value) {
   return String(value ?? "").trim();
-}
-
-function isTrue(value) {
-  const v = clean(value).toLowerCase();
-
-  return (
-    value === true ||
-    v === "true" ||
-    v === "yes" ||
-    v === "1" ||
-    v === "published"
-  );
 }
 
 function slugify(value) {
@@ -40,9 +24,13 @@ function slugify(value) {
 function formatMoney(value) {
   const raw = clean(value);
 
-  if (!raw) return "—";
+  if (!raw) {
+    return "—";
+  }
 
-  if (raw.includes("₹")) return raw;
+  if (raw.includes("₹")) {
+    return raw;
+  }
 
   const number = Number(
     raw.replace(/[₹,\s]/g, "")
@@ -89,19 +77,7 @@ function normalizeStatus(value) {
 }
 
 /* =========================================================
-   HARD-CODED PHASE 1 RULES
-
-   IMPORTANT:
-   Abhi rules API se nahi aa rahe.
-
-   Later:
-   Google Sheet 29-sheet database
-   Rules_Master
-   Rule_Sections
-   Rule_Details
-   Rule_Scoring
-   Tournament_Rule_Snapshot
-   se automatically load honge.
+   DEFAULT RULES
 ========================================================= */
 
 const DEFAULT_RULES = [
@@ -131,7 +107,7 @@ const DEFAULT_RULES = [
     rules: [
       "Teaming with opponents is not allowed.",
       "Cheats, hacks or third-party unfair tools are prohibited.",
-      "Players must follow the official match instructions.",
+      "Players must follow official match instructions.",
       "Admin decisions during the tournament are binding."
     ]
   },
@@ -156,13 +132,7 @@ const DEFAULT_RULES = [
 ];
 
 /* =========================================================
-   SAMPLE PLAYER DATA
-
-   Later:
-   06_Users
-   07_Registrations
-   08_Teams
-   09_Team_Players
+   SAMPLE PLAYERS
 ========================================================= */
 
 const SAMPLE_PLAYERS = [
@@ -202,11 +172,12 @@ const SAMPLE_PLAYERS = [
    COMPONENT
 ========================================================= */
 
-export default function TournamentDetailPage({
-  params
-}) {
-  const [tournamentId, setTournamentId] =
-    useState("");
+export default function TournamentDetailPage() {
+  const params = useParams();
+
+  const tournamentId = clean(
+    params?.tournamentId
+  );
 
   const [tournament, setTournament] =
     useState(null);
@@ -239,23 +210,6 @@ export default function TournamentDetailPage({
     useState(0);
 
   /* =======================================================
-     GET TOURNAMENT ID
-  ======================================================= */
-
-  useEffect(() => {
-    async function resolveParams() {
-      const resolvedParams =
-        await Promise.resolve(params);
-
-      setTournamentId(
-        clean(resolvedParams?.tournamentId)
-      );
-    }
-
-    resolveParams();
-  }, [params]);
-
-  /* =======================================================
      FETCH TOURNAMENT
   ======================================================= */
 
@@ -269,13 +223,12 @@ export default function TournamentDetailPage({
         setLoading(true);
         setError("");
 
-        const response =
-          await fetch(
-            `${API_URL}?_=${Date.now()}`,
-            {
-              cache: "no-store"
-            }
-          );
+        const response = await fetch(
+          `${API_URL}?_=${Date.now()}`,
+          {
+            cache: "no-store"
+          }
+        );
 
         if (!response.ok) {
           throw new Error(
@@ -296,44 +249,33 @@ export default function TournamentDetailPage({
         const decodedId =
           decodeURIComponent(tournamentId);
 
-        const found =
-  list.find((item, index) => {
+        const found = list.find(
+          (item, index) => {
+            const generatedId =
+              clean(item?.id) ||
+              `${slugify(
+                item?.game || item?.gameName
+              )}-${slugify(
+                item?.date
+              )}-${slugify(
+                item?.time
+              )}-${index}`;
 
-    /* =============================================
-       SAME ID SYSTEM AS TOURNAMENT LIST PAGE
-    ============================================= */
+            const possibleIds = [
+              generatedId,
+              item?.id,
+              item?.tournamentId,
+              item?.tournamentName,
+              item?.title
+            ]
+              .filter(Boolean)
+              .map(slugify);
 
-    const generatedId =
-      clean(item?.id) ||
-      `${slugify(item?.game || item?.gameName)}-${slugify(
-        item?.date
-      )}-${slugify(
-        item?.time
-      )}-${index}`;
-
-    /* =============================================
-       ALL POSSIBLE IDS
-    ============================================= */
-
-    const possibleIds = [
-      generatedId,
-
-      item?.id,
-
-      item?.tournamentId,
-
-      item?.tournamentName,
-
-      item?.title
-    ]
-      .filter(Boolean)
-      .map(slugify);
-
-    return possibleIds.includes(
-      slugify(decodedId)
-    );
-
-  });
+            return possibleIds.includes(
+              slugify(decodedId)
+            );
+          }
+        );
 
         if (!found) {
           throw new Error(
@@ -342,7 +284,6 @@ export default function TournamentDetailPage({
         }
 
         setTournament(found);
-
       } catch (err) {
         console.error(err);
 
@@ -350,14 +291,12 @@ export default function TournamentDetailPage({
           err?.message ||
           "Unable to load tournament."
         );
-
       } finally {
         setLoading(false);
       }
     }
 
     loadTournament();
-
   }, [tournamentId]);
 
   /* =======================================================
@@ -387,11 +326,10 @@ export default function TournamentDetailPage({
             .toLowerCase()
             .includes(query)
       );
-
     }, [playerSearch]);
 
   /* =======================================================
-     JOIN
+     JOIN FUNCTIONS
   ======================================================= */
 
   function openJoin() {
@@ -420,19 +358,6 @@ export default function TournamentDetailPage({
 
       return;
     }
-
-    /*
-      PHASE 1:
-      UI confirmation only.
-
-      PHASE 2:
-      07_Registrations
-      08_Teams
-      09_Team_Players
-      10_Payments
-      Wallet
-      se connect hoga.
-    */
 
     setJoinMessage(
       `Tournament join request ready for ${name}.`
@@ -496,7 +421,7 @@ export default function TournamentDetailPage({
   }
 
   /* =======================================================
-     DATA
+     TOURNAMENT DATA
   ======================================================= */
 
   const title =
@@ -507,7 +432,10 @@ export default function TournamentDetailPage({
     "Tournament";
 
   const game =
-    clean(tournament.game) ||
+    clean(
+      tournament.game ||
+      tournament.gameName
+    ) ||
     "Game";
 
   const mode =
@@ -566,6 +494,12 @@ export default function TournamentDetailPage({
       100
     );
 
+  const availableSlots =
+    Math.max(
+      0,
+      maxPlayers - joined
+    );
+
   const progress =
     Math.min(
       100,
@@ -575,14 +509,17 @@ export default function TournamentDetailPage({
       )
     );
 
+  /* =======================================================
+     RETURN PAGE
+  ======================================================= */
+
   return (
     <main className="tdPage">
 
-      {/* ===================================================
-         BACK
-      =================================================== */}
+      {/* TOP BAR */}
 
       <div className="tdTopBar">
+
         <button
           className="tdBackButton"
           onClick={() => {
@@ -599,12 +536,11 @@ export default function TournamentDetailPage({
             tournament.tournamentId
           ) || title}
         </div>
+
       </div>
 
 
-      {/* ===================================================
-         HERO
-      =================================================== */}
+      {/* HERO */}
 
       <section className="tdHero">
 
@@ -645,6 +581,7 @@ export default function TournamentDetailPage({
 
 
           <div className="tdMeta">
+
             <span>
               {mode}
             </span>
@@ -666,6 +603,7 @@ export default function TournamentDetailPage({
             <span>
               {time}
             </span>
+
           </div>
 
 
@@ -707,22 +645,27 @@ export default function TournamentDetailPage({
             <div className="tdSlotInfo">
 
               <div>
+
                 <strong>
-                  {maxPlayers - joined}
+                  {availableSlots}
                 </strong>
 
                 <span>
                   SLOTS AVAILABLE
                 </span>
+
               </div>
 
+
               <div className="tdProgress">
+
                 <div
                   style={{
                     width:
                       `${progress}%`
                   }}
                 />
+
               </div>
 
             </div>
@@ -753,9 +696,7 @@ export default function TournamentDetailPage({
       </section>
 
 
-      {/* ===================================================
-         TABS
-      =================================================== */}
+      {/* TABS */}
 
       <nav className="tdTabs">
 
@@ -786,9 +727,7 @@ export default function TournamentDetailPage({
       </nav>
 
 
-      {/* ===================================================
-         CONTENT
-      =================================================== */}
+      {/* CONTENT */}
 
       <section className="tdContent">
 
@@ -802,7 +741,9 @@ export default function TournamentDetailPage({
             <section className="tdCard tdMainCard">
 
               <div className="tdCardTitle">
+
                 <div>
+
                   <span>
                     TOURNAMENT
                   </span>
@@ -810,7 +751,9 @@ export default function TournamentDetailPage({
                   <h2>
                     OVERVIEW
                   </h2>
+
                 </div>
+
               </div>
 
 
@@ -843,6 +786,7 @@ export default function TournamentDetailPage({
 
                 <div>
                   <span>TIME SLOT</span>
+
                   <strong>
                     {slot || "—"}
                   </strong>
@@ -858,6 +802,7 @@ export default function TournamentDetailPage({
               <div className="tdCardTitle">
 
                 <div>
+
                   <span>
                     QUICK
                   </span>
@@ -865,6 +810,7 @@ export default function TournamentDetailPage({
                   <h2>
                     INFO
                   </h2>
+
                 </div>
 
               </div>
@@ -873,6 +819,7 @@ export default function TournamentDetailPage({
               <div className="tdQuickInfo">
 
                 <div>
+
                   <span>
                     ENTRY FEE
                   </span>
@@ -880,9 +827,12 @@ export default function TournamentDetailPage({
                   <strong>
                     {entryFee}
                   </strong>
+
                 </div>
 
+
                 <div>
+
                   <span>
                     PRIZE POOL
                   </span>
@@ -890,9 +840,12 @@ export default function TournamentDetailPage({
                   <strong>
                     {prizePool}
                   </strong>
+
                 </div>
 
+
                 <div>
+
                   <span>
                     PER KILL
                   </span>
@@ -900,6 +853,7 @@ export default function TournamentDetailPage({
                   <strong>
                     {perKill}
                   </strong>
+
                 </div>
 
               </div>
@@ -920,6 +874,7 @@ export default function TournamentDetailPage({
             <div className="tdPlayersHeader">
 
               <div>
+
                 <span>
                   REGISTERED
                 </span>
@@ -927,6 +882,7 @@ export default function TournamentDetailPage({
                 <h2>
                   PLAYERS
                 </h2>
+
               </div>
 
 
@@ -960,16 +916,20 @@ export default function TournamentDetailPage({
                   >
 
                     <div className="tdPlayerNumber">
+
                       {String(
                         index + 1
                       ).padStart(2, "0")}
+
                     </div>
 
 
                     <div className="tdAvatar">
+
                       {player.name
                         .charAt(0)
                         .toUpperCase()}
+
                     </div>
 
 
@@ -988,7 +948,11 @@ export default function TournamentDetailPage({
                     </div>
 
 
-                                      </article>
+                    <div className="tdJoined">
+                      ✓ JOINED
+                    </div>
+
+                  </article>
 
                 )
               )}
@@ -996,3 +960,375 @@ export default function TournamentDetailPage({
             </div>
 
           </section>
+
+        )}
+
+
+        {/* RULES */}
+
+        {activeTab === "rules" && (
+
+          <section className="tdRules">
+
+            <div className="tdSectionIntro">
+
+              <span>
+                PLAY2PROVE
+              </span>
+
+              <h2>
+                TOURNAMENT RULES
+              </h2>
+
+              <p>
+                Please read all rules before
+                joining the tournament.
+              </p>
+
+            </div>
+
+
+            {DEFAULT_RULES.map(
+              (section, index) => {
+
+                const isOpen =
+                  openRule === index;
+
+                return (
+
+                  <article
+                    className={
+                      isOpen
+                        ? "tdRuleSection open"
+                        : "tdRuleSection"
+                    }
+                    key={section.title}
+                  >
+
+                    <button
+                      className="tdRuleHeader"
+                      onClick={() =>
+                        setOpenRule(
+                          isOpen
+                            ? null
+                            : index
+                        )
+                      }
+                    >
+
+                      <div>
+
+                        <span className="tdRuleIcon">
+                          {section.icon}
+                        </span>
+
+                        <strong>
+                          {section.title}
+                        </strong>
+
+                      </div>
+
+
+                      <span className="tdChevron">
+
+                        {isOpen
+                          ? "−"
+                          : "+"}
+
+                      </span>
+
+                    </button>
+
+
+                    {isOpen && (
+
+                      <div className="tdRuleBody">
+
+                        {section.rules.map(
+                          (rule, ruleIndex) => (
+
+                            <div
+                              className="tdRuleItem"
+                              key={ruleIndex}
+                            >
+
+                              <span>
+                                {ruleIndex + 1}
+                              </span>
+
+                              <p>
+                                {rule}
+                              </p>
+
+                            </div>
+
+                          )
+                        )}
+
+                      </div>
+
+                    )}
+
+                  </article>
+
+                );
+              }
+            )}
+
+          </section>
+
+        )}
+
+
+        {/* PRIZES */}
+
+        {activeTab === "prizes" && (
+
+          <section className="tdCard">
+
+            <div className="tdSectionIntro">
+
+              <span>
+                REWARDS
+              </span>
+
+              <h2>
+                PRIZE INFORMATION
+              </h2>
+
+            </div>
+
+
+            <div className="tdPrizeHero">
+
+              <span>
+                TOTAL PRIZE POOL
+              </span>
+
+              <strong>
+                {prizePool}
+              </strong>
+
+            </div>
+
+
+            <div className="tdPrizeGrid">
+
+              <div>
+
+                <span>
+                  🏆
+                </span>
+
+                <strong>
+                  PLACEMENT PRIZES
+                </strong>
+
+                <p>
+                  Final placement rewards
+                  will be calculated according
+                  to tournament rules.
+                </p>
+
+              </div>
+
+
+              <div>
+
+                <span>
+                  🔫
+                </span>
+
+                <strong>
+                  KILL REWARD
+                </strong>
+
+                <p>
+                  {perKill} per valid kill,
+                  subject to tournament rules.
+                </p>
+
+              </div>
+
+            </div>
+
+          </section>
+
+        )}
+
+
+        {/* MATCH INFO */}
+
+        {activeTab === "match" && (
+
+          <section className="tdGrid">
+
+            <section className="tdCard">
+
+              <div className="tdCardTitle">
+
+                <div>
+
+                  <span>
+                    MATCH
+                  </span>
+
+                  <h2>
+                    INFORMATION
+                  </h2>
+
+                </div>
+
+              </div>
+
+
+              <div className="tdDetailsGrid">
+
+                <div>
+                  <span>GAME</span>
+                  <strong>{game}</strong>
+                </div>
+
+                <div>
+                  <span>MODE</span>
+                  <strong>{mode}</strong>
+                </div>
+
+                <div>
+                  <span>MAP</span>
+                  <strong>{map}</strong>
+                </div>
+
+                <div>
+                  <span>START DATE</span>
+                  <strong>{date}</strong>
+                </div>
+
+                <div>
+                  <span>START TIME</span>
+                  <strong>{time}</strong>
+                </div>
+
+              </div>
+
+            </section>
+
+
+            <aside className="tdCard tdRoomCard">
+
+              <span>
+                ROOM DETAILS
+              </span>
+
+              <h2>
+                🔒 LOCKED
+              </h2>
+
+              <p>
+                Room ID and password will
+                be available to eligible
+                registered players at the
+                scheduled room release time.
+              </p>
+
+            </aside>
+
+          </section>
+
+        )}
+
+      </section>
+
+
+      {/* JOIN MODAL */}
+
+      {joinOpen && (
+
+        <div
+          className="tdModal"
+          onClick={closeJoin}
+        >
+
+          <div
+            className="tdModalBox"
+            onClick={(event) =>
+              event.stopPropagation()
+            }
+          >
+
+            <button
+              className="tdModalClose"
+              onClick={closeJoin}
+            >
+              ×
+            </button>
+
+
+            <span>
+              JOIN TOURNAMENT
+            </span>
+
+            <h2>
+              {title}
+            </h2>
+
+
+            <p>
+              Enter your player details.
+            </p>
+
+
+            <input
+              value={joinName}
+              onChange={(event) =>
+                setJoinName(
+                  event.target.value
+                )
+              }
+              placeholder="Player Name"
+            />
+
+
+            <input
+              value={joinUID}
+              onChange={(event) =>
+                setJoinUID(
+                  event.target.value
+                )
+              }
+              placeholder="Game UID"
+            />
+
+
+            {joinMessage && (
+
+              <div className="tdJoinMessage">
+                {joinMessage}
+              </div>
+
+            )}
+
+
+            <button
+              className="tdConfirmJoin"
+              onClick={confirmJoin}
+            >
+              CONTINUE →
+            </button>
+
+
+            <small>
+              Phase 1 test flow.
+              Registration database integration
+              will be added next.
+            </small>
+
+          </div>
+
+        </div>
+
+      )}
+
+    </main>
+  );
+}
