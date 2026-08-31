@@ -951,10 +951,19 @@ export default function TournamentsPage() {
               ),
 
         joined:
-  18,
+  Number(
+    row?.joined ??
+    row?.registeredPlayers ??
+    0
+  ),
 
 capacity:
-  32,
+  Number(
+    row?.slotsOfMode ??
+    row?.capacity ??
+    row?.maxPlayers ??
+    0
+  ),
 
       };
 
@@ -1558,10 +1567,9 @@ useEffect(() => {
       (item) => {
 
         const itemStatus =
-          getTournamentAutomaticStatus(
-            item,
-            getMasterNow()
-          );
+  normalizeStatus(
+    item?.status
+  );
 
         if (
           status === "All"
@@ -2602,25 +2610,20 @@ function TournamentCard({
   ======================================================= */
 
   const masterNow =
-    getMasterNow();
+  getMasterNow();
 
-  const automaticStatus =
-    getTournamentAutomaticStatus(
-      tournament,
-      masterNow
-    );
+/*
+  Google Sheet / Apps Script API
+  is the single source of truth
+  for tournament status.
+*/
+const automaticStatus =
+  normalizeStatus(
+    tournament?.status
+  );
 
-
-  /* =======================================================
-     USER-FACING CARD STATUS
-     Starting Soon is visually still UPCOMING.
-  ======================================================= */
-
-  const status =
-    automaticStatus ===
-      "Starting Soon"
-      ? "Upcoming"
-      : automaticStatus;
+const status =
+  automaticStatus;
 
 
   const cardStatusClass =
