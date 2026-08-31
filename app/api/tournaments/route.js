@@ -1,5 +1,5 @@
 const GOOGLE_API =
-  "https://script.google.com/macros/s/AKfycbzNNt2zqRoANZD7rLROrzRDisn58ZvOTZCYy8tsErmtt1YeLU-OvCXzde2GzW_xC_Mo/exec";
+  "https://script.google.com/macros/s/AKfycbxBAvu7E74BDsPuoWKYGLZTeWTeyGlhKIju9wG8qlNh9ADLSpvaL99Y5m7m42kaZpMo/exec";
 
 export const dynamic = "force-dynamic";
 
@@ -26,11 +26,10 @@ export async function GET() {
     return Response.json(data, {
       status: 200,
       headers: {
-  "Cache-Control":
-    "no-store, no-cache, must-revalidate",
-},
+        "Cache-Control":
+          "no-store, no-cache, must-revalidate",
+      },
     });
-
   } catch (error) {
     console.error("Tournament API Error:", error);
 
