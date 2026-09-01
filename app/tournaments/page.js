@@ -3161,49 +3161,49 @@ const status =
       )}
 
 
-            {/* =================================================
-          ACTION
-      ================================================= */}
+{
+  automaticStatus === "Past" &&
+  tournament.calculationStatus
+    ?.toLowerCase() === "completed" ? (
 
-      {automaticStatus === "Past" &&
-      tournament.calculationStatus
-        ?.toLowerCase() === "completed" ? (
+    <button
+      className="resultButton"
+      onClick={() => {
+        window.location.href =
+          `/tournaments/${encodeURIComponent(
+            tournament.id
+          )}`;
+      }}
+    >
+      VIEW →
+    </button>
 
-        <button
-          className="resultButton"
-          onClick={() => {
-            window.location.href =
-              `/tournaments/${encodeURIComponent(
-                tournament.id
-              )}`;
-          }}
-        >
-          VIEW →
-        </button>
+  ) : (
 
-      ) : (
+    <button
+      className={
+        automaticStatus === "Live"
+          ? "liveButton"
+          : "joinButton"
+      }
+      onClick={() => {
+        window.location.href =
+          `/tournaments/${encodeURIComponent(
+            tournament.id
+          )}`;
+      }}
+    >
+      {
+        automaticStatus === "Upcoming" ||
+        automaticStatus === "Starting Soon" ||
+        automaticStatus === "Live"
+          ? "VIEW & JOIN →"
+          : "VIEW →"
+      }
+    </button>
 
-        <button
-          className={
-            automaticStatus === "Live"
-              ? "liveButton"
-              : "joinButton"
-          }
-          onClick={() => {
-            window.location.href =
-              `/tournaments/${encodeURIComponent(
-                tournament.id
-              )}`;
-          }}
-        >
-          {automaticStatus === "Upcoming" ||
-          automaticStatus === "Starting Soon" ||
-          automaticStatus === "Live"
-            ? "VIEW & JOIN →"
-            : "VIEW →"}
-        </button>
-
-      )}
+  )
+}
     </article>
   );
 }
