@@ -3161,55 +3161,49 @@ const status =
       )}
 
 
-      {/* =================================================
+            {/* =================================================
           ACTION
       ================================================= */}
 
-      {
-        automaticStatus === "Past" &&
-        tournament.calculationStatus
-          ?.toLowerCase() === "completed" ? (
+      {automaticStatus === "Past" &&
+      tournament.calculationStatus
+        ?.toLowerCase() === "completed" ? (
 
-          <button className="resultButton">
-            CHECK MATCH RESULTS →
-          </button>
+        <button
+          className="resultButton"
+          onClick={() => {
+            window.location.href =
+              `/tournaments/${encodeURIComponent(
+                tournament.id
+              )}`;
+          }}
+        >
+          VIEW →
+        </button>
 
-        ) : automaticStatus === "Calculation Ongoing" ? (
+      ) : (
 
-          <div className="statusAction calculationAction">
-            CALCULATION ONGOING
-          </div>
+        <button
+          className={
+            automaticStatus === "Live"
+              ? "liveButton"
+              : "joinButton"
+          }
+          onClick={() => {
+            window.location.href =
+              `/tournaments/${encodeURIComponent(
+                tournament.id
+              )}`;
+          }}
+        >
+          {automaticStatus === "Upcoming" ||
+          automaticStatus === "Starting Soon" ||
+          automaticStatus === "Live"
+            ? "VIEW & JOIN →"
+            : "VIEW →"}
+        </button>
 
-        ) : automaticStatus === "Match Closing" ? (
-
-          <div className="statusAction closingAction">
-            MATCH CLOSING
-          </div>
-
-        ) : automaticStatus === "Match Ongoing" ? (
-
-          <div className="statusAction ongoingAction">
-            MATCH ONGOING
-          </div>
-
-        ) : (
-
-          <button
-  className={
-    automaticStatus === "Live"
-      ? "liveButton"
-      : "joinButton"
-  }
-  onClick={() => {
-    window.location.href =
-      `/tournaments/${encodeURIComponent(tournament.id)}`;
-  }}
->
-  VIEW & JOIN →
-</button>
-
-        )
-      }
+      )}
     </article>
   );
 }
