@@ -1044,27 +1044,16 @@ export default function TournamentDetailPage() {
 
                       <div className="tdRuleBody">
 
-                        {section.rules.map(
-                          (rule, ruleIndex) => (
+                        {section.rules.map((rule, ruleIndex) => (
+  <div
+    className="tdRuleItem"
+    key={ruleIndex}
+  >
+    <span>{ruleIndex + 1}</span>
 
-                            <div
-                              className="tdRuleItem"
-                              key={ruleIndex}
-                            >
-
-                              <span>
-                                {ruleIndex + 1}
-                              </span>
-
-                              <p>
-                                {rule}
-                              </p>
-
-                            </div>
-
-                          )
-                        )}
-
+    <p>{rule}</p>
+  </div>
+))}
                       </div>
 
                     )}
