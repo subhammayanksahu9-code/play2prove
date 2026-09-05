@@ -1,8 +1,6 @@
-// app/verify-email/page.js
-
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 
@@ -13,7 +11,7 @@ function maskEmail(email) {
   return `${visible}${name.length > 2 ? "•••" : "•"}@${domain}`;
 }
 
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -30,7 +28,9 @@ export default function VerifyEmailPage() {
     const errorDescription = hashParams.get("error_description") || "";
 
     if (errorCode === "otp_expired" || /expired|invalid/i.test(errorDescription)) {
-      setError("That verification link has expired or has already been used. Request a fresh email below.");
+      setError(
+        "That verification link has expired or has already been used. Request a fresh email below."
+      );
     }
   }, [searchParams]);
 
@@ -61,12 +61,16 @@ export default function VerifyEmailPage() {
       if (resendError) {
         const text = (resendError.message || "").toLowerCase();
         if (text.includes("rate limit") || text.includes("too many")) {
-          throw new Error("Email sending is temporarily rate-limited. Please wait a few minutes before requesting another email.");
+          throw new Error(
+            "Email sending is temporarily rate-limited. Please wait a few minutes before requesting another email."
+          );
         }
         throw resendError;
       }
 
-      setMessage("Fresh verification email sent. Open the newest email and use that link.");
+      setMessage(
+        "Fresh verification email sent. Open the newest email and use that link."
+      );
       setCooldown(60);
 
       const interval = window.setInterval(() => {
@@ -80,7 +84,10 @@ export default function VerifyEmailPage() {
       }, 1000);
     } catch (err) {
       console.error("Verification resend error:", err);
-      setError(err?.message || "Unable to send a new verification email. Please try again.");
+      setError(
+        err?.message ||
+          "Unable to send a new verification email. Please try again."
+      );
     } finally {
       setSending(false);
     }
@@ -116,12 +123,41 @@ export default function VerifyEmailPage() {
           disabled={sending || cooldown > 0}
           style={{ ...styles.button, opacity: sending || cooldown > 0 ? 0.6 : 1 }}
         >
-          {sending ? "Sending Verification Email..." : cooldown > 0 ? `Resend available in ${cooldown}s` : "Send New Verification Email"}
+          {sending
+            ? "Sending Verification Email..."
+            : cooldown > 0
+              ? `Resend available in ${cooldown}s`
+              : "Send New Verification Email"}
         </button>
 
-        <button type="button" onClick={() => router.replace("/login")} style={styles.secondaryButton}>
+        <button
+          type="button"
+          onClick={() => router.replace("/login")}
+          style={styles.secondaryButton}
+        >
           Back to Login
         </button>
+      </div>
+    </main>
+  );
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={<LoadingState />}>
+      <VerifyEmailContent />
+    </Suspense>
+  );
+}
+
+function LoadingState() {
+  return (
+    <main style={styles.main}>
+      <div style={styles.card}>
+        <div style={styles.logo}>Play2Prove</div>
+        <div style={styles.icon}>✓</div>
+        <h1 style={styles.title}>Verify Your Email</h1>
+        <p style={styles.subtitle}>Loading verification status...</p>
       </div>
     </main>
   );
