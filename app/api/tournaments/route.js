@@ -1,125 +1,64 @@
-import { createClient } from "@supabase/supabase-js";
-
 export const dynamic = "force-dynamic";
 
-function getSupabaseServerClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+const GOOGLE_SHEETS_API =
+  process.env.PLAY2PROVE_GOOGLE_APPS_SCRIPT_URL ||
+  "https://script.google.com/macros/s/AKfycbx3vZuDmwpqykeX45oWhNffRqySbFQZ6a5ZukM3KEhB6B5e8I6rzWBmg8tsm_zUNz0/exec";
 
-  if (!supabaseUrl || !supabaseKey) {
-    throw new Error("Missing Supabase environment variables");
+function normalizePayload(payload) {
+  if (Array.isArray(payload)) {
+    return { success: true, games: [], tournaments: payload };
   }
 
-  return createClient(supabaseUrl, supabaseKey, {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-    },
-  });
+  return {
+    ...payload,
+    success: payload?.success !== false,
+    games: Array.isArray(payload?.games) ? payload.games : [],
+    tournaments: Array.isArray(payload?.tournaments) ? payload.tournaments : [],
+  };
 }
 
 export async function GET() {
   try {
-    const supabase = getSupabaseServerClient();
+    const response = await fetch(GOOGLE_SHEETS_API, {
+      method: "GET",
+      headers: { Accept: "application/json" },
+      cache: "no-store",
+      redirect: "follow",
+    });
 
-    const [{ data: games, error: gamesError }, { data: tournaments, error: tournamentsError }] =
-      await Promise.all([
-        supabase
-          .from("games")
-          .select("*")
-          .order("display_order", { ascending: true })
-          .order("id", { ascending: true }),
-        supabase
-          .from("tournaments")
-          .select("*, games:game_id(*)")
-          .order("match_date", { ascending: true })
-          .order("start_time", { ascending: true })
-          .order("id", { ascending: true }),
-      ]);
-
-    if (gamesError) {
-      console.error("Supabase games error:", gamesError);
-      return Response.json(
-        { success: false, error: gamesError.message },
-        { status: 502 }
-      );
+    if (!response.ok) {
+      throw new Error(`Google Apps Script API ${response.status}`);
     }
 
-    if (tournamentsError) {
-      console.error("Supabase tournaments error:", tournamentsError);
-      return Response.json(
-        { success: false, error: tournamentsError.message },
-        { status: 502 }
-      );
-    }
-
-    const normalizedGames = (games || []).map((game) => ({
-      id: game.id,
-      gameId: game.id,
-      gameName: game.name,
-      name: game.name,
-      slug: game.slug,
-      shortName: game.short_name,
-      description: game.description,
-      status: game.status,
-      image: game.image_url,
-      imageUrl: game.image_url,
-      bannerUrl: game.banner_url,
-      publish: game.status !== "hidden",
-    }));
-
-    const normalizedTournaments = (tournaments || []).map((tournament) => ({
-      id: tournament.id,
-      tournamentId: tournament.id,
-      title: tournament.title,
-      name: tournament.title,
-      gameId: tournament.game_id,
-      gameName: tournament.games?.name || "",
-      game: tournament.games?.name || "",
-      gameSlug: tournament.games?.slug || "",
-      status: tournament.status,
-      matchType: tournament.match_type,
-      capacity: tournament.capacity,
-      entryFee: tournament.entry_fee,
-      prizePool: tournament.prize_pool,
-      firstPrize: tournament.first_prize,
-      secondPrize: tournament.second_prize,
-      thirdPrize: tournament.third_prize,
-      perKillReward: tournament.per_kill_reward,
-      mapName: tournament.map_name,
-      matchDate: tournament.match_date,
-      startTime: tournament.start_time,
-      registrationOpensAt: tournament.registration_opens_at,
-      registrationClosesAt: tournament.registration_closes_at,
-      roomId: tournament.room_id,
-      roomPassword: tournament.room_password,
-      rules: tournament.rules,
-      bannerUrl: tournament.banner_url,
-    }));
+    const raw = await response.json();
+    const data = normalizePayload(raw);
 
     return Response.json(
       {
-        success: true,
-        source: "supabase",
-        games: normalizedGames,
-        tournaments: normalizedTournaments,
+        ...data,
+        source: "google-sheets-apps-script",
+        serverTimestamp: Date.now(),
       },
       {
         status: 200,
         headers: {
-          "Cache-Control": "no-store, no-cache, must-revalidate",
+          "Cache-Control": "public, s-maxage=5, stale-while-revalidate=30",
         },
       }
     );
   } catch (error) {
-    console.error("Supabase Tournament API Error:", error);
+    console.error("Google Sheets Tournament API Error:", error);
 
     return Response.json(
       {
         success: false,
-        error: error?.message || "Tournament API unavailable",
+        source: "google-sheets-apps-script",
+        games: [],
+        tournaments: [],
+        error: error?.message || "Google Sheets API unavailable",
+        serverTimestamp: Date.now(),
       },
-      { status: 500 }
+      { status: 502 }
     );
   }
 }
