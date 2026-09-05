@@ -19,97 +19,82 @@ export default function LoginPage() {
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
 
-async function handleLogin(e) {
-  e.preventDefault();
+  async function handleLogin(e) {
+    e.preventDefault();
 
-  setMessage("");
-  setMessageType("");
-  setLoading(true);
+    setMessage("");
+    setMessageType("");
+    setLoading(true);
 
-  const cleanEmail = email.trim().toLowerCase();
+    const cleanEmail = email.trim().toLowerCase();
 
-  if (!cleanEmail || !password) {
-    setMessage("Please enter your email and password.");
-    setMessageType("error");
+    if (!cleanEmail || !password) {
+      setMessage("Please enter your email and password.");
+      setMessageType("error");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      // Authenticate directly against the NEW Supabase project's Auth service.
+      // We intentionally do not pre-check a custom public RPC here: Auth is the
+      // source of truth for whether the email/password account exists.
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: cleanEmail,
+        password,
+      });
+
+      if (error) {
+        const errorText = (error.message || "").toLowerCase();
+
+        if (
+          errorText.includes("email not confirmed") ||
+          errorText.includes("email_not_confirmed")
+        ) {
+          setMessage(
+            "Your email address hasn’t been verified yet. Please check your inbox and verify your email before signing in."
+          );
+        } else if (
+          errorText.includes("invalid login credentials") ||
+          errorText.includes("invalid credentials")
+        ) {
+          setMessage(
+            "Incorrect email or password. Please try again, or reset your password if you’ve forgotten it."
+          );
+        } else {
+          setMessage(
+            error.message ||
+              "We couldn’t complete your login. Please try again."
+          );
+        }
+
+        setMessageType("error");
+        setLoading(false);
+        return;
+      }
+
+      if (data?.user) {
+        // /dashboard is not present in the current repository. Send the
+        // authenticated player to the existing profile page instead.
+        window.location.href = "/profile";
+        return;
+      }
+
+      setMessage("We couldn’t complete your login. Please try again.");
+      setMessageType("error");
+    } catch (err) {
+      console.error("Login error:", err);
+
+      setMessage(
+        err?.message ||
+          "Something went wrong while signing in. Please try again."
+      );
+      setMessageType("error");
+    }
+
     setLoading(false);
-    return;
   }
 
-  try {
-    const { data: emailExists, error: checkError } = await supabase.rpc(
-      "check_email_registered",
-      {
-        check_email: cleanEmail,
-      }
-    );
-
-    if (checkError) {
-      console.error("Email check error:", checkError);
-
-      setMessage(
-        "We couldn’t verify your account right now. Please try again."
-      );
-      setMessageType("error");
-      setLoading(false);
-      return;
-    }
-
-    if (!emailExists) {
-      setMessage(
-        "This email address isn’t registered. Please check your email or create a new account."
-      );
-      setMessageType("error");
-      setLoading(false);
-      return;
-    }
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: cleanEmail,
-      password,
-    });
-
-    if (error) {
-      const errorText = error.message.toLowerCase();
-
-      if (
-        errorText.includes("email not confirmed") ||
-        errorText.includes("email_not_confirmed")
-      ) {
-        setMessage(
-          "Your email address hasn’t been verified yet. Please check your inbox and verify your email before signing in."
-        );
-      } else {
-        setMessage(
-          "Incorrect password. Please try again, or reset your password if you’ve forgotten it."
-        );
-      }
-
-      setMessageType("error");
-      setLoading(false);
-      return;
-    }
-
-    if (data?.user) {
-      window.location.href = "/dashboard";
-      return;
-    }
-
-    setMessage(
-      "We couldn’t complete your login. Please try again."
-    );
-    setMessageType("error");
-
-  } catch (err) {
-    console.error("Login error:", err);
-
-    setMessage(
-      "Something went wrong while signing in. Please try again."
-    );
-    setMessageType("error");
-  }
-
-  setLoading(false);
-}
   async function handleForgotPassword(e) {
     e.preventDefault();
 
@@ -173,15 +158,16 @@ async function handleLogin(e) {
 
   return (
     <main style={styles.main}>
-    <button
-  type="button"
-  onClick={() => {
-  window.location.href = "/";
-}}
-  style={styles.backButton}
->
-  ← Back
-</button>
+      <button
+        type="button"
+        onClick={() => {
+          window.location.href = "/";
+        }}
+        style={styles.backButton}
+      >
+        ← Back
+      </button>
+
       <div style={styles.card}>
         <div style={styles.logo}>Play2Prove</div>
 
@@ -189,9 +175,7 @@ async function handleLogin(e) {
           <>
             <h1 style={styles.title}>Welcome Back</h1>
 
-            <p style={styles.subtitle}>
-              Login to your player account
-            </p>
+            <p style={styles.subtitle}>Login to your player account</p>
 
             <form onSubmit={handleLogin}>
               <label style={styles.label}>Email Address</label>
@@ -264,7 +248,7 @@ async function handleLogin(e) {
             )}
 
             <p style={styles.bottom}>
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link href="/signup" style={styles.link}>
                 Create Account
               </Link>
@@ -275,7 +259,7 @@ async function handleLogin(e) {
             <h1 style={styles.title}>Forgot Password?</h1>
 
             <p style={styles.subtitle}>
-              Enter your registered email address and we'll send you a secure
+              Enter your registered email address and we&apos;ll send you a secure
               password reset link.
             </p>
 
@@ -300,9 +284,7 @@ async function handleLogin(e) {
                   opacity: forgotLoading ? 0.65 : 1,
                 }}
               >
-                {forgotLoading
-                  ? "Sending Reset Link..."
-                  : "Send Reset Link"}
+                {forgotLoading ? "Sending Reset Link..." : "Send Reset Link"}
               </button>
             </form>
 
@@ -486,17 +468,17 @@ const styles = {
   },
 
   backButton: {
-  position: "fixed",
-  top: "20px",
-  left: "20px",
-  padding: "10px 16px",
-  background: "#0b0e13",
-  color: "#fff",
-  border: "1px solid #30363d",
-  borderRadius: "9px",
-  fontSize: "14px",
-  fontWeight: "700",
-  cursor: "pointer",
-  zIndex: 100,
-},
+    position: "fixed",
+    top: "20px",
+    left: "20px",
+    padding: "10px 16px",
+    background: "#0b0e13",
+    color: "#fff",
+    border: "1px solid #30363d",
+    borderRadius: "9px",
+    fontSize: "14px",
+    fontWeight: "700",
+    cursor: "pointer",
+    zIndex: 100,
+  },
 };
