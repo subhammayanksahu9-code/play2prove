@@ -6,15 +6,50 @@ import { useState } from "react";
 import Link from "next/link";
 import { supabase } from "../../lib/supabase";
 
+function normalizeEmail(value) {
+  return value.trim().toLowerCase();
+}
+
+function getFriendlyAuthMessage(error) {
+  const text = (error?.message || "").toLowerCase();
+
+  if (
+    text.includes("email not confirmed") ||
+    text.includes("email_not_confirmed")
+  ) {
+    return "Your email is not verified yet. Use the button below to send a fresh verification email.";
+  }
+
+  if (
+    text.includes("invalid login credentials") ||
+    text.includes("invalid credentials")
+  ) {
+    return "Incorrect email or password. Please try again, or reset your password if you forgot it.";
+  }
+
+  if (text.includes("rate limit") || text.includes("too many requests")) {
+    return "Too many requests. Please wait a few minutes and try again.";
+  }
+
+  if (text.includes("network") || text.includes("failed to fetch")) {
+    return "We couldn't reach the authentication server. Check your internet connection and try again.";
+  }
+
+  return error?.message || "We couldn't complete your login. Please try again.";
+}
+
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const [loading, setLoading] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
   const [forgotLoading, setForgotLoading] = useState(false);
 
   const [showPassword, setShowPassword] = useState(false);
   const [forgotMode, setForgotMode] = useState(false);
+  const [showVerificationHelp, setShowVerificationHelp] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
 
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
@@ -24,75 +59,115 @@ export default function LoginPage() {
 
     setMessage("");
     setMessageType("");
-    setLoading(true);
+    setShowVerificationHelp(false);
 
-    const cleanEmail = email.trim().toLowerCase();
+    const cleanEmail = normalizeEmail(email);
 
     if (!cleanEmail || !password) {
       setMessage("Please enter your email and password.");
       setMessageType("error");
-      setLoading(false);
       return;
     }
 
+    setLoading(true);
+
     try {
-      // Authenticate directly against the NEW Supabase project's Auth service.
-      // We intentionally do not pre-check a custom public RPC here: Auth is the
-      // source of truth for whether the email/password account exists.
       const { data, error } = await supabase.auth.signInWithPassword({
         email: cleanEmail,
         password,
       });
 
       if (error) {
-        const errorText = (error.message || "").toLowerCase();
+        const text = (error.message || "").toLowerCase();
+        setMessage(getFriendlyAuthMessage(error));
+        setMessageType("error");
 
         if (
-          errorText.includes("email not confirmed") ||
-          errorText.includes("email_not_confirmed")
+          text.includes("email not confirmed") ||
+          text.includes("email_not_confirmed")
         ) {
-          setMessage(
-            "Your email address hasn’t been verified yet. Please check your inbox and verify your email before signing in."
-          );
-        } else if (
-          errorText.includes("invalid login credentials") ||
-          errorText.includes("invalid credentials")
-        ) {
-          setMessage(
-            "Incorrect email or password. Please try again, or reset your password if you’ve forgotten it."
-          );
-        } else {
-          setMessage(
-            error.message ||
-              "We couldn’t complete your login. Please try again."
-          );
+          setShowVerificationHelp(true);
         }
 
-        setMessageType("error");
-        setLoading(false);
         return;
       }
 
       if (data?.user) {
-        // /dashboard is not present in the current repository. Send the
-        // authenticated player to the existing profile page instead.
         window.location.href = "/profile";
         return;
       }
 
-      setMessage("We couldn’t complete your login. Please try again.");
+      setMessage("We couldn't complete your login. Please try again.");
       setMessageType("error");
-    } catch (err) {
-      console.error("Login error:", err);
+    } catch (error) {
+      console.error("Login error:", error);
+      setMessage(getFriendlyAuthMessage(error));
+      setMessageType("error");
+    } finally {
+      setLoading(false);
+    }
+  }
 
-      setMessage(
-        err?.message ||
-          "Something went wrong while signing in. Please try again."
-      );
+  async function resendVerification() {
+    const cleanEmail = normalizeEmail(email);
+
+    if (!cleanEmail) {
+      setMessage("Enter your registered email address first.");
       setMessageType("error");
+      return;
     }
 
-    setLoading(false);
+    if (resendCooldown > 0) {
+      return;
+    }
+
+    setResendLoading(true);
+    setMessage("");
+    setMessageType("");
+
+    try {
+      const { error } = await supabase.auth.resend({
+        type: "signup",
+        email: cleanEmail,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+
+      if (error) {
+        const text = (error.message || "").toLowerCase();
+
+        if (text.includes("rate limit") || text.includes("too many")) {
+          setMessage("Verification email limit reached. Please wait a few minutes before requesting another one.");
+        } else {
+          setMessage(error.message || "Unable to resend the verification email.");
+        }
+
+        setMessageType("error");
+        return;
+      }
+
+      setMessage("A fresh verification email has been sent. Open the newest email and use that link.");
+      setMessageType("success");
+      setShowVerificationHelp(true);
+      setResendCooldown(60);
+
+      const interval = window.setInterval(() => {
+        setResendCooldown((value) => {
+          if (value <= 1) {
+            window.clearInterval(interval);
+            return 0;
+          }
+          return value - 1;
+        });
+      }, 1000);
+    } catch (error) {
+      console.error("Resend verification error:", error);
+      setMessage("Something went wrong while sending the verification email. Please try again.");
+      setMessageType("error");
+    } finally {
+      setResendLoading(false);
+    }
   }
 
   async function handleForgotPassword(e) {
@@ -101,7 +176,7 @@ export default function LoginPage() {
     setMessage("");
     setMessageType("");
 
-    const cleanEmail = email.trim().toLowerCase();
+    const cleanEmail = normalizeEmail(email);
 
     if (!cleanEmail) {
       setMessage("Please enter your registered email address.");
@@ -113,41 +188,32 @@ export default function LoginPage() {
 
     try {
       const redirectTo = `${window.location.origin}/reset-password`;
-
-      const { error } = await supabase.auth.resetPasswordForEmail(
-        cleanEmail,
-        {
-          redirectTo,
-        }
-      );
+      const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
+        redirectTo,
+      });
 
       if (error) {
         console.error("Forgot password error:", error);
-
-        setMessage(
-          "Unable to send the reset link. Please try again."
-        );
+        setMessage("Unable to send the reset link. Please try again.");
         setMessageType("error");
       } else {
-        setMessage(
-          "If an account exists with this email, a password reset link has been sent. Please check your inbox and spam folder."
-        );
+        setMessage("If an account exists with this email, a password reset link has been sent. Please check your inbox and spam folder.");
         setMessageType("success");
       }
     } catch (error) {
       console.error("Forgot password error:", error);
-
       setMessage("Something went wrong. Please try again.");
       setMessageType("error");
+    } finally {
+      setForgotLoading(false);
     }
-
-    setForgotLoading(false);
   }
 
   function switchToForgot() {
     setForgotMode(true);
     setMessage("");
     setMessageType("");
+    setShowVerificationHelp(false);
   }
 
   function switchToLogin() {
@@ -158,13 +224,7 @@ export default function LoginPage() {
 
   return (
     <main style={styles.main}>
-      <button
-        type="button"
-        onClick={() => {
-          window.location.href = "/";
-        }}
-        style={styles.backButton}
-      >
+      <button type="button" onClick={() => { window.location.href = "/"; }} style={styles.backButton}>
         ← Back
       </button>
 
@@ -174,12 +234,10 @@ export default function LoginPage() {
         {!forgotMode ? (
           <>
             <h1 style={styles.title}>Welcome Back</h1>
-
             <p style={styles.subtitle}>Login to your player account</p>
 
             <form onSubmit={handleLogin}>
               <label style={styles.label}>Email Address</label>
-
               <input
                 type="email"
                 required
@@ -191,7 +249,6 @@ export default function LoginPage() {
               />
 
               <label style={styles.label}>Password</label>
-
               <div style={styles.passwordWrapper}>
                 <input
                   type={showPassword ? "text" : "password"}
@@ -202,70 +259,65 @@ export default function LoginPage() {
                   placeholder="Enter your password"
                   style={styles.passwordInput}
                 />
-
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((value) => !value)}
-                  style={styles.showButton}
-                >
+                <button type="button" onClick={() => setShowPassword((value) => !value)} style={styles.showButton}>
                   {showPassword ? "Hide" : "Show"}
                 </button>
               </div>
 
               <div style={styles.forgotRow}>
-                <button
-                  type="button"
-                  onClick={switchToForgot}
-                  style={styles.forgotButton}
-                >
+                <button type="button" onClick={switchToForgot} style={styles.forgotButton}>
                   Forgot Password?
                 </button>
               </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                style={{
-                  ...styles.button,
-                  opacity: loading ? 0.65 : 1,
-                }}
-              >
+              <button type="submit" disabled={loading} style={{ ...styles.button, opacity: loading ? 0.65 : 1 }}>
                 {loading ? "Logging in..." : "Login"}
               </button>
             </form>
 
             {message && (
-              <div
-                style={{
-                  ...styles.message,
-                  ...(messageType === "error"
-                    ? styles.errorMessage
-                    : styles.successMessage),
-                }}
-              >
+              <div style={{ ...styles.message, ...(messageType === "error" ? styles.errorMessage : styles.successMessage) }}>
                 {message}
               </div>
             )}
 
+            {showVerificationHelp && (
+              <div style={styles.verificationCard}>
+                <div style={styles.verificationTitle}>Email verification</div>
+                <div style={styles.verificationText}>
+                  Use the newest email only. Older verification links can expire or be consumed already.
+                </div>
+                <button
+                  type="button"
+                  onClick={resendVerification}
+                  disabled={resendLoading || resendCooldown > 0}
+                  style={{
+                    ...styles.secondaryButton,
+                    opacity: resendLoading || resendCooldown > 0 ? 0.6 : 1,
+                  }}
+                >
+                  {resendLoading
+                    ? "Sending..."
+                    : resendCooldown > 0
+                      ? `Resend available in ${resendCooldown}s`
+                      : "Resend Verification Email"}
+                </button>
+              </div>
+            )}
+
             <p style={styles.bottom}>
-              Don&apos;t have an account?{" "}
-              <Link href="/signup" style={styles.link}>
-                Create Account
-              </Link>
+              Don&apos;t have an account? <Link href="/signup" style={styles.link}>Create Account</Link>
             </p>
           </>
         ) : (
           <>
             <h1 style={styles.title}>Forgot Password?</h1>
-
             <p style={styles.subtitle}>
-              Enter your registered email address and we&apos;ll send you a secure
-              password reset link.
+              Enter your registered email address and we&apos;ll send you a secure password reset link.
             </p>
 
             <form onSubmit={handleForgotPassword}>
               <label style={styles.label}>Registered Email</label>
-
               <input
                 type="email"
                 required
@@ -276,36 +328,18 @@ export default function LoginPage() {
                 style={styles.input}
               />
 
-              <button
-                type="submit"
-                disabled={forgotLoading}
-                style={{
-                  ...styles.button,
-                  opacity: forgotLoading ? 0.65 : 1,
-                }}
-              >
+              <button type="submit" disabled={forgotLoading} style={{ ...styles.button, opacity: forgotLoading ? 0.65 : 1 }}>
                 {forgotLoading ? "Sending Reset Link..." : "Send Reset Link"}
               </button>
             </form>
 
             {message && (
-              <div
-                style={{
-                  ...styles.message,
-                  ...(messageType === "error"
-                    ? styles.errorMessage
-                    : styles.successMessage),
-                }}
-              >
+              <div style={{ ...styles.message, ...(messageType === "error" ? styles.errorMessage : styles.successMessage) }}>
                 {message}
               </div>
             )}
 
-            <button
-              type="button"
-              onClick={switchToLogin}
-              style={styles.backButton}
-            >
+            <button type="button" onClick={switchToLogin} style={styles.inlineBackButton}>
               ← Back to Login
             </button>
           </>
@@ -327,7 +361,6 @@ const styles = {
     fontFamily: "Arial, sans-serif",
     boxSizing: "border-box",
   },
-
   card: {
     width: "100%",
     maxWidth: "430px",
@@ -337,34 +370,29 @@ const styles = {
     padding: "30px",
     boxSizing: "border-box",
   },
-
   logo: {
     textAlign: "center",
     fontSize: "34px",
     fontWeight: "800",
     marginBottom: "12px",
   },
-
   title: {
     textAlign: "center",
     fontSize: "28px",
     margin: "0 0 8px",
   },
-
   subtitle: {
     textAlign: "center",
     color: "#9ca3af",
     marginBottom: "28px",
     lineHeight: "1.5",
   },
-
   label: {
     display: "block",
     fontSize: "15px",
     fontWeight: "600",
     marginBottom: "8px",
   },
-
   input: {
     width: "100%",
     boxSizing: "border-box",
@@ -377,12 +405,7 @@ const styles = {
     fontSize: "15px",
     outline: "none",
   },
-
-  passwordWrapper: {
-    position: "relative",
-    width: "100%",
-  },
-
+  passwordWrapper: { position: "relative", width: "100%" },
   passwordInput: {
     width: "100%",
     boxSizing: "border-box",
@@ -394,7 +417,6 @@ const styles = {
     fontSize: "15px",
     outline: "none",
   },
-
   showButton: {
     position: "absolute",
     right: "12px",
@@ -406,13 +428,7 @@ const styles = {
     fontWeight: "700",
     cursor: "pointer",
   },
-
-  forgotRow: {
-    display: "flex",
-    justifyContent: "flex-end",
-    marginBottom: "20px",
-  },
-
+  forgotRow: { display: "flex", justifyContent: "flex-end", marginBottom: "20px" },
   forgotButton: {
     background: "transparent",
     border: "none",
@@ -422,7 +438,6 @@ const styles = {
     cursor: "pointer",
     padding: "4px 0",
   },
-
   button: {
     width: "100%",
     padding: "14px",
@@ -434,7 +449,17 @@ const styles = {
     fontWeight: "700",
     cursor: "pointer",
   },
-
+  secondaryButton: {
+    width: "100%",
+    padding: "12px",
+    background: "#111827",
+    color: "#fff",
+    border: "1px solid #334155",
+    borderRadius: "10px",
+    fontSize: "14px",
+    fontWeight: "700",
+    cursor: "pointer",
+  },
   message: {
     marginTop: "18px",
     padding: "13px",
@@ -442,31 +467,36 @@ const styles = {
     fontSize: "14px",
     lineHeight: "1.5",
   },
-
   errorMessage: {
     background: "#3f0b0b",
     border: "1px solid #ef4444",
     color: "#fecaca",
   },
-
   successMessage: {
     background: "#052e16",
     border: "1px solid #22c55e",
     color: "#bbf7d0",
   },
-
-  bottom: {
-    textAlign: "center",
-    color: "#9ca3af",
-    marginTop: "24px",
+  verificationCard: {
+    marginTop: "14px",
+    padding: "14px",
+    borderRadius: "12px",
+    background: "#0f172a",
+    border: "1px solid #334155",
   },
-
-  link: {
-    color: "#22c55e",
-    textDecoration: "none",
-    fontWeight: "700",
+  verificationTitle: {
+    fontWeight: "800",
+    marginBottom: "6px",
+    color: "#fff",
   },
-
+  verificationText: {
+    fontSize: "13px",
+    lineHeight: "1.5",
+    color: "#cbd5e1",
+    marginBottom: "12px",
+  },
+  bottom: { textAlign: "center", color: "#9ca3af", marginTop: "24px" },
+  link: { color: "#22c55e", textDecoration: "none", fontWeight: "700" },
   backButton: {
     position: "fixed",
     top: "20px",
@@ -480,5 +510,15 @@ const styles = {
     fontWeight: "700",
     cursor: "pointer",
     zIndex: 100,
+  },
+  inlineBackButton: {
+    width: "100%",
+    marginTop: "16px",
+    background: "transparent",
+    border: "none",
+    color: "#22c55e",
+    fontWeight: "700",
+    cursor: "pointer",
+    fontSize: "14px",
   },
 };
