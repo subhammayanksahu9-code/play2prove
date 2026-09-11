@@ -185,12 +185,29 @@ export async function POST(request, { params }) {
       const memberUid = text(item?.gameUid);
       if (!memberPlayerName || !memberUid) return jsonError("Every team member needs a name and Game UID.", 422, "TEAM_MEMBER_INVALID");
       if (!identifier) return jsonError("Enter the Play2Prove username or email for every teammate.", 422, "TEAM_MEMBER_NOT_FOUND");
-      const profile = await db.from("users").select("user_id,username,email,full_name").or(`username.eq.${identifier},email.eq.${identifier}`).maybeSingle();
-      if (profile.error) throw profile.error;
-      if (!profile.data) return jsonError("A team member could not be found.", 422, "TEAM_MEMBER_NOT_FOUND");
-      if (seen.has(profile.data.user_id)) return jsonError("A team member cannot be added twice.", 422, "TEAM_MEMBER_DUPLICATE");
-      seen.add(profile.data.user_id);
-      members.push({ user_id: profile.data.user_id, player_name: memberPlayerName, game_uid: memberUid });
+
+      let profile = null;
+      const byEmail = await db.from("users").select("user_id,username,email,full_name,player_id,account_status").ilike("email", identifier).maybeSingle();
+      if (byEmail.error) throw byEmail.error;
+      profile = byEmail.data || null;
+
+      if (!profile) {
+        const byUsername = await db.from("users").select("user_id,username,email,full_name,player_id,account_status").ilike("username", identifier).maybeSingle();
+        if (byUsername.error) throw byUsername.error;
+        profile = byUsername.data || null;
+      }
+
+      if (!profile) {
+        const byPlayerId = await db.from("users").select("user_id,username,email,full_name,player_id,account_status").ilike("player_id", identifier).maybeSingle();
+        if (byPlayerId.error) throw byPlayerId.error;
+        profile = byPlayerId.data || null;
+      }
+
+      if (!profile) return jsonError("A team member could not be found. Use their Play2Prove username, Player ID, or email.", 422, "TEAM_MEMBER_NOT_FOUND");
+      if (text(profile.account_status).toLowerCase() !== "active") return jsonError("This team member account is not active.", 422, "TEAM_MEMBER_INACTIVE");
+      if (seen.has(profile.user_id)) return jsonError("A team member cannot be added twice.", 422, "TEAM_MEMBER_DUPLICATE");
+      seen.add(profile.user_id);
+      members.push({ user_id: profile.user_id, player_name: memberPlayerName, game_uid: memberUid });
     }
     if (teamSize === 1) {
       if (requestedMembers.length) return jsonError("This is a solo tournament.", 422, "TEAM_SIZE_INVALID");
