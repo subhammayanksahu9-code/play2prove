@@ -4,7 +4,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 
 function normalizeEmail(value) {
@@ -13,19 +12,10 @@ function normalizeEmail(value) {
 
 function getFriendlyAuthMessage(error) {
   const text = (error?.message || "").toLowerCase();
-
-  if (text.includes("email not confirmed") || text.includes("email_not_confirmed")) {
-    return "Your email is not verified yet. Use the button below to send a fresh verification email.";
-  }
-  if (text.includes("invalid login credentials") || text.includes("invalid credentials")) {
-    return "Incorrect email or password. Please try again, or reset your password if you forgot it.";
-  }
-  if (text.includes("rate limit") || text.includes("too many requests")) {
-    return "Too many requests. Please wait a few minutes and try again.";
-  }
-  if (text.includes("network") || text.includes("failed to fetch")) {
-    return "We couldn't reach the authentication server. Check your internet connection and try again.";
-  }
+  if (text.includes("email not confirmed") || text.includes("email_not_confirmed")) return "Your email is not verified yet. Use the button below to send a fresh verification email.";
+  if (text.includes("invalid login credentials") || text.includes("invalid credentials")) return "Incorrect email or password. Please try again, or reset your password if you forgot it.";
+  if (text.includes("rate limit") || text.includes("too many requests")) return "Too many requests. Please wait a few minutes and try again.";
+  if (text.includes("network") || text.includes("failed to fetch")) return "We couldn't reach the authentication server. Check your internet connection and try again.";
   return error?.message || "We couldn't complete your login. Please try again.";
 }
 
@@ -35,10 +25,12 @@ function safeNext(value) {
   return next;
 }
 
-export default function LoginPage() {
-  const searchParams = useSearchParams();
-  const nextDestination = safeNext(searchParams.get("next"));
+function getNextDestination() {
+  if (typeof window === "undefined") return "/profile";
+  return safeNext(new URLSearchParams(window.location.search).get("next"));
+}
 
+export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -52,39 +44,22 @@ export default function LoginPage() {
   const [messageType, setMessageType] = useState("");
 
   async function handleLogin(e) {
-    e.preventDefault();
-    setMessage("");
-    setMessageType("");
-    setShowVerificationHelp(false);
+    e.preventDefault(); setMessage(""); setMessageType(""); setShowVerificationHelp(false);
     const cleanEmail = normalizeEmail(email);
-    if (!cleanEmail || !password) {
-      setMessage("Please enter your email and password.");
-      setMessageType("error");
-      return;
-    }
+    if (!cleanEmail || !password) { setMessage("Please enter your email and password."); setMessageType("error"); return; }
     setLoading(true);
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email: cleanEmail, password });
       if (error) {
         const text = (error.message || "").toLowerCase();
-        setMessage(getFriendlyAuthMessage(error));
-        setMessageType("error");
+        setMessage(getFriendlyAuthMessage(error)); setMessageType("error");
         if (text.includes("email not confirmed") || text.includes("email_not_confirmed")) setShowVerificationHelp(true);
         return;
       }
-      if (data?.user) {
-        window.location.href = nextDestination;
-        return;
-      }
-      setMessage("We couldn't complete your login. Please try again.");
-      setMessageType("error");
-    } catch (error) {
-      console.error("Login error:", error);
-      setMessage(getFriendlyAuthMessage(error));
-      setMessageType("error");
-    } finally {
-      setLoading(false);
-    }
+      if (data?.user) { window.location.href = getNextDestination(); return; }
+      setMessage("We couldn't complete your login. Please try again."); setMessageType("error");
+    } catch (error) { console.error("Login error:", error); setMessage(getFriendlyAuthMessage(error)); setMessageType("error"); }
+    finally { setLoading(false); }
   }
 
   async function resendVerification() {
@@ -99,13 +74,10 @@ export default function LoginPage() {
         setMessage(text.includes("rate limit") || text.includes("too many") ? "Verification email limit reached. Please wait a few minutes before requesting another one." : error.message || "Unable to resend the verification email.");
         setMessageType("error"); return;
       }
-      setMessage("A fresh verification email has been sent. Open the newest email and use that link.");
-      setMessageType("success"); setShowVerificationHelp(true); setResendCooldown(60);
+      setMessage("A fresh verification email has been sent. Open the newest email and use that link."); setMessageType("success"); setShowVerificationHelp(true); setResendCooldown(60);
       const interval = window.setInterval(() => setResendCooldown((value) => { if (value <= 1) { window.clearInterval(interval); return 0; } return value - 1; }), 1000);
-    } catch (error) {
-      console.error("Resend verification error:", error);
-      setMessage("Something went wrong while sending the verification email. Please try again."); setMessageType("error");
-    } finally { setResendLoading(false); }
+    } catch (error) { console.error("Resend verification error:", error); setMessage("Something went wrong while sending the verification email. Please try again."); setMessageType("error"); }
+    finally { setResendLoading(false); }
   }
 
   async function handleForgotPassword(e) {
