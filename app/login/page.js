@@ -68,7 +68,9 @@ export default function LoginPage() {
     if (resendCooldown > 0) return;
     setResendLoading(true); setMessage(""); setMessageType("");
     try {
-      const { error } = await supabase.auth.resend({ type: "signup", email: cleanEmail, options: { emailRedirectTo: `${window.location.origin}/auth/callback` } });
+      const next = encodeURIComponent(getNextDestination());
+      const callbackUrl = `${window.location.origin}/auth/callback?next=${next}`;
+      const { error } = await supabase.auth.resend({ type: "signup", email: cleanEmail, options: { emailRedirectTo: callbackUrl } });
       if (error) {
         const text = (error.message || "").toLowerCase();
         setMessage(text.includes("rate limit") || text.includes("too many") ? "Verification email limit reached. Please wait a few minutes before requesting another one." : error.message || "Unable to resend the verification email.");
