@@ -1,10 +1,14 @@
 /* Tournament join/review modal scroll stability fix. */
 
-/* Keep the normal tournaments page from browser scroll anchoring jumps. */
+/*
+  Keep normal tournament-page scrolling stable while cards/countdowns
+  refresh in the background. The browser's native scroll anchoring should
+  stay enabled on the page; only the modal internals need anchoring disabled.
+*/
 html,
 body,
 .tournamentPage {
-  overflow-anchor: none;
+  overflow-anchor: auto;
 }
 
 body:has(.tdModalBackdrop) {
