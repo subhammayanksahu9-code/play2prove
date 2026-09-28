@@ -1,5 +1,12 @@
 /* Tournament join/review modal scroll stability fix. */
 
+/* Keep the normal tournaments page from browser scroll anchoring jumps. */
+html,
+body,
+.tournamentPage {
+  overflow-anchor: none;
+}
+
 body:has(.tdModalBackdrop) {
   overflow: hidden;
   overscroll-behavior: none;
