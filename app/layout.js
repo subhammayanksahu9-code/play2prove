@@ -5,6 +5,7 @@
 
 import "./styles.css";
 import "./globals.css";
+import "./tournament-scroll-fix.css";
 
 // ==========================================
 // END - GLOBAL CSS IMPORT
