@@ -1,0 +1,38 @@
+/* Tournament join/review modal scroll stability fix. */
+
+body:has(.tdModalBackdrop) {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+.tdModalBackdrop {
+  overflow: hidden;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
+
+.tdModal {
+  overscroll-behavior: contain;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-gutter: stable;
+  scroll-behavior: auto;
+}
+
+.tdModalHead,
+.tdForm,
+.tdReview,
+.tdSuccess {
+  overflow-anchor: none;
+}
+
+@media (max-width: 760px) {
+  .tdModalBackdrop {
+    overscroll-behavior: contain;
+  }
+
+  .tdModal {
+    max-height: calc(100dvh - 16px);
+  }
+}
