@@ -1311,6 +1311,7 @@ capacity:
   ======================================================= */
 
   const autoOpenedGameRef = useRef(false);
+  const autoOpenedAllRef = useRef(false);
 
 useEffect(() => {
   const params =
@@ -1329,6 +1330,21 @@ useEffect(() => {
   ========================================= */
 
   if (allMode) {
+
+    /*
+      ALL TOURNAMENTS MODE must initialize only once.
+
+      games is a live-refreshing state (API refresh every 10s).
+      This effect depends on games for ?game= handling, so without
+      this guard the page would call window.scrollTo(0, 0) on every
+      background refresh and throw the customer back to the top.
+    */
+    if (autoOpenedAllRef.current) {
+      return;
+    }
+
+    autoOpenedAllRef.current = true;
+
     setAllTournamentsMode(true);
     setSelectedGame(null);
 
@@ -1346,7 +1362,6 @@ useEffect(() => {
 
     return;
   }
-
   /* =========================================
      SPECIFIC GAME MODE
   ========================================= */
