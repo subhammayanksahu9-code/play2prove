@@ -6,6 +6,17 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
 
+function safeNext(value) {
+  const next = String(value || "").trim();
+  if (!next.startsWith("/") || next.startsWith("//") || next.includes("\\")) return "/profile";
+  return next;
+}
+
+function getNextDestination() {
+  if (typeof window === "undefined") return "/profile";
+  return safeNext(new URLSearchParams(window.location.search).get("next"));
+}
+
 export default function AuthCallbackPage() {
   const router = useRouter();
   const [status, setStatus] = useState("checking");
@@ -13,6 +24,7 @@ export default function AuthCallbackPage() {
 
   useEffect(() => {
     let active = true;
+    const nextDestination = getNextDestination();
 
     async function finishAuth() {
       const hash = new URLSearchParams(window.location.hash.slice(1));
@@ -41,11 +53,11 @@ export default function AuthCallbackPage() {
       }
 
       setStatus("success");
-      setMessage("Email verified successfully. Opening your player account...");
+      setMessage(nextDestination === "/profile" ? "Email verified successfully. Opening your player account..." : "Email verified successfully. Returning you to your tournament...");
 
       window.setTimeout(() => {
-        router.replace("/profile");
-      }, 1200);
+        router.replace(nextDestination);
+      }, 900);
     }
 
     const { data: listener } = supabase.auth.onAuthStateChange((event) => {
