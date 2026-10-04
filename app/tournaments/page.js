@@ -854,10 +854,20 @@ export default function TournamentsPage() {
       index
     ) {
 
+      const gameObject =
+        row?.game &&
+        typeof row.game === "object"
+          ? row.game
+          : null;
+
       const gameName =
         clean(
-          row?.game ??
-          row?.gameName
+          gameObject?.game_name ??
+          gameObject?.gameName ??
+          gameObject?.game_short_name ??
+          gameObject?.gameShortName ??
+          row?.gameName ??
+          (typeof row?.game === "string" ? row.game : "")
         );
 
       const tournamentImage =
@@ -865,6 +875,14 @@ export default function TournamentsPage() {
           row?.image ??
           row?.imageUrl ??
           row?.["Image URL"]
+        );
+
+      const gameImage =
+        clean(
+          gameObject?.image_url ??
+          gameObject?.imageUrl ??
+          gameObject?.image ??
+          ""
         );
 
       return {
@@ -922,7 +940,8 @@ export default function TournamentsPage() {
           ),
 
         image:
-          tournamentImage,
+          tournamentImage ||
+          gameImage,
 
         entry:
           numberValue(
@@ -2527,7 +2546,9 @@ useEffect(() => {
     selectedGameData ||
     games.find(
       (g) =>
-        g.id === item.game
+        g.id === item.game ||
+        slugify(g.name) === item.game ||
+        slugify(g.id) === item.game
     )
   }
 />
