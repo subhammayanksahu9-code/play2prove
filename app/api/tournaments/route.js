@@ -63,7 +63,10 @@ export async function GET() {
           prizePool: t.prize_pool,
           gameStandards: t.game_standards,
           ggStandardStatement: t.gg_standard_statement,
-          image: t.image_url || null,
+          image:
+            t.image_url ||
+            gameMap.get(t.game_short_name)?.image_url ||
+            null,
           game: gameMap.get(t.game_short_name) || null,
         })),
       },
