@@ -26,7 +26,7 @@ export async function GET() {
           .order("id", { ascending: true }),
         supabase
           .from("tournaments")
-          .select("id,tournament_id,game_short_name,tournament_name,match_date,start_time,mode_format_id,map,entry_fee,per_kill,prize_pool,game_standards,gg_standard_statement,parts_of_day,publish,status,slots_of_mode")
+          .select("id,tournament_id,game_short_name,tournament_name,match_date,start_time,mode_format_id,map,entry_fee,per_kill,prize_pool,game_standards,gg_standard_statement,parts_of_day,publish,status,slots_of_mode,image_url")
           .eq("active", true)
           .eq("publish", true)
           .order("match_date", { ascending: true })
@@ -63,6 +63,7 @@ export async function GET() {
           prizePool: t.prize_pool,
           gameStandards: t.game_standards,
           ggStandardStatement: t.gg_standard_statement,
+          image: t.image_url || null,
           game: gameMap.get(t.game_short_name) || null,
         })),
       },
