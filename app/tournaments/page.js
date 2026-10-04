@@ -470,6 +470,26 @@ function getTournamentAutomaticStatus(
 
   }
 
+  /*
+    ADDITIONAL PAST RULE:
+    The 10-minute LIVE window is also the
+    tournament's join window. Immediately after
+    that window closes, move the tournament to Past.
+
+    Existing Match Ongoing / Match Closing /
+    Calculation Ongoing logic remains below so
+    the existing flow/code is preserved.
+  */
+  if (
+    now >=
+    start +
+      LIVE
+  ) {
+
+    return "Past";
+
+  }
+
   if (
     now <
     start +
