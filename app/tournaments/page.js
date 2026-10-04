@@ -70,7 +70,7 @@ function getMasterNow() {
 }
 
 const CACHE_KEY =
-  "play2prove_tournaments_v5";
+  "play2prove_tournaments_v6";
 
 const CACHE_MAX_AGE =
   5 * 60 * 1000;
