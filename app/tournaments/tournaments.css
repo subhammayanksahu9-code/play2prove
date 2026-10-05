@@ -6194,3 +6194,5 @@ span.statusPast {
     transform: none !important;
   }
 }
+
+/* Vercel preview rebuild marker — no UI/logic change */
