@@ -5989,3 +5989,208 @@ span.statusPast {
   }
 
 }
+
+
+/* =========================================================
+   PLAY2PROVE — GAMING VISUAL POLISH
+   UI ONLY — FILTER / MAPPING / DATA LOGIC UNTOUCHED
+========================================================= */
+
+/* Slightly stronger readability at normal Chrome 100% zoom */
+.tournamentPage .tournamentNavButtons {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 18px;
+}
+
+.tournamentPage .arenaNavButton {
+  min-height: 42px;
+  padding: 0 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, .13);
+  border-radius: 9px;
+  background:
+    linear-gradient(135deg, rgba(18, 24, 37, .96), rgba(7, 10, 17, .96));
+  color: #e9edf5;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .7px;
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.045),
+    0 8px 24px rgba(0,0,0,.22);
+  transition:
+    transform .2s ease,
+    border-color .2s ease,
+    color .2s ease,
+    box-shadow .2s ease,
+    background .2s ease;
+}
+
+.tournamentPage .arenaNavButton .navArrow {
+  color: var(--pp-orange);
+  font-size: 14px;
+  line-height: 1;
+}
+
+.tournamentPage .arenaNavButton:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 88, 0, .58);
+  color: #fff;
+  background:
+    linear-gradient(135deg, rgba(31, 18, 14, .98), rgba(9, 12, 20, .98));
+  box-shadow:
+    0 0 22px rgba(255, 80, 0, .12),
+    inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+/* Animated esports atmosphere — visual only */
+.tournamentPage::after {
+  content: "";
+  position: fixed;
+  inset: -25%;
+  z-index: -2;
+  pointer-events: none;
+  opacity: .34;
+  background:
+    radial-gradient(circle at 18% 24%, rgba(255, 72, 0, .13), transparent 18%),
+    radial-gradient(circle at 82% 34%, rgba(104, 70, 255, .12), transparent 20%),
+    radial-gradient(circle at 55% 82%, rgba(0, 170, 255, .055), transparent 18%);
+  filter: blur(28px);
+  animation: ppArenaDrift 18s ease-in-out infinite alternate;
+}
+
+@keyframes ppArenaDrift {
+  0%   { transform: translate3d(-2%, -1%, 0) scale(1); }
+  50%  { transform: translate3d(2%, 1.5%, 0) scale(1.035); }
+  100% { transform: translate3d(-1%, 2%, 0) scale(1.02); }
+}
+
+/* Header gets a subtle moving energy sweep without changing content */
+.tournamentPage .tournamentHeader::before {
+  content: "";
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: -35%;
+  width: 28%;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,255,255,.055),
+      transparent
+    );
+  transform: skewX(-18deg);
+  animation: ppHeaderSweep 8s ease-in-out infinite;
+}
+
+@keyframes ppHeaderSweep {
+  0%, 58% { left: -35%; opacity: 0; }
+  66%     { opacity: .7; }
+  78%,100%{ left: 125%; opacity: 0; }
+}
+
+/* Make filter text easier to read at 100% zoom.
+   Structure, labels, buttons and state mapping remain unchanged. */
+.tournamentPage .filterGroup label {
+  font-size: 9px;
+  letter-spacing: 1.8px;
+  color: #8994a8;
+}
+
+.tournamentPage .compactFilters button {
+  min-height: 40px;
+  padding-left: 15px;
+  padding-right: 15px;
+  font-size: 9px;
+  letter-spacing: .35px;
+}
+
+.tournamentPage .compactFilters button.selected {
+  box-shadow:
+    0 0 18px rgba(255, 80, 0, .11),
+    inset 0 0 18px rgba(255, 80, 0, .035);
+}
+
+.tournamentPage .filterPanel {
+  box-shadow:
+    0 20px 65px rgba(0,0,0,.34),
+    inset 0 1px 0 rgba(255,255,255,.035),
+    0 0 45px rgba(92, 65, 255, .035);
+}
+
+/* Time-slot cards stay exactly the same grid/mapping,
+   only become more readable and visually alive. */
+.tournamentPage .slotGrid button {
+  min-height: 72px;
+}
+
+.tournamentPage .slotGrid button strong {
+  font-size: 10px;
+}
+
+.tournamentPage .slotGrid button small {
+  font-size: 7px;
+}
+
+.tournamentPage .slotGrid button:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 10px 25px rgba(0,0,0,.25),
+    0 0 18px rgba(112,76,255,.07);
+}
+
+/* Result heading readability */
+.tournamentPage .resultsHeader strong {
+  font-size: 18px;
+}
+
+.tournamentPage .resultsHeader span {
+  font-size: 9px;
+}
+
+/* Preserve usability on narrower screens */
+@media (max-width: 700px) {
+  .tournamentPage .tournamentNavButtons {
+    gap: 8px;
+  }
+
+  .tournamentPage .arenaNavButton {
+    min-height: 40px;
+    padding: 0 13px;
+    font-size: 9px;
+  }
+
+  .tournamentPage .filterGroup label {
+    font-size: 8px;
+  }
+
+  .tournamentPage .compactFilters button {
+    min-height: 38px;
+    font-size: 8px;
+  }
+
+  .tournamentPage .slotGrid button {
+    min-height: 62px;
+  }
+}
+
+/* Respect accessibility preference after the new animations are added. */
+@media (prefers-reduced-motion: reduce) {
+  .tournamentPage::after,
+  .tournamentPage .tournamentHeader::before {
+    animation: none !important;
+  }
+
+  .tournamentPage .arenaNavButton:hover,
+  .tournamentPage .slotGrid button:hover {
+    transform: none !important;
+  }
+}
