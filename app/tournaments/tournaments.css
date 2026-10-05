@@ -5992,535 +5992,177 @@ span.statusPast {
 
 
 /* =========================================================
-   PLAY2PROVE — GAMING VISUAL POLISH
-   UI ONLY — FILTER / MAPPING / DATA LOGIC UNTOUCHED
-========================================================= */
-
-/* Slightly stronger readability at normal Chrome 100% zoom */
-.tournamentPage .tournamentNavButtons {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin: 0 0 18px;
-}
-
-.tournamentPage .arenaNavButton {
-  min-height: 42px;
-  padding: 0 16px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  border: 1px solid rgba(255, 255, 255, .13);
-  border-radius: 9px;
-  background:
-    linear-gradient(135deg, rgba(18, 24, 37, .96), rgba(7, 10, 17, .96));
-  color: #e9edf5;
-  font-size: 10px;
-  font-weight: 900;
-  letter-spacing: .7px;
-  cursor: pointer;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.045),
-    0 8px 24px rgba(0,0,0,.22);
-  transition:
-    transform .2s ease,
-    border-color .2s ease,
-    color .2s ease,
-    box-shadow .2s ease,
-    background .2s ease;
-}
-
-.tournamentPage .arenaNavButton .navArrow {
-  color: var(--pp-orange);
-  font-size: 14px;
-  line-height: 1;
-}
-
-.tournamentPage .arenaNavButton:hover {
-  transform: translateY(-2px);
-  border-color: rgba(255, 88, 0, .58);
-  color: #fff;
-  background:
-    linear-gradient(135deg, rgba(31, 18, 14, .98), rgba(9, 12, 20, .98));
-  box-shadow:
-    0 0 22px rgba(255, 80, 0, .12),
-    inset 0 1px 0 rgba(255,255,255,.06);
-}
-
-/* Animated esports atmosphere — visual only */
-.tournamentPage::after {
-  content: "";
-  position: fixed;
-  inset: -25%;
-  z-index: -2;
-  pointer-events: none;
-  opacity: .34;
-  background:
-    radial-gradient(circle at 18% 24%, rgba(255, 72, 0, .13), transparent 18%),
-    radial-gradient(circle at 82% 34%, rgba(104, 70, 255, .12), transparent 20%),
-    radial-gradient(circle at 55% 82%, rgba(0, 170, 255, .055), transparent 18%);
-  filter: blur(28px);
-  animation: ppArenaDrift 18s ease-in-out infinite alternate;
-}
-
-@keyframes ppArenaDrift {
-  0%   { transform: translate3d(-2%, -1%, 0) scale(1); }
-  50%  { transform: translate3d(2%, 1.5%, 0) scale(1.035); }
-  100% { transform: translate3d(-1%, 2%, 0) scale(1.02); }
-}
-
-/* Header gets a subtle moving energy sweep without changing content */
-.tournamentPage .tournamentHeader::before {
-  content: "";
-  position: absolute;
-  top: -20%;
-  bottom: -20%;
-  left: -35%;
-  width: 28%;
-  pointer-events: none;
-  background:
-    linear-gradient(
-      90deg,
-      transparent,
-      rgba(255,255,255,.055),
-      transparent
-    );
-  transform: skewX(-18deg);
-  animation: ppHeaderSweep 8s ease-in-out infinite;
-}
-
-@keyframes ppHeaderSweep {
-  0%, 58% { left: -35%; opacity: 0; }
-  66%     { opacity: .7; }
-  78%,100%{ left: 125%; opacity: 0; }
-}
-
-/* Make filter text easier to read at 100% zoom.
-   Structure, labels, buttons and state mapping remain unchanged. */
-.tournamentPage .filterGroup label {
-  font-size: 9px;
-  letter-spacing: 1.8px;
-  color: #8994a8;
-}
-
-.tournamentPage .compactFilters button {
-  min-height: 40px;
-  padding-left: 15px;
-  padding-right: 15px;
-  font-size: 9px;
-  letter-spacing: .35px;
-}
-
-.tournamentPage .compactFilters button.selected {
-  box-shadow:
-    0 0 18px rgba(255, 80, 0, .11),
-    inset 0 0 18px rgba(255, 80, 0, .035);
-}
-
-.tournamentPage .filterPanel {
-  box-shadow:
-    0 20px 65px rgba(0,0,0,.34),
-    inset 0 1px 0 rgba(255,255,255,.035),
-    0 0 45px rgba(92, 65, 255, .035);
-}
-
-/* Time-slot cards stay exactly the same grid/mapping,
-   only become more readable and visually alive. */
-.tournamentPage .slotGrid button {
-  min-height: 72px;
-}
-
-.tournamentPage .slotGrid button strong {
-  font-size: 10px;
-}
-
-.tournamentPage .slotGrid button small {
-  font-size: 7px;
-}
-
-.tournamentPage .slotGrid button:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    0 10px 25px rgba(0,0,0,.25),
-    0 0 18px rgba(112,76,255,.07);
-}
-
-/* Result heading readability */
-.tournamentPage .resultsHeader strong {
-  font-size: 18px;
-}
-
-.tournamentPage .resultsHeader span {
-  font-size: 9px;
-}
-
-/* Preserve usability on narrower screens */
-@media (max-width: 700px) {
-  .tournamentPage .tournamentNavButtons {
-    gap: 8px;
-  }
-
-  .tournamentPage .arenaNavButton {
-    min-height: 40px;
-    padding: 0 13px;
-    font-size: 9px;
-  }
-
-  .tournamentPage .filterGroup label {
-    font-size: 8px;
-  }
-
-  .tournamentPage .compactFilters button {
-    min-height: 38px;
-    font-size: 8px;
-  }
-
-  .tournamentPage .slotGrid button {
-    min-height: 62px;
-  }
-}
-
-/* Respect accessibility preference after the new animations are added. */
-@media (prefers-reduced-motion: reduce) {
-  .tournamentPage::after,
-  .tournamentPage .tournamentHeader::before {
-    animation: none !important;
-  }
-
-  .tournamentPage .arenaNavButton:hover,
-  .tournamentPage .slotGrid button:hover {
-    transform: none !important;
-  }
-}
-
-/* Vercel preview rebuild marker — no UI/logic change */
-
-
-/* =========================================================
    PLAY2PROVE — ARENA BACKGROUND EXPERIENCE
-   VISUAL BACKGROUND ONLY
-   DO NOT TOUCH TOURNAMENT CARDS / FILTERS / MAPPING
+   BACKGROUND ONLY
+   FILTERS / CARDS / MAPPING / CONTENT / LAYOUT UNTOUCHED
 ========================================================= */
 
 .tournamentPage {
+  position: relative;
   background:
-    radial-gradient(
-      circle at 8% 16%,
-      rgba(255, 72, 0, .22),
-      transparent 24%
-    ),
-    radial-gradient(
-      circle at 92% 12%,
-      rgba(74, 106, 255, .20),
-      transparent 25%
-    ),
-    radial-gradient(
-      circle at 50% 58%,
-      rgba(145, 58, 255, .09),
-      transparent 30%
-    ),
-    radial-gradient(
-      circle at 50% 110%,
-      rgba(0, 180, 255, .08),
-      transparent 34%
-    ),
-    linear-gradient(
-      135deg,
-      #020308 0%,
-      #050815 42%,
-      #02040b 100%
-    );
+    radial-gradient(circle at 8% 16%, rgba(255,72,0,.20), transparent 24%),
+    radial-gradient(circle at 92% 12%, rgba(74,106,255,.18), transparent 25%),
+    radial-gradient(circle at 52% 58%, rgba(145,58,255,.08), transparent 30%),
+    radial-gradient(circle at 50% 110%, rgba(0,180,255,.07), transparent 34%),
+    linear-gradient(135deg, #020308 0%, #050815 42%, #02040b 100%);
   background-attachment: fixed;
 }
 
-/* Animated sci-fi grid / scan field behind the whole arena */
+/* Moving sci-fi grid behind all content */
 .tournamentPage::before {
-  opacity: .16;
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  pointer-events: none;
+  opacity: .13;
   background-image:
-    linear-gradient(
-      rgba(90, 120, 190, .10) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      90deg,
-      rgba(90, 120, 190, .10) 1px,
-      transparent 1px
-    ),
+    linear-gradient(rgba(90,120,190,.095) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(90,120,190,.095) 1px, transparent 1px),
     repeating-linear-gradient(
       135deg,
       transparent 0,
-      transparent 58px,
-      rgba(255, 84, 0, .045) 59px,
-      transparent 60px
-    ),
-    radial-gradient(
-      circle at center,
-      rgba(255,255,255,.8) .5px,
-      transparent .7px
+      transparent 74px,
+      rgba(255,84,0,.04) 75px,
+      transparent 76px
     );
-  background-size:
-    52px 52px,
-    52px 52px,
-    170px 170px,
-    6px 6px;
-  animation:
-    ppArenaGridMove 20s linear infinite;
+  background-size: 52px 52px, 52px 52px, 180px 180px;
+  animation: ppArenaGridMove 22s linear infinite;
 }
 
 @keyframes ppArenaGridMove {
-  0% {
-    background-position:
-      0 0,
-      0 0,
-      0 0,
-      0 0;
+  from {
+    background-position: 0 0, 0 0, 0 0;
   }
-  100% {
-    background-position:
-      52px 104px,
-      104px 52px,
-      -170px 85px,
-      30px 30px;
+  to {
+    background-position: 104px 156px, 156px 104px, -180px 90px;
   }
 }
 
-/* Deep moving energy field */
+/* Slow moving energy / glow field */
 .tournamentPage::after {
   content: "";
   position: fixed;
   inset: -35%;
-  z-index: -2;
+  z-index: -11;
   pointer-events: none;
-  opacity: .46;
+  opacity: .38;
   background:
     conic-gradient(
       from 210deg at 18% 42%,
       transparent 0deg,
-      rgba(255, 72, 0, .18) 24deg,
+      rgba(255,72,0,.18) 24deg,
       transparent 52deg,
       transparent 178deg,
-      rgba(90, 82, 255, .15) 202deg,
+      rgba(90,82,255,.15) 202deg,
       transparent 238deg
     ),
-    radial-gradient(
-      ellipse at 18% 40%,
-      rgba(255, 76, 0, .22),
-      transparent 22%
-    ),
-    radial-gradient(
-      ellipse at 82% 22%,
-      rgba(85, 105, 255, .20),
-      transparent 24%
-    ),
-    radial-gradient(
-      ellipse at 56% 88%,
-      rgba(0, 183, 255, .11),
-      transparent 20%
-    );
-  filter: blur(38px) saturate(1.25);
+    radial-gradient(ellipse at 18% 40%, rgba(255,76,0,.20), transparent 22%),
+    radial-gradient(ellipse at 82% 22%, rgba(85,105,255,.18), transparent 24%),
+    radial-gradient(ellipse at 56% 88%, rgba(0,183,255,.10), transparent 20%);
+  filter: blur(42px) saturate(1.2);
   transform-origin: center;
-  animation:
-    ppArenaEnergy 18s ease-in-out infinite alternate;
+  animation: ppArenaEnergy 18s ease-in-out infinite alternate;
 }
 
 @keyframes ppArenaEnergy {
   0% {
-    transform:
-      translate3d(-2%, 1%, 0)
-      rotate(-1deg)
-      scale(1);
+    transform: translate3d(-2%, 1%, 0) rotate(-1deg) scale(1);
   }
   50% {
-    transform:
-      translate3d(2%, -2%, 0)
-      rotate(1.5deg)
-      scale(1.045);
+    transform: translate3d(2%, -2%, 0) rotate(1deg) scale(1.04);
   }
   100% {
-    transform:
-      translate3d(-1%, 2%, 0)
-      rotate(-.5deg)
-      scale(1.02);
+    transform: translate3d(-1%, 2%, 0) rotate(-.5deg) scale(1.02);
   }
 }
 
-/* Use the existing decorative grid/glow layers as moving arena scenery.
-   No card/filter selectors are changed here. */
+/* Existing background-only decorative layers, if present */
 .tournamentPage .tpGrid {
-  opacity: .12;
-  animation:
-    ppGridDrift 14s linear infinite;
-  transform-origin: center;
+  opacity: .10;
+  animation: ppGridDrift 14s linear infinite;
 }
 
 @keyframes ppGridDrift {
-  0% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  50% {
-    transform: translate3d(1.5%, -1%, 0) scale(1.02);
-  }
-  100% {
-    transform: translate3d(-1%, 1.5%, 0) scale(1.04);
-  }
+  0% { transform: translate3d(0,0,0) scale(1); }
+  50% { transform: translate3d(1%, -0.7%, 0) scale(1.02); }
+  100% { transform: translate3d(-0.7%, 1%, 0) scale(1.04); }
 }
 
 .tournamentPage .tpGlow {
-  opacity: .24;
-  animation:
-    ppGlowFloat 8s ease-in-out infinite alternate;
+  opacity: .20;
+  animation: ppGlowFloat 8s ease-in-out infinite alternate;
 }
 
 @keyframes ppGlowFloat {
-  0% {
-    transform: translate3d(-2%, 0, 0) scale(.98);
-  }
-  100% {
-    transform: translate3d(2%, -3%, 0) scale(1.06);
-  }
+  0% { transform: translate3d(-2%,0,0) scale(.98); }
+  100% { transform: translate3d(2%,-3%,0) scale(1.06); }
 }
 
-/* Give the tournament header a cinematic backdrop without changing
-   its text, structure or controls. */
-.tournamentPage .tournamentHeader {
-  box-shadow:
-    0 30px 100px rgba(0,0,0,.40),
-    0 0 55px rgba(255,72,0,.08),
-    0 0 70px rgba(82,82,255,.06),
-    inset 0 1px 0 rgba(255,255,255,.05);
+/* Keep the existing top neon line alive without touching page controls */
+.tournamentPage .tpNeonTop {
+  animation: ppTopEnergy 5.5s linear infinite;
 }
 
-.tournamentPage .tournamentHeader::before {
-  opacity: .72;
-  background:
-    radial-gradient(
-      circle at 78% 38%,
-      rgba(255, 77, 0, .18),
-      transparent 24%
-    ),
-    radial-gradient(
-      circle at 62% 0%,
-      rgba(92, 92, 255, .13),
-      transparent 28%
-    ),
-    repeating-linear-gradient(
-      125deg,
-      transparent 0,
-      transparent 24px,
-      rgba(255,255,255,.024) 25px,
-      transparent 26px
-    );
-  background-size:
-    auto,
-    auto,
-    180px 180px;
-  animation:
-    ppHeaderAtmosphere 10s ease-in-out infinite alternate;
+@keyframes ppTopEnergy {
+  0%,100% { opacity: .55; }
+  50% { opacity: 1; }
 }
 
-@keyframes ppHeaderAtmosphere {
-  0% {
-    transform: translate3d(-4%, 0, 0) scale(1.02);
-    opacity: .54;
-  }
-  100% {
-    transform: translate3d(5%, -1%, 0) scale(1.08);
-    opacity: .82;
-  }
-}
-
-/* Fixed cinematic side energy rails — background only */
-.tournamentPage .tournamentSection::before {
+/* Background rails only */
+.tournamentPage .tournamentSection::before,
+.tournamentPage .tournamentSection::after {
   content: "";
   position: fixed;
   top: 14%;
   bottom: 8%;
-  left: 0;
   width: 2px;
-  z-index: -1;
+  z-index: -5;
   pointer-events: none;
-  background:
-    linear-gradient(
-      to bottom,
-      transparent,
-      rgba(255, 76, 0, .75) 18%,
-      rgba(255, 76, 0, .08) 48%,
-      rgba(92, 92, 255, .55) 82%,
-      transparent
-    );
-  box-shadow:
-    0 0 18px rgba(255, 76, 0, .30),
-    0 0 40px rgba(94, 86, 255, .16);
-  animation:
-    ppRailPulse 4.8s ease-in-out infinite;
+  opacity: .55;
+}
+
+.tournamentPage .tournamentSection::before {
+  left: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(255,76,0,.65) 18%,
+    rgba(255,76,0,.05) 48%,
+    rgba(92,92,255,.50) 82%,
+    transparent
+  );
+  box-shadow: 0 0 18px rgba(255,76,0,.24);
+  animation: ppRailPulse 4.8s ease-in-out infinite;
 }
 
 .tournamentPage .tournamentSection::after {
-  content: "";
-  position: fixed;
-  top: 20%;
-  bottom: 12%;
   right: 0;
-  width: 2px;
-  z-index: -1;
-  pointer-events: none;
-  background:
-    linear-gradient(
-      to bottom,
-      transparent,
-      rgba(75, 125, 255, .65) 24%,
-      rgba(75, 125, 255, .06) 55%,
-      rgba(255, 76, 0, .62) 84%,
-      transparent
-    );
-  box-shadow:
-    0 0 18px rgba(75, 125, 255, .24),
-    0 0 40px rgba(255, 76, 0, .12);
-  animation:
-    ppRailPulse 5.7s ease-in-out infinite reverse;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(75,125,255,.58) 24%,
+    rgba(75,125,255,.05) 55%,
+    rgba(255,76,0,.55) 84%,
+    transparent
+  );
+  box-shadow: 0 0 18px rgba(75,125,255,.20);
+  animation: ppRailPulse 5.7s ease-in-out infinite reverse;
 }
 
 @keyframes ppRailPulse {
-  0%, 100% {
-    opacity: .45;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-/* Keep the arena alive while leaving all existing interaction styles alone. */
-.tournamentPage .tpNeonTop {
-  animation:
-    ppTopEnergy 5.5s linear infinite;
-}
-
-@keyframes ppTopEnergy {
-  0% {
-    opacity: .55;
-    filter: hue-rotate(0deg);
-  }
-  50% {
-    opacity: 1;
-    filter: hue-rotate(12deg);
-  }
-  100% {
-    opacity: .55;
-    filter: hue-rotate(0deg);
-  }
+  0%,100% { opacity: .35; }
+  50% { opacity: .9; }
 }
 
 @media (max-width: 700px) {
   .tournamentPage::after {
-    opacity: .30;
-    filter: blur(32px);
+    opacity: .26;
   }
 
   .tournamentPage .tournamentSection::before,
   .tournamentPage .tournamentSection::after {
-    opacity: .45;
+    opacity: .35;
   }
 }
 
@@ -6529,10 +6171,9 @@ span.statusPast {
   .tournamentPage::after,
   .tournamentPage .tpGrid,
   .tournamentPage .tpGlow,
-  .tournamentPage .tournamentHeader::before,
+  .tournamentPage .tpNeonTop,
   .tournamentPage .tournamentSection::before,
-  .tournamentPage .tournamentSection::after,
-  .tournamentPage .tpNeonTop {
+  .tournamentPage .tournamentSection::after {
     animation: none !important;
   }
 }
