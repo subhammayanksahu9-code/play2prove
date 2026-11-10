@@ -47,6 +47,8 @@ function PPIcon({name}) {
   if(name==="plus-circle") return <svg {...common}><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>;
   if(name==="arrow-up-right") return <svg {...common}><path d="M7 17 17 7M8 7h9v9"/></svg>;
   if(name==="menu") return <svg {...common}><path d="M4 6h16M4 12h16M4 18h16"/></svg>;
+  if(name==="x") return <svg {...common}><path d="m6 6 12 12M18 6 6 18"/></svg>;
+  if(name==="chevron-left") return <svg {...common}><path d="m15 18-6-6 6-6"/></svg>;
   return <svg {...common}><path d="M5 12h14M13 6l6 6-6 6"/></svg>;
 }
 export default function ProfilePage() {
@@ -59,7 +61,7 @@ export default function ProfilePage() {
   const [editingMember,setEditingMember]=useState(-1),[memberForm,setMemberForm]=useState({name:"",uid:"",owner:"Own",friend:""});
   const [txFilter,setTxFilter]=useState("All Types");
 
-  useEffect(()=>{loadProfile();},[]);
+  useEffect(()=>{if(window.innerWidth<760)setSidebarOpen(false);loadProfile();},[]);
   async function loadProfile(){
     setLoading(true);setError("");
     try{
