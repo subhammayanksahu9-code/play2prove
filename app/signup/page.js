@@ -154,7 +154,7 @@ export default function SignupPage() {
         return;
       }
 
-      router.replace(`/verify-email?email=${encodeURIComponent(cleanEmail)}`);
+      router.replace("/login?registered=1");
     } catch (error) {
       console.error("Signup error:", error);
       setErrorMessage(friendlyError(error));
@@ -180,7 +180,7 @@ export default function SignupPage() {
       <div style={styles.card}>
         <div style={styles.logo}>Play2Prove</div>
         <h1 style={styles.title}>Create Your Player Account</h1>
-        <p style={styles.subtitle}>Secure signup with email verification</p>
+        <p style={styles.subtitle}>Create your Play2Prove player account</p>
 
         <form onSubmit={handleSignup} noValidate>
           <label style={styles.label}>Full Name</label>
