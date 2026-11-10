@@ -116,7 +116,7 @@ export default function ProfilePage() {
     </aside>
     <main className="pp-main">
       <header className="pp-topbar">
-        <div className="pp-top-left"><button className="pp-toggle" onClick={()=>setSidebarOpen(v=>!v)} aria-label={sidebarOpen?"Collapse sidebar":"Expand sidebar"} title={sidebarOpen?"Collapse navigation":"Expand navigation"}><PPIcon name={sidebarOpen?"x":"menu"}/></button><div className="pp-crumb">Player Centre <b>/ {active==="gameDetail"?game:NAV.find(n=>n[0]===active)?.[2]||"Profile"}</b></div></div>
+        <div className="pp-top-left"><button className="pp-toggle" onClick={()=>setSidebarOpen(v=>!v)} aria-label={sidebarOpen?"Collapse sidebar":"Expand sidebar"} title={sidebarOpen?"Collapse navigation":"Expand navigation"}><PPIcon name={sidebarOpen?"x":"menu"}/></button><div className="pp-crumb">Player Centre <b>/ {active==="gameDetail"?game:({overview:"My Profile",personal:"My Personal Data",security:"Account & Security",gaming:"My Gaming Profile",wallet:"Wallet Overview",transactions:"Transaction History",deposits:"Deposit History",withdrawals:"Withdraw History"})[active]||"Profile"}</b></div></div>
         <div className="pp-top-right"><div className="pp-user-chip"><span>{displayName.charAt(0).toUpperCase()}</span><b>{displayName}</b></div><button className="pp-logout" onClick={logout}>Logout ↗</button></div>
       </header>
       {error&&<div className="pp-alert pp-error">{error}</div>}{message&&<div className="pp-alert pp-success">{message}</div>}
