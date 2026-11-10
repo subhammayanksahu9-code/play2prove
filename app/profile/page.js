@@ -3,195 +3,151 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 
+const GAME_LIST = [
+  { name: "Free Fire", icon: "🔥", sub: "Garena" },
+  { name: "BGMI", icon: "🎯", sub: "Battlegrounds Mobile India" },
+  { name: "Valorant", icon: "⚡", sub: "Riot Games" },
+  { name: "Call of Duty", icon: "🎮", sub: "COD Mobile" },
+];
+const TXNS = [
+  { date: "—", id: "—", remark: "Your wallet transactions will appear here", type: "—", debit: "—", credit: "—", balance: "—", status: "No records" },
+];
+const NAV = [
+  ["overview","▦","Profile Overview"],["personal","♙","My Personal Data"],["gaming","🎮","My Gaming Profile"],
+  ["wallet","▣","Wallet Overview"],["transactions","↕","Transaction History"],["deposits","＋","Deposit History"],
+  ["withdrawals","−","Withdraw History"],["security","♢","Account & Security"],
+];
+
 export default function ProfilePage() {
-  const [authUser, setAuthUser] = useState(null);
-  const [player, setPlayer] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [editing, setEditing] = useState(false);
-  const [personalOpen, setPersonalOpen] = useState(false);
-  const [securityOpen, setSecurityOpen] = useState(false);
-  const [fullName, setFullName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  const [authUser,setAuthUser]=useState(null),[player,setPlayer]=useState(null),[loading,setLoading]=useState(true);
+  const [saving,setSaving]=useState(false),[editing,setEditing]=useState(false),[sidebarOpen,setSidebarOpen]=useState(true);
+  const [active,setActive]=useState("overview"),[personalOpen,setPersonalOpen]=useState(false),[securityOpen,setSecurityOpen]=useState(false);
+  const [fullName,setFullName]=useState(""),[phone,setPhone]=useState(""),[email,setEmail]=useState("");
+  const [message,setMessage]=useState(""),[error,setError]=useState("");
+  const [game,setGame]=useState("Free Fire"),[members,setMembers]=useState({}),[memberEditor,setMemberEditor]=useState(false);
+  const [editingMember,setEditingMember]=useState(-1),[memberForm,setMemberForm]=useState({name:"",uid:"",owner:"Own",friend:""});
+  const [txFilter,setTxFilter]=useState("All Types");
 
-  useEffect(() => { loadProfile(); }, []);
-
-  async function loadProfile() {
-    setLoading(true); setError("");
-    try {
-      const { data, error: sessionError } = await supabase.auth.getSession();
-      if (sessionError) throw sessionError;
-      const current = data?.session?.user;
-      if (!current) { window.location.replace("/login"); return; }
-      setAuthUser(current);
-
-      const { data: userRow, error: userError } = await supabase
-        .from("users")
-        .select("*")
-        .eq("user_id", current.id)
-        .maybeSingle();
-      if (userError) throw userError;
-      if (!userRow) throw new Error("Player account record not found.");
-
-      setPlayer(userRow);
-      setFullName(userRow.full_name || current.user_metadata?.full_name || "");
-      setPhone(userRow.mobile_number || current.user_metadata?.phone || "");
-    } catch (err) {
-      console.error("Profile loading error:", err);
-      setError(err?.message || "Unable to load your profile.");
-    } finally { setLoading(false); }
+  useEffect(()=>{loadProfile();},[]);
+  async function loadProfile(){
+    setLoading(true);setError("");
+    try{
+      const {data,error:sessionError}=await supabase.auth.getSession();if(sessionError)throw sessionError;
+      const current=data?.session?.user;if(!current){window.location.replace("/login");return;}
+      setAuthUser(current);setEmail(current.email||"");
+      const {data:userRow,error:userError}=await supabase.from("users").select("*").eq("user_id",current.id).maybeSingle();
+      if(userError)throw userError;if(!userRow)throw new Error("Player account record not found.");
+      setPlayer(userRow);setFullName(userRow.full_name||current.user_metadata?.full_name||"");setPhone(userRow.mobile_number||current.user_metadata?.phone||"");
+    }catch(err){console.error(err);setError(err?.message||"Unable to load profile.");}finally{setLoading(false);}
   }
-
-  async function saveProfile() {
-    if (!authUser) return;
-    setSaving(true); setError(""); setMessage("");
-    try {
-      const cleanName = fullName.trim();
-      const cleanPhone = phone.replace(/\D/g, "");
-      if (cleanName.length < 3) throw new Error("Please enter a valid full name.");
-      if (cleanPhone && !/^[6-9]\d{9}$/.test(cleanPhone)) throw new Error("Please enter a valid 10-digit Indian mobile number.");
-
-      const { data: updated, error: updateError } = await supabase
-        .from("users")
-        .update({ full_name: cleanName, mobile_number: cleanPhone || null })
-        .eq("user_id", authUser.id)
-        .select("*")
-        .single();
-      if (updateError) throw updateError;
-
-      setPlayer(updated); setFullName(updated.full_name || ""); setPhone(updated.mobile_number || ""); setEditing(false); setMessage("Profile updated successfully.");
-    } catch (err) {
-      console.error("Profile update error:", err);
-      setError(err?.message || "Unable to update your profile.");
-    } finally { setSaving(false); }
+  async function saveProfile(){
+    if(!authUser)return;setSaving(true);setError("");setMessage("");
+    try{
+      const name=fullName.trim(),mobile=phone.replace(/\\D/g,"");
+      if(name.length<3)throw new Error("Enter a valid full name.");
+      if(mobile&&!/^[6-9]\\d{9}$/.test(mobile))throw new Error("Enter a valid 10-digit Indian mobile number.");
+      const {data,error:updateError}=await supabase.from("users").update({full_name:name,mobile_number:mobile||null}).eq("user_id",authUser.id).select("*").single();
+      if(updateError)throw updateError;setPlayer(data);setFullName(data.full_name||"");setPhone(data.mobile_number||"");setEditing(false);setMessage("Personal details saved.");
+    }catch(err){setError(err?.message||"Could not save details.");}finally{setSaving(false);}
   }
-
-  async function logout() {
-    await supabase.auth.signOut();
-    window.location.href = "/login";
+  async function logout(){await supabase.auth.signOut();window.location.href="/login";}
+  function go(page){setActive(page);setMessage("");setError("");if(window.innerWidth<760)setSidebarOpen(false);}
+  function openGame(name){setGame(name);setActive("gameDetail");setMemberEditor(false);}
+  function saveMember(){
+    const f=memberForm;if(!f.name.trim()||!f.uid.trim()||(f.owner==="Friend"&&!f.friend.trim()))return;
+    setMembers(prev=>{const arr=[...(prev[game]||[])];const row={...f};if(editingMember>=0)arr[editingMember]=row;else arr.push(row);return {...prev,[game]:arr};});
+    setMemberEditor(false);setEditingMember(-1);setMemberForm({name:"",uid:"",owner:"Own",friend:""});
   }
+  function editMember(i){setEditingMember(i);setMemberForm({...members[game][i]});setMemberEditor(true);}
+  function removeMember(i){if(!window.confirm("Remove this game ID?"))return;setMembers(prev=>({...prev,[game]:(prev[game]||[]).filter((_,n)=>n!==i)}));}
+  const displayName=fullName||player?.full_name||authUser?.email?.split("@")[0]||"Player";
+  const playerId=player?.player_id||"Not assigned";
+  const balance=Number(player?.wallet_balance||0);
 
-  const displayName = fullName || player?.full_name || authUser?.email?.split("@")[0] || "Player";
-  const playerId = player?.player_id || "Not assigned";
-  const accountStatus = player?.account_status || "active";
-  const memberSince = player?.created_at || authUser?.created_at;
+  if(loading)return <main className="pp-loading">Loading Player Centre...</main>;
+  if(!authUser)return null;
 
-  if (loading) return <main style={styles.page}><div style={styles.loading}>Loading Player Account...</div></main>;
-  if (!authUser) return null;
-
-  return (
-    <main style={styles.page}>
-      <header style={styles.header}>
-        <button onClick={() => (window.location.href = "/")} style={styles.headerBtn}>← Home</button>
-        <div style={styles.brand}><div style={styles.logoBox}>P2P</div><div><b>Play2Prove</b><small style={styles.brandSmall}>PLAY • COMPETE • EARN • PROVE</small></div></div>
-        <button onClick={logout} style={styles.headerBtn}>Logout</button>
-      </header>
-
-      <div style={styles.container}>
-        <section style={styles.hero}>
-          <div style={styles.avatar}>{displayName.charAt(0).toUpperCase()}</div>
-          <div style={{ flex: 1 }}>
-            <div style={styles.green}>● PLAYER ACCOUNT</div>
-            <h1 style={styles.name}>{displayName}</h1>
-            <p style={styles.email}>{authUser.email}</p>
-            <div style={styles.badge}>PLAYER ID: {playerId}</div>
-          </div>
-          <button onClick={() => { setEditing(v => !v); setError(""); setMessage(""); }} style={styles.editBtn}>{editing ? "Cancel" : "Edit Profile"}</button>
-        </section>
-
-        {error && <div style={styles.error}>{error}</div>}
-        {message && <div style={styles.success}>{message}</div>}
-
-        <section style={styles.stats}>
-          <div style={styles.card}><small>PLAYER ID</small><strong>{playerId}</strong></div>
-          <div style={styles.card}><small>ACCOUNT</small><strong>{accountStatus}</strong></div>
-          <div style={styles.card}><small>MEMBER SINCE</small><strong>{memberSince ? new Date(memberSince).toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" }) : "—"}</strong></div>
-        </section>
-
-        <section style={styles.grid}>
-          <div style={{display:"grid",gap:14,alignContent:"start"}}>
-            <div style={styles.accordionCard}>
-              <button type="button" onClick={() => setPersonalOpen(v => !v)} aria-expanded={personalOpen} style={styles.accordionTrigger}>
-                <span style={{display:"flex",alignItems:"center",gap:12}}>
-                  <span style={styles.accordionIcon}>▣</span>
-                  <span style={{textAlign:"left"}}>
-                    <span style={{display:"block",fontSize:15,fontWeight:900,color:"#fff"}}>My Personal Information</span>
-                    <span style={{display:"block",fontSize:11,color:"#8993a1",marginTop:4}}>Full name, mobile number and account details</span>
-                  </span>
-                </span>
-                <span style={styles.accordionChevron}>{personalOpen ? "−" : "+"}</span>
-              </button>
-              {personalOpen && <div style={styles.accordionContent}>
-                <div style={styles.cardHead}><div><div style={styles.orange}>ACCOUNT INFORMATION</div><h2 style={{margin:"5px 0 0"}}>Personal Details</h2></div><span style={styles.green}>🔒 SECURE</span></div>
-                <div style={styles.formGrid}>
-                  <Field label="Real Full Name" editing={editing} value={fullName} onChange={setFullName} />
-                  <ReadOnlyField label="Email Address" value={authUser.email || "Not available"} />
-                  <Field label="Mobile Number" editing={editing} value={phone} onChange={setPhone} />
-                  <ReadOnlyField label="Referral Code" value={player?.referral_code || "Not assigned"} />
-                </div>
-                {editing && <div style={{textAlign:"right",marginTop:20}}><button disabled={saving} onClick={saveProfile} style={styles.saveBtn}>{saving ? "Saving..." : "Save Profile"}</button></div>}
-                <div style={styles.personalNote}>Aadhaar and PAN fields will be added only with secure verification and protected storage.</div>
-                <div style={{textAlign:"right",marginTop:12}}><button onClick={() => {setEditing(v => !v);setError("");setMessage("");}} style={styles.inlineEdit}>{editing ? "Cancel Edit" : "Edit Details"}</button></div>
-              </div>}
-            </div>
-            <div style={styles.accordionCard}>
-              <button type="button" onClick={() => setSecurityOpen(v => !v)} aria-expanded={securityOpen} style={styles.accordionTrigger}>
-                <span style={{display:"flex",alignItems:"center",gap:12}}>
-                  <span style={styles.accordionIcon}>♢</span>
-                  <span style={{textAlign:"left"}}>
-                    <span style={{display:"block",fontSize:15,fontWeight:900,color:"#fff"}}>Password & Security</span>
-                    <span style={{display:"block",fontSize:11,color:"#8993a1",marginTop:4}}>Manage your account access</span>
-                  </span>
-                </span>
-                <span style={styles.accordionChevron}>{securityOpen ? "−" : "+"}</span>
-              </button>
-              {securityOpen && <div style={styles.accordionContent}><p style={styles.securityText}>Never share your password or OTP.</p><button onClick={() => (window.location.href = "/reset-password")} style={styles.linkBtn}>Change Password →</button></div>}
-            </div>
-          </div>
-          <aside style={{display:"grid",gap:14,alignContent:"start"}}>
-            <div style={styles.cardLarge}>
-              <div style={styles.orange}>PLAYER CENTER</div><h3>Manage Account</h3>
-              {[[ "▣","Dashboard","/dashboard"],["♛","Tournaments","/tournaments"],["⚔","My Matches","/matches"],["▣","Wallet","/wallet"]].map(([icon,label,path]) => <button key={path} onClick={() => (window.location.href = path)} style={styles.quick}><span>{icon}</span><span>{label}</span><span>→</span></button>)}
-            </div>
-            <div style={styles.security}><b>🔐 Account Security</b><p style={styles.securityText}>Your account details stay private.</p></div>
-          </aside>
-        </section>
+  return <div className={"pp-app "+(!sidebarOpen?"pp-collapsed":"")}>
+    <aside className="pp-sidebar">
+      <div className="pp-side-scroll">
+        <div className="pp-brand"><div className="pp-logo">P2P</div><div className="pp-brand-name">Play<span>2</span>Prove<small>PLAYER CENTRE</small></div></div>
+        <div className="pp-nav-label">PLAYER MENU</div>
+        <nav className="pp-nav">{NAV.map(([id,icon,label])=><button key={id} className={active===id?"active":""} onClick={()=>go(id)}><i>{icon}</i><span>{label}</span></button>)}</nav>
+        <div className="pp-support"><b>Need help?</b><p>Having trouble with your player account?</p><button onClick={()=>go("security")}>Account Support</button></div>
       </div>
+      <div className="pp-side-foot">PLAY • COMPETE • EARN • PROVE</div>
+    </aside>
+    <main className="pp-main">
+      <header className="pp-topbar">
+        <div className="pp-top-left"><button className="pp-toggle" onClick={()=>setSidebarOpen(v=>!v)} aria-label="Toggle sidebar">☰</button><div className="pp-crumb">Player Centre <b>/ {active==="gameDetail"?game:NAV.find(n=>n[0]===active)?.[2]||"Profile"}</b></div></div>
+        <div className="pp-top-right"><div className="pp-user-chip"><span>{displayName.charAt(0).toUpperCase()}</span><b>{displayName}</b></div><button className="pp-logout" onClick={logout}>Logout ↗</button></div>
+      </header>
+      {error&&<div className="pp-alert pp-error">{error}</div>}{message&&<div className="pp-alert pp-success">{message}</div>}
+
+      {active==="overview"&&<section className="pp-page">
+        <div className="pp-heading"><div><h1>Player Profile</h1><p>Your gaming identity, account details and wallet at one place.</p></div><span className="pp-status">● ACCOUNT ACTIVE</span></div>
+        <div className="pp-card pp-profile-card">
+          <div className="pp-identity"><div className="pp-avatar">{displayName.charAt(0).toUpperCase()}</div><div><h2>{displayName}</h2><p>{authUser.email||"Email not added"}</p><span className="pp-uid">PLAYER ID: {playerId} <button onClick={()=>navigator.clipboard?.writeText(playerId)}>Copy</button></span></div></div>
+          <div className="pp-quick-actions"><button onClick={()=>go("transactions")}><i>↕</i>Transactions</button><button onClick={()=>go("deposits")}><i>＋</i>Deposit</button><button onClick={()=>go("withdrawals")}><i>−</i>Withdraw</button></div>
+          <div className="pp-balance"><small>TOTAL WALLET BALANCE</small><strong>₹ {balance.toLocaleString("en-IN",{minimumFractionDigits:2})}</strong><span>Available balance</span></div>
+        </div>
+        <div className="pp-stats"><div className="pp-stat"><small>PLAYER ID</small><b>{playerId}</b></div><div className="pp-stat"><small>ACCOUNT STATUS</small><b className="pp-green">{player?.account_status||"Active"}</b></div><div className="pp-stat"><small>MEMBER SINCE</small><b>{(player?.created_at||authUser.created_at)?new Date(player?.created_at||authUser.created_at).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}):"—"}</b></div></div>
+        <div className="pp-section-head"><div><h2>My Gaming Profiles</h2><p>Manage game IDs separately for each game.</p></div><button className="pp-text-btn" onClick={()=>go("gaming")}>View all →</button></div>
+        <div className="pp-games">{GAME_LIST.map(g=><button className="pp-game" key={g.name} onClick={()=>openGame(g.name)}><span>{g.icon}</span><b>{g.name}</b><small>{(members[g.name]||[]).length} IDs added</small><em>Open profile →</em></button>)}</div>
+        <div className="pp-section-head"><div><h2>Account Shortcuts</h2><p>Quick access to your player account.</p></div></div>
+        <div className="pp-shortcuts">{[["♙","My Personal Data","personal"],["▣","Wallet Overview","wallet"],["↕","Transaction History","transactions"],["♢","Password & Security","security"]].map(([ic,label,id])=><button key={id} onClick={()=>go(id)}><i>{ic}</i><span><b>{label}</b><small>Open and manage details</small></span><em>→</em></button>)}</div>
+      </section>}
+
+      {active==="personal"&&<section className="pp-page">
+        <div className="pp-backrow"><button onClick={()=>go("overview")}>← Back</button><div><h1>My Personal Data</h1><p>Your personal and account information.</p></div></div>
+        <div className={"pp-accordion "+(personalOpen?"open":"")}><button className="pp-accordion-head" onClick={()=>setPersonalOpen(v=>!v)}><span><i>♙</i><span><b>Personal Information</b><small>Real name, mobile, email and identity details</small></span></span><strong>{personalOpen?"−":"＋"}</strong></button>
+          {personalOpen&&<div className="pp-accordion-body"><div className="pp-form-grid">
+            <label>REAL FULL NAME<input disabled={!editing} value={fullName} onChange={e=>setFullName(e.target.value)} placeholder="Enter your legal name"/></label>
+            <label>MOBILE NUMBER<input disabled={!editing} value={phone} onChange={e=>setPhone(e.target.value)} placeholder="10-digit mobile number"/></label>
+            <label>EMAIL ADDRESS<input disabled value={email}/></label>
+            <label>PLAYER ID<input disabled value={playerId}/></label>
+            <label>AADHAAR NUMBER<input disabled placeholder="Secure verification required"/></label>
+            <label>PAN NUMBER<input disabled placeholder="Secure verification required"/></label>
+          </div><p className="pp-note">Aadhaar and PAN are not collected or stored in this profile yet. Secure verification must be designed before adding them.</p>
+          <div className="pp-actions">{editing?<><button className="pp-secondary" onClick={()=>{setEditing(false);setFullName(player?.full_name||"");setPhone(player?.mobile_number||"");}}>Cancel</button><button className="pp-primary" disabled={saving} onClick={saveProfile}>{saving?"Saving...":"Save Changes"}</button></>:<button className="pp-primary" onClick={()=>setEditing(true)}>Edit Details</button>}</div></div>}
+        </div>
+        <div className="pp-accordion"><button className="pp-accordion-head" onClick={()=>setSecurityOpen(v=>!v)}><span><i>♢</i><span><b>Password & Security</b><small>Manage your password and account access</small></span></span><strong>{securityOpen?"−":"＋"}</strong></button>{securityOpen&&<div className="pp-accordion-body"><p>Keep your password private. Use the secure password reset flow to change it.</p><button className="pp-primary" onClick={()=>window.location.href="/reset-password"}>Change Password</button></div>}</div>
+      </section>}
+
+      {active==="gaming"&&<section className="pp-page"><div className="pp-heading"><div><h1>My Gaming Profile</h1><p>Select a game to manage your player IDs and friend members.</p></div></div><div className="pp-games pp-games-large">{GAME_LIST.map(g=><button className="pp-game" key={g.name} onClick={()=>openGame(g.name)}><span>{g.icon}</span><b>{g.name}</b><small>{(members[g.name]||[]).length} player IDs</small><em>Manage game IDs →</em></button>)}</div></section>}
+
+      {active==="gameDetail"&&<section className="pp-page"><div className="pp-backrow"><button onClick={()=>go("gaming")}>← Back to Games</button><div><h1>{game} Profile</h1><p>Only IDs saved under {game} appear here.</p></div></div>
+        <div className="pp-card"><div className="pp-section-head"><div><h2>{game} Members</h2><p>Add your own ID or a friend's ID.</p></div><button className="pp-primary" onClick={()=>{setEditingMember(-1);setMemberForm({name:"",uid:"",owner:"Own",friend:""});setMemberEditor(true);}}>＋ Add Member</button></div>
+          {(members[game]||[]).length===0?<div className="pp-empty">No {game} IDs added yet. Add your first player ID.</div>:(members[game]||[]).map((m,i)=><div className="pp-member" key={i}><div><b>{m.name}</b><p>UID: {m.uid}</p><small>{m.owner==="Friend"?"FRIEND TAG · "+m.friend:"OWN ACCOUNT"}</small></div><div><button className="pp-secondary" onClick={()=>editMember(i)}>Edit</button><button className="pp-danger" onClick={()=>removeMember(i)}>Remove</button></div></div>)}
+          {memberEditor&&<div className="pp-member-editor"><h3>{editingMember>=0?"Edit Member":"Add Game Member"}</h3><div className="pp-form-grid"><label>IN-GAME NAME<input value={memberForm.name} onChange={e=>setMemberForm({...memberForm,name:e.target.value})} placeholder="e.g. 7H Prince"/></label><label>GAME UID / ID<input value={memberForm.uid} onChange={e=>setMemberForm({...memberForm,uid:e.target.value})} placeholder="Enter game UID"/></label><label>ID BELONGS TO<select value={memberForm.owner} onChange={e=>setMemberForm({...memberForm,owner:e.target.value})}><option>Own</option><option>Friend</option></select></label>{memberForm.owner==="Friend"&&<label>FRIEND NAME<input value={memberForm.friend} onChange={e=>setMemberForm({...memberForm,friend:e.target.value})} placeholder="Friend's name"/></label>}</div><div className="pp-actions"><button className="pp-secondary" onClick={()=>setMemberEditor(false)}>Cancel</button><button className="pp-primary" onClick={saveMember}>Save Member</button></div></div>}
+        </div></section>}
+
+      {active==="wallet"&&<section className="pp-page"><div className="pp-heading"><div><h1>Wallet Overview</h1><p>Your Play2Prove wallet summary.</p></div></div><div className="pp-card pp-wallet-hero"><small>AVAILABLE WALLET BALANCE</small><strong>₹ {balance.toLocaleString("en-IN",{minimumFractionDigits:2})}</strong><p>Balance is read from your player account.</p></div><div className="pp-stats pp-wallet-stats"><div className="pp-stat"><small>TOTAL DEPOSIT</small><b>—</b></div><div className="pp-stat"><small>TOTAL WITHDRAW</small><b>—</b></div><div className="pp-stat"><small>TOTAL PAID</small><b>—</b></div><div className="pp-stat"><small>REWARDS</small><b>—</b></div></div><div className="pp-card"><h2>Balance Activity</h2><div className="pp-empty">Wallet chart will appear when the wallet ledger is connected.</div></div></section>}
+
+      {["transactions","deposits","withdrawals"].includes(active)&&<section className="pp-page"><div className="pp-backrow"><button onClick={()=>go("overview")}>← Back</button><div><h1>{active==="transactions"?"Transaction History":active==="deposits"?"Deposit History":"Withdraw History"}</h1><p>{active==="transactions"?"Complete bank-style wallet statement, line by line.":active==="deposits"?"All deposits and top-ups, maintained separately.":"All withdrawal requests and payout records."}</p></div></div>
+        <div className="pp-card"><div className="pp-filters"><input placeholder="Search ID / remarks"/>{active==="transactions"&&<select value={txFilter} onChange={e=>setTxFilter(e.target.value)}><option>All Types</option><option>Deposit</option><option>Withdraw</option><option>Paid</option><option>Winning</option><option>Refund</option></select>}<input type="date"/><input type="date"/></div><div className="pp-table-wrap"><table className="pp-table"><thead><tr>{(active==="transactions"?["Date & Time","Transaction ID","Description / Remarks","Type","Debit (₹)","Credit (₹)","Balance (₹)","Status"]:active==="deposits"?["Date & Time","Deposit ID","Payment Method","UTR / Reference","Amount (₹)","Wallet Credit (₹)","Status","Remarks"]:["Date & Time","Withdrawal ID","Bank / UPI","Account Reference","Requested (₹)","Paid (₹)","Status","Remarks"]).map(h=><th key={h}>{h}</th>)}</tr></thead><tbody><tr><td colSpan="8" className="pp-empty-cell">No {active==="transactions"?"transactions":active==="deposits"?"deposits":"withdrawals"} recorded yet.</td></tr></tbody></table></div></div></section>}
+
+      {active==="security"&&<section className="pp-page"><div className="pp-backrow"><button onClick={()=>go("overview")}>← Back</button><div><h1>Account & Security</h1><p>Protect your Play2Prove account.</p></div></div><div className="pp-card"><h2>Password & Login</h2><p className="pp-muted">Change your password using the secure account flow.</p><button className="pp-primary" onClick={()=>window.location.href="/reset-password"}>Change Password</button></div></section>}
     </main>
-  );
+    <style jsx global>{`
+      *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#eef2f8;color:#172033;font-family:Arial,Helvetica,sans-serif}
+      .pp-app{height:100dvh;display:flex;gap:12px;padding:12px;background:#eef2f8;overflow:hidden}
+      .pp-sidebar{width:244px;flex:0 0 244px;background:#111a31;color:#fff;border-radius:16px;display:flex;flex-direction:column;overflow:hidden;transition:width .2s,flex-basis .2s}
+      .pp-side-scroll{flex:1;overflow-y:auto;padding:18px 12px;overscroll-behavior:contain}.pp-brand{display:flex;align-items:center;gap:10px;padding:0 7px 20px;border-bottom:1px solid #ffffff20;white-space:nowrap}
+      .pp-logo{width:38px;height:38px;border-radius:11px;background:linear-gradient(140deg,#adc2ff,#536fe0);display:grid;place-items:center;color:#142044;font-weight:900}.pp-brand-name{font-size:17px;font-weight:900}.pp-brand-name span{color:#a9bdff}.pp-brand-name small{display:block;font-size:9px;color:#91a0bf;letter-spacing:1.5px;margin-top:3px}
+      .pp-nav-label{font-size:10px;letter-spacing:1.5px;color:#8190ad;padding:22px 10px 9px}.pp-nav{display:grid;gap:5px}.pp-nav button{border:0;background:none;color:#c7d1e5;text-align:left;padding:11px;border-radius:9px;font-size:12px;display:flex;gap:12px;align-items:center;white-space:nowrap;cursor:pointer}.pp-nav button.active{background:#293b68;color:#fff;box-shadow:inset 3px 0 #a9bdff}.pp-nav i{font-style:normal;width:20px;text-align:center;font-size:16px}
+      .pp-support{padding:13px;background:#1b2948;border-radius:11px;margin:18px 2px 10px;font-size:11px}.pp-support p{color:#adbad2;line-height:1.5}.pp-support button{width:100%;border:0;padding:9px;border-radius:8px;background:#e0e8ff;color:#1b2b57;font-weight:bold;font-size:10px;cursor:pointer}.pp-side-foot{padding:12px 10px;text-align:center;font-size:8px;letter-spacing:1px;color:#8290aa;border-top:1px solid #ffffff18;white-space:nowrap}
+      .pp-collapsed .pp-sidebar{width:66px;flex-basis:66px}.pp-collapsed .pp-brand-name,.pp-collapsed .pp-nav-label,.pp-collapsed .pp-nav button span,.pp-collapsed .pp-support,.pp-collapsed .pp-side-foot{display:none}.pp-collapsed .pp-brand{justify-content:center;padding:0 0 20px}.pp-collapsed .pp-side-scroll{padding:18px 7px}.pp-collapsed .pp-nav button{justify-content:center;padding:12px 3px}
+      .pp-main{flex:1;min-width:0;overflow-y:auto;overscroll-behavior:contain;padding:2px 5px 35px;scrollbar-width:thin}.pp-topbar{height:52px;display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}.pp-top-left,.pp-top-right{display:flex;align-items:center;gap:12px}.pp-toggle,.pp-logout{height:37px;border:1px solid #dfe5ee;background:#fff;border-radius:9px;padding:0 12px;color:#293b68;font-weight:bold;cursor:pointer}.pp-crumb{font-size:12px;color:#788397}.pp-crumb b{color:#172033}.pp-user-chip{display:flex;align-items:center;gap:8px;font-size:11px}.pp-user-chip span{width:29px;height:29px;border-radius:9px;background:#dce6ff;display:grid;place-items:center;color:#314cae;font-weight:bold}.pp-logout{color:#4b5870}
+      .pp-page{max-width:1250px;margin:0 auto}.pp-heading,.pp-section-head{display:flex;justify-content:space-between;align-items:end;gap:15px;margin:0 2px 15px}.pp-heading h1,.pp-backrow h1{font-size:25px;margin:0 0 6px}.pp-heading p,.pp-backrow p,.pp-section-head p{font-size:11px;color:#788397;margin:0}.pp-status{font-size:10px;color:#149568;background:#e6f7ef;padding:8px 11px;border-radius:20px;font-weight:bold}
+      .pp-card,.pp-stat{background:#fff;border:1px solid #e5eaf2;border-radius:15px;padding:16px;margin-bottom:14px;box-shadow:0 8px 25px #1a2b4d0a}.pp-profile-card{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:14px;align-items:center}.pp-identity{display:flex;align-items:center;gap:12px;min-width:0}.pp-avatar{width:70px;height:70px;flex:0 0 70px;border-radius:19px;background:linear-gradient(140deg,#dce6f7,#aebfdb);display:grid;place-items:center;color:#354d7d;font-size:24px;font-weight:900}.pp-identity h2{font-size:17px;margin:0 0 5px}.pp-identity p{font-size:10px;color:#788397;margin:0 0 8px}.pp-uid{display:inline-block;font-size:9px;background:#f1f4f9;padding:6px 8px;border-radius:7px}.pp-uid button{border:0;background:none;color:#314cae;font-weight:bold;cursor:pointer}.pp-quick-actions{display:flex;justify-content:center;gap:12px}.pp-quick-actions button{border:0;background:none;font-size:10px;color:#4d5870;font-weight:bold;display:grid;justify-items:center;gap:6px;cursor:pointer}.pp-quick-actions i{font-style:normal;width:38px;height:38px;border-radius:12px;background:#edf1fb;color:#314cae;display:grid;place-items:center;font-size:17px}.pp-balance{background:linear-gradient(135deg,#1a2850,#344e9c);color:#fff;border-radius:12px;padding:14px}.pp-balance small,.pp-wallet-hero small{font-size:9px;color:#cbd6f7;font-weight:bold;letter-spacing:1px}.pp-balance strong,.pp-wallet-hero strong{display:block;font-size:23px;margin:8px 0}.pp-balance span{font-size:10px;color:#d5def5}
+      .pp-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 22px}.pp-stat{margin:0;padding:13px}.pp-stat small{display:block;font-size:9px;color:#788397;font-weight:bold}.pp-stat b{display:block;margin-top:7px;font-size:13px;overflow-wrap:anywhere}.pp-green{color:#149568}
+      .pp-section-head{margin-top:20px}.pp-section-head h2{font-size:16px;margin:0 0 4px}.pp-text-btn{border:0;background:none;color:#314cae;font-weight:bold;font-size:11px;cursor:pointer}.pp-games{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.pp-game{border:0;text-align:left;min-height:122px;border-radius:12px;padding:14px;color:#fff;background:linear-gradient(135deg,#17223d,#344f91);display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;cursor:pointer}.pp-game:nth-child(2){background:linear-gradient(135deg,#28364e,#657b9d)}.pp-game:nth-child(3){background:linear-gradient(135deg,#29213e,#63538e)}.pp-game:nth-child(4){background:linear-gradient(135deg,#202b36,#5b697a)}.pp-game>span{font-size:21px}.pp-game b{font-size:14px}.pp-game small{font-size:9px;color:#dce4f6}.pp-game em{font-style:normal;font-size:10px;color:#dce4f6}.pp-games-large{margin-top:12px}.pp-games-large .pp-game{min-height:150px}
+      .pp-shortcuts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.pp-shortcuts button{border:1px solid #e5eaf2;background:#fff;border-radius:11px;padding:12px;display:flex;align-items:center;gap:10px;text-align:left;color:#172033;cursor:pointer}.pp-shortcuts i{font-style:normal;width:34px;height:34px;border-radius:9px;background:#e5ebfa;color:#314cae;display:grid;place-items:center}.pp-shortcuts b,.pp-shortcuts small{display:block}.pp-shortcuts b{font-size:11px}.pp-shortcuts small{font-size:9px;color:#788397;margin-top:4px}.pp-shortcuts em{font-style:normal;margin-left:auto}
+      .pp-backrow{display:flex;align-items:center;gap:12px;margin:0 0 16px}.pp-backrow>button{border:1px solid #dfe5ee;background:#fff;border-radius:8px;padding:9px 12px;font-size:11px;font-weight:bold;color:#34415b;cursor:pointer;white-space:nowrap}.pp-backrow h1{font-size:21px}.pp-accordion{border:1px solid #e5eaf2;border-radius:12px;overflow:hidden;background:#fff;margin:10px 0}.pp-accordion-head{width:100%;border:0;background:#f5f7fb;padding:15px;text-align:left;display:flex;justify-content:space-between;align-items:center;cursor:pointer}.pp-accordion-head>span{display:flex;align-items:center;gap:11px}.pp-accordion-head i{font-style:normal;width:36px;height:36px;border-radius:10px;background:#e5ebfa;color:#314cae;display:grid;place-items:center}.pp-accordion-head b,.pp-accordion-head small{display:block}.pp-accordion-head b{font-size:12px}.pp-accordion-head small{font-size:10px;color:#788397;margin-top:4px}.pp-accordion-head strong{color:#314cae;font-size:17px}.pp-accordion-body{padding:17px}.pp-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.pp-form-grid label{display:block;font-size:9px;color:#566176;font-weight:bold}.pp-form-grid input,.pp-form-grid select{display:block;width:100%;margin-top:6px;padding:11px;border:1px solid #dfe5ee;border-radius:8px;background:#fff;color:#172033;font-size:11px}.pp-form-grid input:disabled{background:#f4f6fa;color:#536078}.pp-note,.pp-muted{font-size:10px;color:#788397;line-height:1.5}.pp-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}.pp-primary,.pp-secondary,.pp-danger{border:0;border-radius:8px;padding:10px 14px;font-size:10px;font-weight:bold;cursor:pointer}.pp-primary{background:#314cae;color:#fff}.pp-secondary{background:#edf1f7;color:#39465d}.pp-danger{background:#fff0f1;color:#c34656;margin-left:6px}.pp-member{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:13px;border:1px solid #e5eaf2;border-radius:10px;margin:9px 0;background:#fafbfe}.pp-member b{font-size:12px}.pp-member p{font-size:10px;color:#566176;margin:6px 0}.pp-member small{font-size:9px;color:#314cae;font-weight:bold}.pp-member-editor{border-top:1px solid #e5eaf2;margin-top:14px;padding-top:14px}.pp-empty{padding:26px;text-align:center;color:#788397;font-size:11px;background:#f8f9fc;border:1px dashed #dce2ec;border-radius:10px}.pp-wallet-hero{background:linear-gradient(135deg,#1a2850,#344e9c);color:#fff;padding:22px}.pp-wallet-hero strong{font-size:30px}.pp-wallet-hero p{font-size:10px;color:#d5def5}.pp-wallet-stats{margin-top:12px;grid-template-columns:repeat(4,minmax(0,1fr))}.pp-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.pp-filters input,.pp-filters select{border:1px solid #e5eaf2;border-radius:7px;padding:9px;font-size:10px;background:#fff}.pp-table-wrap{overflow:auto;border:1px solid #e5eaf2;border-radius:10px}.pp-table{border-collapse:collapse;width:100%;min-width:850px;font-size:10px}.pp-table th{background:#f0f3f9;color:#46536b;text-align:left;font-size:9px;padding:11px;white-space:nowrap}.pp-table td{padding:14px;border-top:1px solid #edf0f5;color:#788397}.pp-empty-cell{text-align:center}.pp-alert{max-width:1250px;margin:0 auto 12px;padding:11px 14px;border-radius:9px;font-size:11px}.pp-error{background:#fff0f1;border:1px solid #f2c4ca;color:#b42332}.pp-success{background:#e6f7ef;border:1px solid #b8e5d0;color:#147b54}.pp-loading{height:100dvh;display:grid;place-items:center;background:#eef2f8;color:#314cae;font-weight:bold}
+      @media(max-width:1050px){.pp-profile-card{grid-template-columns:1fr 1fr}.pp-balance{grid-column:1/-1}.pp-games{grid-template-columns:repeat(2,minmax(0,1fr))}}
+      @media(max-width:760px){.pp-app{padding:6px;gap:6px}.pp-sidebar{width:64px;flex-basis:64px}.pp-brand-name,.pp-nav-label,.pp-nav button span,.pp-support,.pp-side-foot{display:none}.pp-brand{justify-content:center;padding:0 0 18px}.pp-side-scroll{padding:14px 6px}.pp-nav button{justify-content:center;padding:12px 2px}.pp-crumb{display:none}.pp-user-chip b{display:none}.pp-main{padding:2px 2px 25px}.pp-heading h1{font-size:21px}.pp-profile-card{grid-template-columns:1fr}.pp-balance{grid-column:auto}.pp-form-grid{grid-template-columns:1fr}.pp-shortcuts{grid-template-columns:1fr}.pp-stats{grid-template-columns:1fr 1fr}.pp-wallet-stats{grid-template-columns:1fr 1fr}.pp-backrow{align-items:flex-start}.pp-backrow h1{font-size:18px}.pp-games{grid-template-columns:1fr 1fr}}
+      @media(max-width:420px){.pp-status{font-size:8px}.pp-profile-card{padding:12px}.pp-quick-actions{justify-content:flex-start}.pp-member{align-items:flex-start}.pp-member>div:last-child{display:flex;flex-direction:column;gap:5px}.pp-danger{margin:0}.pp-topbar{margin-bottom:12px}}
+    `}</style>
+  </div>;
 }
-
-function Field({label,editing,value,onChange}){return <div><label style={styles.label}>{label}</label>{editing?<input value={value} onChange={e=>onChange(e.target.value)} style={styles.input}/>:<div style={styles.value}>{value||"Not provided"}</div>}</div>}
-function ReadOnlyField({label,value}){return <div><label style={styles.label}>{label}</label><div style={styles.value}>{value||"Not provided"}</div></div>}
-
-const styles={
-  accordionCard:{background:"#0b0f14",border:"1px solid #303846",borderRadius:15,overflow:"hidden",boxShadow:"0 12px 35px rgba(0,0,0,.18)"},
-  accordionTrigger:{width:"100%",minHeight:80,padding:"16px 18px",border:0,background:"linear-gradient(110deg,#111923,#0b0f14)",display:"flex",alignItems:"center",justifyContent:"space-between",cursor:"pointer"},
-  accordionIcon:{width:40,height:40,borderRadius:11,display:"grid",placeItems:"center",background:"rgba(255,90,0,.12)",border:"1px solid rgba(255,90,0,.25)",color:"#ff6a24",fontSize:18},
-  accordionChevron:{width:29,height:29,borderRadius:8,display:"grid",placeItems:"center",background:"#202833",color:"#ff6a24",fontSize:20,fontWeight:900},
-  accordionContent:{padding:"20px",borderTop:"1px solid #252b34",background:"#0b0f14"},
-  personalNote:{marginTop:18,padding:"11px 13px",borderRadius:8,background:"#111923",border:"1px solid #283343",color:"#9aa5b5",fontSize:11,lineHeight:1.5},
-  inlineEdit:{background:"transparent",border:"1px solid #ff5a00",color:"#ff7130",borderRadius:8,padding:"9px 13px",fontWeight:800,cursor:"pointer",fontSize:11},
-  page:{minHeight:"100vh",background:"#05070a",color:"#fff",fontFamily:"Arial,Helvetica,sans-serif",paddingBottom:40},
-  header:{height:72,borderBottom:"1px solid #20252d",display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 28px",background:"#06080b"},
-  headerBtn:{background:"transparent",color:"#d1d5db",border:"1px solid #30363d",borderRadius:8,padding:"9px 14px",cursor:"pointer",fontWeight:700},
-  brand:{display:"flex",alignItems:"center",gap:10},
-  logoBox:{width:38,height:38,borderRadius:9,background:"#ff5a00",display:"grid",placeItems:"center",fontWeight:900,fontSize:12},
-  brandSmall:{display:"block",color:"#6b7280",fontSize:8,letterSpacing:1},
-  container:{maxWidth:1100,margin:"0 auto",padding:"35px 20px"},
-  hero:{background:"#0d1117",border:"1px solid #252b34",borderRadius:18,padding:30,display:"flex",alignItems:"center",gap:20},
-  avatar:{width:88,height:88,borderRadius:"50%",background:"#ff5a00",display:"grid",placeItems:"center",fontSize:36,fontWeight:900},
-  green:{color:"#22c55e",fontSize:10,fontWeight:800,letterSpacing:1},
-  orange:{color:"#ff5a00",fontSize:10,fontWeight:900,letterSpacing:1.4},
-  name:{fontSize:32,margin:"6px 0"},email:{color:"#9ca3af",margin:"0 0 12px"},badge:{display:"inline-block",border:"1px solid #30363d",borderRadius:7,padding:"7px 10px",fontSize:11,fontWeight:700,color:"#cbd5e1"},
-  editBtn:{background:"#ff5a00",border:0,color:"#fff",borderRadius:9,padding:"12px 18px",fontWeight:800,cursor:"pointer"},
-  error:{marginTop:18,padding:14,borderRadius:10,background:"#3b0b0b",border:"1px solid #ef4444",color:"#fecaca"},success:{marginTop:18,padding:14,borderRadius:10,background:"#052e16",border:"1px solid #22c55e",color:"#bbf7d0"},
-  stats:{display:"grid",gridTemplateColumns:"repeat(3,minmax(0,1fr))",gap:14,marginTop:18},card:{background:"#0b0f14",border:"1px solid #252b34",borderRadius:12,padding:18},
-  cardLarge:{background:"#0b0f14",border:"1px solid #252b34",borderRadius:16,padding:24},cardHead:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:22},
-  grid:{display:"grid",gridTemplateColumns:"minmax(0,1.6fr) minmax(280px,.8fr)",gap:18,marginTop:18},formGrid:{display:"grid",gridTemplateColumns:"repeat(2,minmax(0,1fr))",gap:18},label:{display:"block",color:"#9ca3af",fontSize:12,fontWeight:700,marginBottom:8},value:{minHeight:46,background:"#07090c",border:"1px solid #252b34",borderRadius:9,padding:"13px",display:"flex",alignItems:"center",boxSizing:"border-box"},
-  input:{width:"100%",minHeight:46,boxSizing:"border-box",background:"#07090c",border:"1px solid #3a424d",borderRadius:9,padding:"13px",color:"#fff",fontSize:14},saveBtn:{background:"#16a34a",border:0,color:"#fff",borderRadius:9,padding:"12px 22px",fontWeight:800,cursor:"pointer"},
-  quick:{width:"100%",display:"grid",gridTemplateColumns:"28px 1fr 20px",textAlign:"left",alignItems:"center",background:"#080b0f",color:"#d8dde5",border:"1px solid #242a32",borderRadius:8,padding:12,marginTop:8,cursor:"pointer",fontWeight:700},
-  security:{background:"#0b1510",border:"1px solid #21462d",borderRadius:16,padding:20},securityText:{color:"#8f9a94",fontSize:12},linkBtn:{background:"transparent",border:0,color:"#22c55e",padding:0,fontWeight:800,cursor:"pointer"},loading:{width:"min(420px,calc(100% - 40px))",margin:"20vh auto",padding:35,textAlign:"center",background:"#0b0f14",border:"1px solid #252b34",borderRadius:16}
-};
