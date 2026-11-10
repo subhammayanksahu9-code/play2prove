@@ -12,7 +12,7 @@ function normalizeEmail(value) {
 
 function getFriendlyAuthMessage(error) {
   const text = (error?.message || "").toLowerCase();
-  if (text.includes("email not confirmed") || text.includes("email_not_confirmed")) return "Your email is not verified yet. Use the button below to send a fresh verification email.";
+  if (text.includes("email not confirmed") || text.includes("email_not_confirmed")) return "Email confirmation is still enabled in the authentication settings. Please contact support.";
   if (text.includes("invalid login credentials") || text.includes("invalid credentials")) return "Incorrect email or password. Please try again, or reset your password if you forgot it.";
   if (text.includes("rate limit") || text.includes("too many requests")) return "Too many requests. Please wait a few minutes and try again.";
   if (text.includes("network") || text.includes("failed to fetch")) return "We couldn't reach the authentication server. Check your internet connection and try again.";
@@ -34,17 +34,14 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [resendLoading, setResendLoading] = useState(false);
   const [forgotLoading, setForgotLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [forgotMode, setForgotMode] = useState(false);
-  const [showVerificationHelp, setShowVerificationHelp] = useState(false);
-  const [resendCooldown, setResendCooldown] = useState(0);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
 
   async function handleLogin(e) {
-    e.preventDefault(); setMessage(""); setMessageType(""); setShowVerificationHelp(false);
+    e.preventDefault(); setMessage(""); setMessageType("");
     const cleanEmail = normalizeEmail(email);
     if (!cleanEmail || !password) { setMessage("Please enter your email and password."); setMessageType("error"); return; }
     setLoading(true);
@@ -53,7 +50,6 @@ export default function LoginPage() {
       if (error) {
         const text = (error.message || "").toLowerCase();
         setMessage(getFriendlyAuthMessage(error)); setMessageType("error");
-        if (text.includes("email not confirmed") || text.includes("email_not_confirmed")) setShowVerificationHelp(true);
         return;
       }
       if (data?.user) { window.location.href = getNextDestination(); return; }
@@ -62,25 +58,6 @@ export default function LoginPage() {
     finally { setLoading(false); }
   }
 
-  async function resendVerification() {
-    const cleanEmail = normalizeEmail(email);
-    if (!cleanEmail) { setMessage("Enter your registered email address first."); setMessageType("error"); return; }
-    if (resendCooldown > 0) return;
-    setResendLoading(true); setMessage(""); setMessageType("");
-    try {
-      const next = encodeURIComponent(getNextDestination());
-      const callbackUrl = `${window.location.origin}/auth/callback?next=${next}`;
-      const { error } = await supabase.auth.resend({ type: "signup", email: cleanEmail, options: { emailRedirectTo: callbackUrl } });
-      if (error) {
-        const text = (error.message || "").toLowerCase();
-        setMessage(text.includes("rate limit") || text.includes("too many") ? "Verification email limit reached. Please wait a few minutes before requesting another one." : error.message || "Unable to resend the verification email.");
-        setMessageType("error"); return;
-      }
-      setMessage("A fresh verification email has been sent. Open the newest email and use that link."); setMessageType("success"); setShowVerificationHelp(true); setResendCooldown(60);
-      const interval = window.setInterval(() => setResendCooldown((value) => { if (value <= 1) { window.clearInterval(interval); return 0; } return value - 1; }), 1000);
-    } catch (error) { console.error("Resend verification error:", error); setMessage("Something went wrong while sending the verification email. Please try again."); setMessageType("error"); }
-    finally { setResendLoading(false); }
-  }
 
   async function handleForgotPassword(e) {
     e.preventDefault(); setMessage(""); setMessageType("");
@@ -96,7 +73,7 @@ export default function LoginPage() {
     finally { setForgotLoading(false); }
   }
 
-  function switchToForgot() { setForgotMode(true); setMessage(""); setMessageType(""); setShowVerificationHelp(false); }
+  function switchToForgot() { setForgotMode(true); setMessage(""); setMessageType(""); }
   function switchToLogin() { setForgotMode(false); setMessage(""); setMessageType(""); }
 
   return (
@@ -120,7 +97,7 @@ export default function LoginPage() {
               <button type="submit" disabled={loading} style={{ ...styles.button, opacity: loading ? 0.65 : 1 }}>{loading ? "Logging in..." : "Login"}</button>
             </form>
             {message && <div style={{ ...styles.message, ...(messageType === "error" ? styles.errorMessage : styles.successMessage) }}>{message}</div>}
-            {showVerificationHelp && <div style={styles.verificationCard}><div style={styles.verificationTitle}>Email verification</div><div style={styles.verificationText}>Use the newest email only. Older verification links can expire or be consumed already.</div><button type="button" onClick={resendVerification} disabled={resendLoading || resendCooldown > 0} style={{ ...styles.secondaryButton, opacity: resendLoading || resendCooldown > 0 ? 0.6 : 1 }}>{resendLoading ? "Sending..." : resendCooldown > 0 ? `Resend available in ${resendCooldown}s` : "Resend Verification Email"}</button></div>}
+
             <p style={styles.bottom}>Don&apos;t have an account? <Link href="/signup" style={styles.link}>Create Account</Link></p>
           </>
         ) : (
@@ -155,13 +132,9 @@ const styles = {
   forgotRow: { display: "flex", justifyContent: "flex-end", marginBottom: "20px" },
   forgotButton: { background: "transparent", border: "none", color: "#22c55e", fontSize: "14px", fontWeight: "700", cursor: "pointer", padding: "4px 0" },
   button: { width: "100%", padding: "14px", background: "#16a34a", color: "#fff", border: "none", borderRadius: "10px", fontSize: "16px", fontWeight: "700", cursor: "pointer" },
-  secondaryButton: { width: "100%", padding: "12px", background: "#111827", color: "#fff", border: "1px solid #334155", borderRadius: "10px", fontSize: "14px", fontWeight: "700", cursor: "pointer" },
   message: { marginTop: "18px", padding: "13px", borderRadius: "9px", fontSize: "14px", lineHeight: "1.5" },
   errorMessage: { background: "#3f0b0b", border: "1px solid #ef4444", color: "#fecaca" },
   successMessage: { background: "#052e16", border: "1px solid #22c55e", color: "#bbf7d0" },
-  verificationCard: { marginTop: "14px", padding: "14px", borderRadius: "12px", background: "#0f172a", border: "1px solid #334155" },
-  verificationTitle: { fontWeight: "800", marginBottom: "6px", color: "#fff" },
-  verificationText: { fontSize: "13px", lineHeight: "1.5", color: "#cbd5e1", marginBottom: "12px" },
   bottom: { textAlign: "center", color: "#9ca3af", marginTop: "24px" },
   link: { color: "#22c55e", textDecoration: "none", fontWeight: "700" },
   backButton: { position: "fixed", top: "20px", left: "20px", padding: "10px 16px", background: "#0b0e13", color: "#fff", border: "1px solid #30363d", borderRadius: "9px", fontSize: "14px", fontWeight: "700", cursor: "pointer", zIndex: 100 },
