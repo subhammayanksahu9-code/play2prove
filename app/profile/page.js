@@ -14,6 +14,16 @@ const TXNS = [
 ];
 const NAV = [["overview","user-round","My Profile"],["transactions","receipt-text","Transaction History"]];
 
+function PPIcon({name}) {
+  const common={width:18,height:18,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.8,strokeLinecap:"round",strokeLinejoin:"round","aria-hidden":true};
+  if(name==="user-round") return <svg {...common}><circle cx="12" cy="8" r="4"/><path d="M5 21a7 7 0 0 1 14 0"/></svg>;
+  if(name==="receipt-text") return <svg {...common}><path d="M5 3h14v18l-3-2-4 2-4-2-3 2z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>;
+  if(name==="refresh-cw") return <svg {...common}><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.6 9A7 7 0 0 1 18 6l2 6M4 12l2 6a7 7 0 0 0 12.4-3"/></svg>;
+  if(name==="plus-circle") return <svg {...common}><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>;
+  if(name==="arrow-up-right") return <svg {...common}><path d="M7 17 17 7M8 7h9v9"/></svg>;
+  if(name==="menu") return <svg {...common}><path d="M4 6h16M4 12h16M4 18h16"/></svg>;
+  return <svg {...common}><path d="M5 12h14M13 6l6 6-6 6"/></svg>;
+}
 export default function ProfilePage() {
   const [authUser,setAuthUser]=useState(null),[player,setPlayer]=useState(null),[loading,setLoading]=useState(true);
   const [saving,setSaving]=useState(false),[editing,setEditing]=useState(false),[sidebarOpen,setSidebarOpen]=useState(true);
@@ -68,7 +78,7 @@ export default function ProfilePage() {
       <div className="pp-side-scroll">
         <div className="pp-brand"><div className="pp-logo">P2P</div><div className="pp-brand-name">Play<span>2</span>Prove<small>PLAYER CENTRE</small></div></div>
         <div className="pp-nav-label">PLAYER CENTRE</div>
-        <nav className="pp-nav">{NAV.map(([id,icon,label])=><button key={id} className={active===id?"active":""} onClick={()=>go(id)}><i>{icon==="user-round"?"◉":"▤"}</i><span>{label}</span></button>)}</nav>
+        <nav className="pp-nav">{NAV.map(([id,icon,label])=><button key={id} className={active===id?"active":""} onClick={()=>go(id)}><i><PPIcon name={icon}/></i><span>{label}</span></button>)}</nav>
       </div>
       <div className="pp-side-foot">PLAY • COMPETE • EARN • PROVE</div>
     </aside>
@@ -83,8 +93,8 @@ export default function ProfilePage() {
         <div className="pp-heading"><div><h1>Player Profile</h1><p>Your gaming identity, account details and wallet at one place.</p></div><span className="pp-status">● ACCOUNT ACTIVE</span></div>
         <div className="pp-card pp-profile-card">
           <div className="pp-identity"><div className="pp-avatar">{displayName.charAt(0).toUpperCase()}</div><div><h2>{displayName}</h2><p>{authUser.email||"Email not added"}</p><span className="pp-uid">PLAYER ID: {playerId} <button onClick={()=>navigator.clipboard?.writeText(playerId)}>Copy</button></span></div></div>
-          <div className="pp-quick-actions"><button onClick={()=>go("transactions")}><i>↕</i>Transactions</button><button onClick={()=>go("deposits")}><i>＋</i>Deposit</button><button onClick={()=>go("withdrawals")}><i>−</i>Withdraw</button></div>
-          <div className="pp-wallet-panel"><div className="pp-wallet-top"><div><small>TOTAL WALLET BALANCE</small><strong>₹ {balance.toLocaleString("en-IN",{minimumFractionDigits:2})}</strong><span>Available balance</span></div><button className="pp-refresh" onClick={loadProfile} title="Refresh balance">⟳</button></div><div className="pp-wallet-buttons"><button onClick={()=>go("deposits")}>＋ Add Deposit</button><button onClick={()=>go("withdrawals")}>↗ Add Withdraw Request</button><button onClick={()=>go("transactions")}>▤ Check Transactions</button></div></div>
+          <div className="pp-quick-actions"><button onClick={()=>go("transactions")}><i><PPIcon name="receipt-text"/></i>Transactions</button><button onClick={()=>go("deposits")}><i><PPIcon name="plus-circle"/></i>Deposit</button><button onClick={()=>go("withdrawals")}><i><PPIcon name="arrow-up-right"/></i>Withdraw</button></div>
+          <div className="pp-wallet-panel"><div className="pp-wallet-top"><div><small>TOTAL WALLET BALANCE</small><strong>₹ {balance.toLocaleString("en-IN",{minimumFractionDigits:2})}</strong><span>Available balance</span></div><button className="pp-refresh" onClick={loadProfile} title="Refresh balance"><PPIcon name="refresh-cw"/></button></div><div className="pp-wallet-buttons"><button onClick={()=>go("deposits")}><PPIcon name="plus-circle"/> Add Deposit</button><button onClick={()=>go("withdrawals")}><PPIcon name="arrow-up-right"/> Add Withdraw Request</button><button onClick={()=>go("transactions")}><PPIcon name="receipt-text"/> Check Transactions</button></div></div>
         </div>
         <div className="pp-stats"><div className="pp-stat"><small>PLAYER ID</small><b>{playerId}</b></div><div className="pp-stat"><small>ACCOUNT STATUS</small><b className="pp-green">{player?.account_status||"Active"}</b></div><div className="pp-stat"><small>MEMBER SINCE</small><b>{(player?.created_at||authUser.created_at)?new Date(player?.created_at||authUser.created_at).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}):"—"}</b></div></div>
         <div className="pp-section-head"><div><h2>My Gaming Profiles</h2><p>Manage game IDs separately for each game.</p></div><button className="pp-text-btn" onClick={()=>go("gaming")}>View all →</button></div>
