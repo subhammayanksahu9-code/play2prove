@@ -9,6 +9,8 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [personalOpen, setPersonalOpen] = useState(false);
+  const [securityOpen, setSecurityOpen] = useState(false);
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
@@ -109,23 +111,51 @@ export default function ProfilePage() {
         </section>
 
         <section style={styles.grid}>
-          <div style={styles.cardLarge}>
-            <div style={styles.cardHead}><div><div style={styles.orange}>ACCOUNT INFORMATION</div><h2 style={{margin:"5px 0 0"}}>Player Profile</h2></div><span style={styles.green}>🔒 SECURE</span></div>
-            <div style={styles.formGrid}>
-              <Field label="Full Name" editing={editing} value={fullName} onChange={setFullName} />
-              <ReadOnlyField label="Email Address" value={authUser.email || "Not available"} />
-              <Field label="Mobile Number" editing={editing} value={phone} onChange={setPhone} />
-              <ReadOnlyField label="Referral Code" value={player?.referral_code || "Not assigned"} />
+          <div style={{display:"grid",gap:14,alignContent:"start"}}>
+            <div style={styles.accordionCard}>
+              <button type="button" onClick={() => setPersonalOpen(v => !v)} aria-expanded={personalOpen} style={styles.accordionTrigger}>
+                <span style={{display:"flex",alignItems:"center",gap:12}}>
+                  <span style={styles.accordionIcon}>▣</span>
+                  <span style={{textAlign:"left"}}>
+                    <span style={{display:"block",fontSize:15,fontWeight:900,color:"#fff"}}>My Personal Information</span>
+                    <span style={{display:"block",fontSize:11,color:"#8993a1",marginTop:4}}>Full name, mobile number and account details</span>
+                  </span>
+                </span>
+                <span style={styles.accordionChevron}>{personalOpen ? "−" : "+"}</span>
+              </button>
+              {personalOpen && <div style={styles.accordionContent}>
+                <div style={styles.cardHead}><div><div style={styles.orange}>ACCOUNT INFORMATION</div><h2 style={{margin:"5px 0 0"}}>Personal Details</h2></div><span style={styles.green}>🔒 SECURE</span></div>
+                <div style={styles.formGrid}>
+                  <Field label="Real Full Name" editing={editing} value={fullName} onChange={setFullName} />
+                  <ReadOnlyField label="Email Address" value={authUser.email || "Not available"} />
+                  <Field label="Mobile Number" editing={editing} value={phone} onChange={setPhone} />
+                  <ReadOnlyField label="Referral Code" value={player?.referral_code || "Not assigned"} />
+                </div>
+                {editing && <div style={{textAlign:"right",marginTop:20}}><button disabled={saving} onClick={saveProfile} style={styles.saveBtn}>{saving ? "Saving..." : "Save Profile"}</button></div>}
+                <div style={styles.personalNote}>Aadhaar and PAN fields will be added only with secure verification and protected storage.</div>
+                <div style={{textAlign:"right",marginTop:12}}><button onClick={() => {setEditing(v => !v);setError("");setMessage("");}} style={styles.inlineEdit}>{editing ? "Cancel Edit" : "Edit Details"}</button></div>
+              </div>}
             </div>
-            {editing && <div style={{textAlign:"right",marginTop:20}}><button disabled={saving} onClick={saveProfile} style={styles.saveBtn}>{saving ? "Saving..." : "Save Profile"}</button></div>}
+            <div style={styles.accordionCard}>
+              <button type="button" onClick={() => setSecurityOpen(v => !v)} aria-expanded={securityOpen} style={styles.accordionTrigger}>
+                <span style={{display:"flex",alignItems:"center",gap:12}}>
+                  <span style={styles.accordionIcon}>♢</span>
+                  <span style={{textAlign:"left"}}>
+                    <span style={{display:"block",fontSize:15,fontWeight:900,color:"#fff"}}>Password & Security</span>
+                    <span style={{display:"block",fontSize:11,color:"#8993a1",marginTop:4}}>Manage your account access</span>
+                  </span>
+                </span>
+                <span style={styles.accordionChevron}>{securityOpen ? "−" : "+"}</span>
+              </button>
+              {securityOpen && <div style={styles.accordionContent}><p style={styles.securityText}>Never share your password or OTP.</p><button onClick={() => (window.location.href = "/reset-password")} style={styles.linkBtn}>Change Password →</button></div>}
+            </div>
           </div>
-
-          <aside style={{display:"grid",gap:14}}>
+          <aside style={{display:"grid",gap:14,alignContent:"start"}}>
             <div style={styles.cardLarge}>
               <div style={styles.orange}>PLAYER CENTER</div><h3>Manage Account</h3>
-              {[["▣","Dashboard","/dashboard"],["♛","Tournaments","/tournaments"],["⚔","My Matches","/matches"],["▣","Wallet","/wallet"]].map(([icon,label,path]) => <button key={path} onClick={() => (window.location.href = path)} style={styles.quick}><span>{icon}</span><span>{label}</span><span>→</span></button>)}
+              {[[ "▣","Dashboard","/dashboard"],["♛","Tournaments","/tournaments"],["⚔","My Matches","/matches"],["▣","Wallet","/wallet"]].map(([icon,label,path]) => <button key={path} onClick={() => (window.location.href = path)} style={styles.quick}><span>{icon}</span><span>{label}</span><span>→</span></button>)}
             </div>
-            <div style={styles.security}><b>🔐 Account Security</b><p style={styles.securityText}>Never share your password or OTP.</p><button onClick={() => (window.location.href = "/reset-password")} style={styles.linkBtn}>Change Password →</button></div>
+            <div style={styles.security}><b>🔐 Account Security</b><p style={styles.securityText}>Your account details stay private.</p></div>
           </aside>
         </section>
       </div>
@@ -137,6 +167,13 @@ function Field({label,editing,value,onChange}){return <div><label style={styles.
 function ReadOnlyField({label,value}){return <div><label style={styles.label}>{label}</label><div style={styles.value}>{value||"Not provided"}</div></div>}
 
 const styles={
+  accordionCard:{background:"#0b0f14",border:"1px solid #303846",borderRadius:15,overflow:"hidden",boxShadow:"0 12px 35px rgba(0,0,0,.18)"},
+  accordionTrigger:{width:"100%",minHeight:80,padding:"16px 18px",border:0,background:"linear-gradient(110deg,#111923,#0b0f14)",display:"flex",alignItems:"center",justifyContent:"space-between",cursor:"pointer"},
+  accordionIcon:{width:40,height:40,borderRadius:11,display:"grid",placeItems:"center",background:"rgba(255,90,0,.12)",border:"1px solid rgba(255,90,0,.25)",color:"#ff6a24",fontSize:18},
+  accordionChevron:{width:29,height:29,borderRadius:8,display:"grid",placeItems:"center",background:"#202833",color:"#ff6a24",fontSize:20,fontWeight:900},
+  accordionContent:{padding:"20px",borderTop:"1px solid #252b34",background:"#0b0f14"},
+  personalNote:{marginTop:18,padding:"11px 13px",borderRadius:8,background:"#111923",border:"1px solid #283343",color:"#9aa5b5",fontSize:11,lineHeight:1.5},
+  inlineEdit:{background:"transparent",border:"1px solid #ff5a00",color:"#ff7130",borderRadius:8,padding:"9px 13px",fontWeight:800,cursor:"pointer",fontSize:11},
   page:{minHeight:"100vh",background:"#05070a",color:"#fff",fontFamily:"Arial,Helvetica,sans-serif",paddingBottom:40},
   header:{height:72,borderBottom:"1px solid #20252d",display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 28px",background:"#06080b"},
   headerBtn:{background:"transparent",color:"#d1d5db",border:"1px solid #30363d",borderRadius:8,padding:"9px 14px",cursor:"pointer",fontWeight:700},
