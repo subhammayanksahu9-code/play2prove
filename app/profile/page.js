@@ -43,9 +43,9 @@ export default function ProfilePage() {
   async function saveProfile(){
     if(!authUser)return;setSaving(true);setError("");setMessage("");
     try{
-      const name=fullName.trim(),mobile=phone.replace(/\\D/g,"");
+      const name=fullName.trim(),mobile=phone.replace(/\D/g,"");
       if(name.length<3)throw new Error("Enter a valid full name.");
-      if(mobile&&!/^[6-9]\\d{9}$/.test(mobile))throw new Error("Enter a valid 10-digit Indian mobile number.");
+      if(mobile&&!/^[6-9]\d{9}$/.test(mobile))throw new Error("Enter a valid 10-digit Indian mobile number.");
       const {data,error:updateError}=await supabase.from("users").update({full_name:name,mobile_number:mobile||null}).eq("user_id",authUser.id).select("*").single();
       if(updateError)throw updateError;setPlayer(data);setFullName(data.full_name||"");setPhone(data.mobile_number||"");setEditing(false);setMessage("Personal details saved.");
     }catch(err){setError(err?.message||"Could not save details.");}finally{setSaving(false);}
