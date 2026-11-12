@@ -267,22 +267,38 @@ const featuredTournaments = useMemo(() => {
 
       {authUser && (
         <div className="p2pQuickAccess">
-          <button className={`p2pQuickToggle ${shortcutOpen ? "is-open" : ""}`} onClick={() => setShortcutOpen(v => !v)} aria-label={shortcutOpen ? "Close quick access panel" : "Open quick access panel"} title={shortcutOpen ? "Close Quick Access" : "Open Quick Access"}>
-            <span className="quickToggleIcon">{shortcutOpen ? "×" : "☰"}</span><span className="quickToggleHint">{shortcutOpen ? "CLOSE MENU" : "QUICK ACCESS"}</span>
+          <button className={`p2pQuickToggle ${shortcutOpen ? "is-open" : ""}`} onClick={() => setShortcutOpen(v => !v)} aria-label={shortcutOpen ? "Close player shortcuts" : "Open player shortcuts"} title="Player shortcuts">
+            <span className="quickToggleIcon">{shortcutOpen ? "×" : "☰"}</span><span className="quickToggleHint">{shortcutOpen ? "CLOSE" : "PLAYER MENU"}</span>
           </button>
           <aside className={`p2pQuickPanel ${shortcutOpen ? "is-open" : ""}`} aria-hidden={!shortcutOpen}>
-            <div className="quickPanelHead"><div><small>PLAYER SHORTCUTS</small><strong>Quick Access</strong></div><button onClick={() => setShortcutOpen(false)} aria-label="Close quick access">×</button></div>
-            <button className="quickWalletCard" onClick={() => setWalletMenuOpen(v => !v)} aria-expanded={walletMenuOpen}>
-              <span className="quickWalletIcon">₹</span><span className="quickWalletCopy"><small>MY WALLET</small><strong>{walletBalance === null ? "—" : `₹ ${walletBalance.toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2})}`}</strong><em>Tap to manage wallet</em></span><span className="quickWalletArrow">{walletMenuOpen ? "⌃" : "›"}</span>
-            </button>
-            {walletMenuOpen && <div className="quickWalletMenu">
-              <button onClick={refreshWallet} disabled={walletRefreshing}><span>↻</span><span><b>{walletRefreshing ? "Refreshing..." : "Refresh Balance"}</b><small>Update available balance</small></span></button>
-              <button onClick={() => go("/profile?walletAction=request")}><span>＋</span><span><b>Deposit / Withdraw Request</b><small>Manage wallet requests</small></span></button>
-              <button onClick={() => go("/profile?section=transactions")}><span>▤</span><span><b>Check Transactions</b><small>View wallet statement</small></span></button>
-            </div>}
-            <div className="quickPanelFoot"><span/>SECURE PLAYER ACCESS</div>
+            <div className="quickPanelScroll">
+              <div className="quickPanelBrand"><span className="quickBrandLogo">P2P</span><span><b>Play2Prove</b><small>PLAYER CENTRE</small></span><button onClick={() => setShortcutOpen(false)} aria-label="Close sidebar">‹</button></div>
+              <div className="quickNavLabel">MAIN MENU</div>
+              <nav className="quickNav">
+                <button onClick={() => {setShortcutOpen(false);scrollTo("home");}}><span>⌂</span>Home</button>
+                <button onClick={() => {setShortcutOpen(false);go("/all-tournaments");}}><span>♜</span>Tournaments</button>
+                <button onClick={() => {setShortcutOpen(false);go("/matches");}}><span>⚔</span>My Matches</button>
+                <button onClick={() => {setShortcutOpen(false);go("/leaderboard");}}><span>▥</span>Leaderboard</button>
+                <button onClick={() => {setShortcutOpen(false);go("/rewards");}}><span>♙</span>Rewards</button>
+                <button onClick={() => {setShortcutOpen(false);go("/store");}}><span>▣</span>Store</button>
+                <button onClick={() => {setShortcutOpen(false);go("/refer");}}><span>♧</span>Refer &amp; Earn</button>
+              </nav>
+              <div className="quickNavLabel quickAccountLabel">ACCOUNT &amp; SUPPORT</div>
+              <nav className="quickNav quickAccountNav">
+                <button onClick={() => {setShortcutOpen(false);go("/profile");}}><span>♙</span>My Profile</button>
+                <button className={walletMenuOpen ? "quickWalletActive" : ""} onClick={() => setWalletMenuOpen(v => !v)} aria-expanded={walletMenuOpen}><span>▣</span>Wallet <b className="quickBalance">{walletBalance === null ? "₹ —" : `₹${walletBalance.toLocaleString("en-IN",{maximumFractionDigits:2})}`}</b><i>{walletMenuOpen ? "⌃" : "›"}</i></button>
+                {walletMenuOpen && <div className="quickWalletMenu">
+                  <button onClick={refreshWallet} disabled={walletRefreshing}><span>↻</span><span><b>{walletRefreshing ? "Refreshing..." : "Refresh"}</b><small>Update wallet balance</small></span></button>
+                  <button onClick={() => {setShortcutOpen(false);setWalletMenuOpen(false);go("/profile?walletAction=request");}}><span>＋</span><span><b>Deposit / Withdraw Request</b><small>Open wallet request</small></span></button>
+                  <button onClick={() => {setShortcutOpen(false);setWalletMenuOpen(false);go("/profile?section=transactions");}}><span>▤</span><span><b>Check Transactions</b><small>View transaction history</small></span></button>
+                </div>}
+                <button onClick={() => {setShortcutOpen(false);go("/help");}}><span>ⓘ</span>Help Center</button>
+              </nav>
+              <div className="quickPanelSocial"><small>SOCIAL LINKS</small><div><a href="https://wa.me/?text=https%3A%2F%2Fplay2prove.vercel.app" target="_blank" rel="noreferrer">↗</a><a href="https://www.instagram.com/" target="_blank" rel="noreferrer">◎</a><a href="https://www.youtube.com/" target="_blank" rel="noreferrer">▷</a></div></div>
+            </div>
+            <div className="quickPanelFoot"><span/>PLAY • COMPETE • EARN • PROVE</div>
           </aside>
-          {shortcutOpen && <button className="quickPanelScrim" onClick={() => {setShortcutOpen(false);setWalletMenuOpen(false);}} aria-label="Close quick access panel"/>}
+          {shortcutOpen && <button className="quickPanelScrim" onClick={() => {setShortcutOpen(false);setWalletMenuOpen(false);}} aria-label="Close player shortcuts"/>}
         </div>
       )}
 
