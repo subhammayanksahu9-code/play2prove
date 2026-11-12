@@ -286,7 +286,7 @@ const featuredTournaments = useMemo(() => {
               <div className="quickNavLabel quickAccountLabel">ACCOUNT &amp; SUPPORT</div>
               <nav className="quickNav quickAccountNav">
                 <button onClick={() => {setShortcutOpen(false);go("/profile");}}><span>♙</span>My Profile</button>
-                <button className={walletMenuOpen ? "quickWalletActive" : ""} onClick={() => setWalletMenuOpen(v => !v)} aria-expanded={walletMenuOpen}><span>▣</span>Wallet <b className="quickBalance">{walletBalance === null ? "₹ —" : `₹${walletBalance.toLocaleString("en-IN",{maximumFractionDigits:2})}`}</b><i>{walletMenuOpen ? "⌃" : "›"}</i></button>
+                <button className={walletMenuOpen ? "quickWalletActive" : ""} onClick={() => setWalletMenuOpen(v => !v)} aria-expanded={walletMenuOpen}><span>▣</span>Wallet &amp; Transactions <i>{walletMenuOpen ? "⌃" : "›"}</i></button>
                 {walletMenuOpen && <div className="quickWalletMenu">
                   <button onClick={refreshWallet} disabled={walletRefreshing}><span>↻</span><span><b>{walletRefreshing ? "Refreshing..." : "Refresh"}</b><small>Update wallet balance</small></span></button>
                   <button onClick={() => {setShortcutOpen(false);setWalletMenuOpen(false);go("/profile?walletAction=request");}}><span>＋</span><span><b>Deposit / Withdraw Request</b><small>Open wallet request</small></span></button>
