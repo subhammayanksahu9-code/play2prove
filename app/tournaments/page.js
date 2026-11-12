@@ -7,6 +7,7 @@ import {
   useState
 } from "react";
 import "./tournaments.css";
+import "../tournament-scroll-fix.css";
 
 /* =========================================================
    PLAY2PROVE — TOURNAMENT PAGE
