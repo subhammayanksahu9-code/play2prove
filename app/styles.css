@@ -4035,3 +4035,48 @@ a:focus-visible {
     0 0 8px rgba(255,106,0,0.20),
     inset 0 0 8px rgba(255,106,0,0.05) !important;
 }
+
+
+/* ============================================================
+   PLAYER QUICK ACCESS + AUTHENTICATED NAV
+============================================================ */
+.navProfile{display:flex;align-items:center;gap:10px;min-height:42px;padding:4px 13px 4px 5px;border:1px solid rgba(255,115,45,.38);border-radius:12px;background:linear-gradient(120deg,rgba(255,70,0,.14),rgba(15,20,36,.88));color:#fff;cursor:pointer;transition:.2s}
+.navProfile:hover{border-color:#ff6a24;box-shadow:0 0 24px rgba(255,76,15,.18);transform:translateY(-1px)}
+.navProfileAvatar{width:32px;height:32px;display:grid;place-items:center;border-radius:10px;background:linear-gradient(140deg,#ff6a00,#ff3600);font-size:14px;font-weight:950;color:#fff;box-shadow:0 0 15px rgba(255,72,0,.28)}
+.navProfileText{display:grid;gap:2px;text-align:left;max-width:150px}
+.navProfileText strong{font-size:12px;font-weight:850;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.navProfileText small{font-size:7px;letter-spacing:1.4px;color:#ff8a53;font-weight:900}
+.navProfileChevron{font-size:17px;color:#ff8a53;margin-left:2px}
+.p2pQuickAccess{position:fixed;left:0;top:50%;z-index:120;transform:translateY(-50%);pointer-events:none}
+.p2pQuickToggle{pointer-events:auto;position:relative;display:flex;align-items:center;gap:9px;min-height:52px;padding:0 13px 0 11px;border:1px solid rgba(255,112,42,.62);border-left:0;border-radius:0 15px 15px 0;background:linear-gradient(105deg,rgba(255,70,0,.98),rgba(255,111,0,.94));color:#fff;box-shadow:0 8px 28px rgba(255,67,0,.28),inset 0 1px 0 rgba(255,255,255,.25);cursor:pointer;transition:width .22s,filter .2s,box-shadow .2s}
+.p2pQuickToggle:hover{filter:brightness(1.12);box-shadow:0 10px 34px rgba(255,67,0,.42)}
+.quickToggleIcon{width:27px;height:27px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.4);border-radius:9px;background:rgba(20,9,6,.2);font-size:19px;font-weight:800;line-height:1}
+.quickToggleHint{font-size:8px;font-weight:950;letter-spacing:1.25px;white-space:nowrap}
+.p2pQuickPanel{pointer-events:auto;position:absolute;left:0;top:calc(100% + 10px);width:300px;padding:16px;border:1px solid rgba(91,118,164,.36);border-left:0;border-radius:0 18px 18px 0;background:linear-gradient(145deg,rgba(10,15,29,.98),rgba(15,10,28,.98));box-shadow:18px 18px 50px rgba(0,0,0,.48),inset 0 1px 0 rgba(255,255,255,.05);backdrop-filter:blur(20px);transform:translateX(-110%);opacity:0;visibility:hidden;transition:transform .25s ease,opacity .2s,visibility .2s}
+.p2pQuickPanel.is-open{transform:translateX(0);opacity:1;visibility:visible}
+.quickPanelHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.quickPanelHead div{display:grid;gap:5px}
+.quickPanelHead small{font-size:8px;letter-spacing:1.8px;font-weight:900;color:#ff7441}
+.quickPanelHead strong{font-size:18px;color:#fff;letter-spacing:-.4px}
+.quickPanelHead>button{width:30px;height:30px;border:1px solid #34415a;border-radius:9px;background:#151d2d;color:#dce6f8;font-size:20px;cursor:pointer}
+.quickWalletCard{width:100%;display:flex;align-items:center;gap:12px;padding:14px;border:1px solid rgba(255,111,51,.35);border-radius:14px;background:linear-gradient(115deg,rgba(255,74,13,.18),rgba(24,34,57,.95));color:#fff;text-align:left;cursor:pointer}
+.quickWalletCard:hover{border-color:#ff773e;box-shadow:0 0 22px rgba(255,77,25,.12)}
+.quickWalletIcon{width:39px;height:39px;flex:0 0 39px;display:grid;place-items:center;border-radius:12px;background:linear-gradient(145deg,#ff7a28,#f33c08);font-size:21px;font-weight:950;box-shadow:0 5px 18px rgba(255,72,0,.2)}
+.quickWalletCopy{display:grid;gap:3px;min-width:0}
+.quickWalletCopy small{font-size:8px;color:#ff9a70;letter-spacing:1.5px;font-weight:900}
+.quickWalletCopy strong{font-size:19px;letter-spacing:-.4px}
+.quickWalletCopy em{font-size:9px;color:#a6b2c8;font-style:normal}
+.quickWalletArrow{margin-left:auto;font-size:23px;color:#ff8a54}
+.quickWalletMenu{display:grid;gap:6px;margin-top:9px;animation:quickMenuIn .18s ease}
+.quickWalletMenu button{display:flex;align-items:center;gap:11px;width:100%;padding:11px 10px;border:1px solid rgba(118,139,177,.16);border-radius:11px;background:rgba(255,255,255,.035);color:#fff;text-align:left;cursor:pointer;transition:.18s}
+.quickWalletMenu button:hover:not(:disabled){background:rgba(255,104,45,.12);border-color:rgba(255,117,66,.38);transform:translateX(2px)}
+.quickWalletMenu button:disabled{opacity:.6;cursor:wait}
+.quickWalletMenu button>span:first-child{width:29px;height:29px;display:grid;place-items:center;border-radius:9px;background:rgba(255,103,45,.14);color:#ff986b;font-size:17px}
+.quickWalletMenu button>span:last-child{display:grid;gap:3px}
+.quickWalletMenu b{font-size:10px;font-weight:850}
+.quickWalletMenu small{font-size:8px;color:#9ba9c1}
+.quickPanelFoot{display:flex;align-items:center;gap:8px;margin:14px 2px 0;color:#687b9b;font-size:7px;font-weight:900;letter-spacing:1.35px}
+.quickPanelFoot span{width:6px;height:6px;border-radius:50%;background:#00d89a;box-shadow:0 0 10px #00d89a}
+.quickPanelScrim{pointer-events:auto;position:fixed;inset:-100vh -100vw;width:300vw;height:300vh;z-index:-1;border:0;background:transparent;cursor:default}
+@keyframes quickMenuIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:800px){.navProfile{min-height:36px;gap:7px;padding:3px 8px 3px 4px}.navProfileAvatar{width:29px;height:29px}.navProfileText{max-width:100px}.navProfileText strong{font-size:10px;max-width:100px}.navProfileText small{font-size:6px}.p2pQuickToggle{min-height:47px;padding:0 10px}.quickToggleHint{font-size:7px}.p2pQuickPanel{width:min(290px,86vw)}}
