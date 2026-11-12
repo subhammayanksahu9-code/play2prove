@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabase";
-import "./styles.css";
+import "./components/home/home.css";
 import { Stat, SectionTitle, TournamentCard, GameCard, MoreGamesCard, Step, LeaderboardRow } from "./components/home/HomeSections";
 
 export default function HomePage() {
