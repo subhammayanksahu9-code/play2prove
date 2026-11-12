@@ -11,6 +11,10 @@ export default function HomePage() {
   const [walletMenuOpen, setWalletMenuOpen] = useState(false);
   const [walletRefreshing, setWalletRefreshing] = useState(false);
   const [shortcutOpen, setShortcutOpen] = useState(false);
+  const [noticeOpen, setNoticeOpen] = useState(false);
+  const [walletRequest, setWalletRequest] = useState(null);
+  const [requestAmount, setRequestAmount] = useState("");
+  const [requestReference, setRequestReference] = useState("");
 
 useEffect(() => {
   let active = true;
@@ -246,16 +250,25 @@ const featuredTournaments = useMemo(() => {
         <div className="navActions">
           {authUser ? (
             <>
+              <button className="headerIconButton downloadsButton" onClick={() => go("/downloads")} aria-label="Downloads" title="Downloads">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v3h16v-3"/></svg><span>Downloads</span>
+              </button>
+              <div className="notificationWrap">
+                <button className={`headerIconButton notificationButton ${noticeOpen ? "is-active" : ""}`} onClick={() => {setNoticeOpen(v=>!v);setWalletMenuOpen(false);}} aria-label="Notifications" title="Notifications">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><i className="notificationDot"/>
+                </button>
+                {noticeOpen && <div className="notificationDropdown"><div><strong>Notifications</strong><button onClick={()=>setNoticeOpen(false)} aria-label="Close notifications">×</button></div><p>You’re all caught up.</p><small>New tournament and wallet updates will appear here.</small></div>}
+              </div>
               <div className="navWalletWrap">
-                <button className={`navWallet ${walletMenuOpen ? "is-open" : ""}`} onClick={() => setWalletMenuOpen(v => !v)} aria-expanded={walletMenuOpen} aria-label="Open wallet options">
-                  <span className="navWalletIcon">▣</span><strong>{walletBalance === null ? "₹ —" : `₹${walletBalance.toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2})}`}</strong><span className="navWalletPlus">+</span>
+                <button className={`navWallet ${walletMenuOpen ? "is-open" : ""}`} onClick={() => {setWalletMenuOpen(v => !v);setNoticeOpen(false);}} aria-expanded={walletMenuOpen} aria-label="Open wallet options">
+                  <svg className="navWalletIcon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 9h18M16 14h2"/></svg><strong>{walletBalance === null ? "₹ —" : `₹${walletBalance.toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2})}`}</strong><span className="navWalletPlus">+</span>
                 </button>
                 {walletMenuOpen && <div className="navWalletDropdown">
                   <div className="navWalletDropHead"><small>PLAYER WALLET</small><strong>{walletBalance === null ? "₹ —" : `₹${walletBalance.toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2})}`}</strong></div>
-                  <button onClick={refreshWallet} disabled={walletRefreshing}><span>↻</span><span><b>{walletRefreshing ? "Refreshing..." : "Refresh Balance"}</b><small>Update current wallet balance</small></span></button>
-                  <button onClick={() => {setWalletMenuOpen(false);go("/profile?walletAction=request");}}><span>＋</span><span><b>Deposit / Withdraw Request</b><small>Submit a wallet request</small></span></button>
-                  <button onClick={() => {setWalletMenuOpen(false);go("/profile?section=transactions");}}><span>▤</span><span><b>Check Transactions</b><small>View wallet transaction history</small></span></button>
-                  <small className="navWalletFoot">Payment gateway not connected</small>
+                  <button onClick={refreshWallet} disabled={walletRefreshing}><span className="walletActionIcon"><svg viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.6 9A7 7 0 0 1 18 6l2 6M4 12l2 6a7 7 0 0 0 12.4-3"/></svg></span><span><b>{walletRefreshing ? "Refreshing..." : "Refresh Balance"}</b><small>Update current wallet balance</small></span></button>
+                  <button onClick={() => {setWalletMenuOpen(false);setWalletRequest("Deposit");setRequestAmount("");setRequestReference("");}}><span className="walletActionIcon"><svg viewBox="0 0 24 24"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></span><span><b>Deposit</b><small>Add funds to your wallet</small></span></button>
+                  <button onClick={() => {setWalletMenuOpen(false);setWalletRequest("Withdraw");setRequestAmount("");setRequestReference("");}}><span className="walletActionIcon"><svg viewBox="0 0 24 24"><path d="M12 5v14m-6-6 6 6 6-6"/></svg></span><span><b>Withdraw</b><small>Request wallet withdrawal</small></span></button>
+                  <button onClick={() => {setWalletMenuOpen(false);go("/profile?section=transactions");}}><span className="walletActionIcon"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6M9 16h4"/></svg></span><span><b>Transaction History</b><small>View deposits and withdrawals</small></span></button>
                 </div>}
               </div>
               <button className="navProfile" onClick={() => go("/profile")} aria-label="Open player profile">
@@ -305,6 +318,21 @@ const featuredTournaments = useMemo(() => {
         </aside>
       )}
 
+      {walletRequest && (
+        <div className="walletModalBackdrop" role="presentation" onMouseDown={(event)=>{if(event.target===event.currentTarget)setWalletRequest(null);}}>
+          <section className="walletRequestModal" role="dialog" aria-modal="true" aria-labelledby="walletRequestTitle">
+            <button className="walletModalClose" onClick={()=>setWalletRequest(null)} aria-label="Close dialog"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+            <div className="walletModalEyebrow">PLAYER WALLET</div>
+            <h2 id="walletRequestTitle">{walletRequest} Funds</h2>
+            <p>{walletRequest==="Deposit" ? "Enter the amount you want to add to your wallet." : "Enter the amount you want to withdraw from your wallet."}</p>
+            <label htmlFor="walletAmount">Amount (₹)</label>
+            <input id="walletAmount" type="number" min="1" step="1" placeholder="Enter amount" value={requestAmount} onChange={e=>setRequestAmount(e.target.value)}/>
+            {walletRequest==="Deposit" ? <><label htmlFor="walletReference">Payment reference / UTR (optional)</label><input id="walletReference" value={requestReference} onChange={e=>setRequestReference(e.target.value)} placeholder="Enter UTR after payment"/></> : <><label htmlFor="walletReference">UPI ID / Bank details</label><input id="walletReference" value={requestReference} onChange={e=>setRequestReference(e.target.value)} placeholder="Enter withdrawal details"/></>}
+            <div className="walletModalNotice">Payment gateway and wallet request processing are not connected yet. This form is a UI preview; no money will be transferred or request submitted.</div>
+            <button className="walletModalPrimary" onClick={()=>setWalletRequest(null)}>Close</button>
+          </section>
+        </div>
+      )}
       <div className="globalRail">
         <span></span>
         <span></span>
