@@ -1,9 +1,52 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { supabase } from "../lib/supabase";
 
 export default function HomePage() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [authUser, setAuthUser] = useState(null);
+  const [playerName, setPlayerName] = useState("");
+  const [walletBalance, setWalletBalance] = useState(null);
+  const [walletMenuOpen, setWalletMenuOpen] = useState(false);
+  const [walletRefreshing, setWalletRefreshing] = useState(false);
+  const [shortcutOpen, setShortcutOpen] = useState(false);
+
+useEffect(() => {
+  let active = true;
+  async function loadPlayer() {
+    const { data } = await supabase.auth.getSession();
+    const user = data?.session?.user || null;
+    if (!active) return;
+    setAuthUser(user);
+    if (!user) { setPlayerName(""); setWalletBalance(null); return; }
+    const { data: row, error } = await supabase.from("users").select("full_name, wallet_balance").eq("user_id", user.id).maybeSingle();
+    if (!active) return;
+    if (error) { console.error("PLAY2PROVE HOME PLAYER:", error); setPlayerName(user.user_metadata?.full_name || user.email?.split("@")[0] || "Player"); setWalletBalance(null); return; }
+    setPlayerName(row?.full_name || user.user_metadata?.full_name || user.email?.split("@")[0] || "Player");
+    setWalletBalance(Number(row?.wallet_balance || 0));
+  }
+  loadPlayer();
+  const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+    const user = session?.user || null;
+    setAuthUser(user);
+    if (!user) { setPlayerName(""); setWalletBalance(null); }
+    else setTimeout(() => loadPlayer(), 0);
+  });
+  return () => { active = false; listener?.subscription?.unsubscribe(); };
+}, []);
+
+async function refreshWallet() {
+  if (!authUser || walletRefreshing) return;
+  setWalletRefreshing(true);
+  try {
+    const { data, error } = await supabase.from("users").select("wallet_balance, full_name").eq("user_id", authUser.id).maybeSingle();
+    if (error) throw error;
+    setWalletBalance(Number(data?.wallet_balance || 0));
+    if (data?.full_name) setPlayerName(data.full_name);
+  } catch (error) { console.error("PLAY2PROVE WALLET REFRESH:", error); }
+  finally { setWalletRefreshing(false); }
+}
 
 const [homeTournaments, setHomeTournaments] = useState([]);
 const [homeTournamentLoading, setHomeTournamentLoading] = useState(true);
@@ -200,56 +243,20 @@ const featuredTournaments = useMemo(() => {
         </div>
 
 
-        <nav className={`p2pNav ${menuOpen ? "open" : ""}`}>
-
-          <button onClick={() => scrollTo("home")}>
-            Home
-          </button>
-
-          <button onClick={() => scrollTo("tournaments")}>
-            Tournaments
-          </button>
-
-          <button onClick={() => scrollTo("games")}>
-            Games
-          </button>
-
-          <button onClick={() => scrollTo("how")}>
-            How It Works
-          </button>
-
-          <button onClick={() => scrollTo("leaderboard")}>
-            Leaderboard
-          </button>
-
-        </nav>
-
-
         <div className="navActions">
-
-          <button
-            className="navLogin"
-            onClick={() => go("/login")}
-          >
-            Login
-          </button>
-
-          <button
-            className="navSignup"
-            onClick={() => go("/signup")}
-          >
-            Join Now
-          </button>
-
+          {authUser ? (
+            <button className="navProfile" onClick={() => go("/profile")} aria-label="Open player profile">
+              <span className="navProfileAvatar">{(playerName || authUser.email || "P").charAt(0).toUpperCase()}</span>
+              <span className="navProfileText"><strong>{playerName || "Player"}</strong><small>MY PROFILE</small></span>
+              <span className="navProfileChevron">⌄</span>
+            </button>
+          ) : (
+            <>
+              <button className="navLogin" onClick={() => go("/login")}>Login</button>
+              <button className="navSignup" onClick={() => go("/signup")}>Sign Up</button>
+            </>
+          )}
         </div>
-
-
-        <button
-          className="mobileMenu"
-          onClick={() => setMenuOpen(!menuOpen)}
-        >
-          ☰
-        </button>
 
       </header>
 
@@ -257,6 +264,27 @@ const featuredTournaments = useMemo(() => {
       {/* =====================================================
           TOP NEON RAIL
       ===================================================== */}
+
+      {authUser && (
+        <div className="p2pQuickAccess">
+          <button className={`p2pQuickToggle ${shortcutOpen ? "is-open" : ""}`} onClick={() => setShortcutOpen(v => !v)} aria-label={shortcutOpen ? "Close quick access panel" : "Open quick access panel"} title={shortcutOpen ? "Close Quick Access" : "Open Quick Access"}>
+            <span className="quickToggleIcon">{shortcutOpen ? "×" : "☰"}</span><span className="quickToggleHint">{shortcutOpen ? "CLOSE MENU" : "QUICK ACCESS"}</span>
+          </button>
+          <aside className={`p2pQuickPanel ${shortcutOpen ? "is-open" : ""}`} aria-hidden={!shortcutOpen}>
+            <div className="quickPanelHead"><div><small>PLAYER SHORTCUTS</small><strong>Quick Access</strong></div><button onClick={() => setShortcutOpen(false)} aria-label="Close quick access">×</button></div>
+            <button className="quickWalletCard" onClick={() => setWalletMenuOpen(v => !v)} aria-expanded={walletMenuOpen}>
+              <span className="quickWalletIcon">₹</span><span className="quickWalletCopy"><small>MY WALLET</small><strong>{walletBalance === null ? "—" : `₹ ${walletBalance.toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2})}`}</strong><em>Tap to manage wallet</em></span><span className="quickWalletArrow">{walletMenuOpen ? "⌃" : "›"}</span>
+            </button>
+            {walletMenuOpen && <div className="quickWalletMenu">
+              <button onClick={refreshWallet} disabled={walletRefreshing}><span>↻</span><span><b>{walletRefreshing ? "Refreshing..." : "Refresh Balance"}</b><small>Update available balance</small></span></button>
+              <button onClick={() => go("/profile?walletAction=request")}><span>＋</span><span><b>Deposit / Withdraw Request</b><small>Manage wallet requests</small></span></button>
+              <button onClick={() => go("/profile?section=transactions")}><span>▤</span><span><b>Check Transactions</b><small>View wallet statement</small></span></button>
+            </div>}
+            <div className="quickPanelFoot"><span/>SECURE PLAYER ACCESS</div>
+          </aside>
+          {shortcutOpen && <button className="quickPanelScrim" onClick={() => {setShortcutOpen(false);setWalletMenuOpen(false);}} aria-label="Close quick access panel"/>}
+        </div>
+      )}
 
       <div className="globalRail">
         <span></span>
