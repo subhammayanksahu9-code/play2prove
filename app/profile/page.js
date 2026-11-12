@@ -61,6 +61,7 @@ export default function ProfilePage() {
   const [game,setGame]=useState("Free Fire"),[members,setMembers]=useState({}),[memberEditor,setMemberEditor]=useState(false);
   const [editingMember,setEditingMember]=useState(-1),[memberForm,setMemberForm]=useState({name:"",uid:"",owner:"Own",friend:""});
   const [txFilter,setTxFilter]=useState("All Types");
+  const [requestModal,setRequestModal]=useState(false),[requestType,setRequestType]=useState("Deposit"),[requestAmount,setRequestAmount]=useState("");
 
   useEffect(()=>{
     const params = new URLSearchParams(window.location.search);
@@ -70,7 +71,7 @@ export default function ProfilePage() {
     else if (section === "wallet") setActive("wallet");
     if (walletAction === "request") {
       setActive("wallet");
-      setMessage("Deposit / withdrawal request destination selected. Request controls will be added in the next wallet step.");
+      setRequestModal(true);
     }
     if(window.innerWidth<760)setSidebarOpen(false);
     loadProfile();
@@ -177,10 +178,37 @@ export default function ProfilePage() {
         <div className="pp-card"><div className="pp-filters"><input placeholder="Search ID / remarks"/>{active==="transactions"&&<select value={txFilter} onChange={e=>setTxFilter(e.target.value)}><option>All Types</option><option>Deposit</option><option>Withdraw</option><option>Paid</option><option>Winning</option><option>Refund</option></select>}<input type="date"/><input type="date"/></div><div className="pp-table-wrap"><table className="pp-table"><thead><tr>{(active==="transactions"?["Date & Time","Transaction ID","Description / Remarks","Type","Debit (₹)","Credit (₹)","Balance (₹)","Status"]:active==="deposits"?["Date & Time","Deposit ID","Payment Method","UTR / Reference","Amount (₹)","Wallet Credit (₹)","Status","Remarks"]:["Date & Time","Withdrawal ID","Bank / UPI","Account Reference","Requested (₹)","Paid (₹)","Status","Remarks"]).map(h=><th key={h}>{h}</th>)}</tr></thead><tbody><tr><td colSpan="8" className="pp-empty-cell">No {active==="transactions"?"transactions":active==="deposits"?"deposits":"withdrawals"} recorded yet.</td></tr></tbody></table></div></div></section>}
 
       {active==="security"&&<section className="pp-page"><div className="pp-backrow"><button onClick={()=>go("overview")}>← Back</button><div><h1>Account & Security</h1><p>Protect your Play2Prove account.</p></div></div><div className="pp-card"><h2>Password & Login</h2><p className="pp-muted">Change your password using the secure account flow.</p><button className="pp-primary" onClick={()=>window.location.href="/reset-password"}>Change Password</button></div></section>}
+      {requestModal&&<div className="pp-modal-backdrop" onClick={()=>setRequestModal(false)}>
+        <section className="pp-request-modal" role="dialog" aria-modal="true" aria-labelledby="wallet-request-title" onClick={e=>e.stopPropagation()}>
+          <button className="pp-modal-close" onClick={()=>setRequestModal(false)} aria-label="Close request">×</button>
+          <span className="pp-eyebrow">PLAYER WALLET / REQUEST</span>
+          <h2 id="wallet-request-title">Wallet Request<span>.</span></h2>
+          <p className="pp-muted">Choose what you want to do. Payment gateway is not connected yet.</p>
+          <div className="pp-request-tabs"><button className={requestType==="Deposit"?"active":""} onClick={()=>setRequestType("Deposit")}>＋ Deposit</button><button className={requestType==="Withdraw"?"active":""} onClick={()=>setRequestType("Withdraw")}>↗ Withdraw</button></div>
+          <label className="pp-request-label">AMOUNT (₹)</label>
+          <input className="pp-request-amount" inputMode="decimal" type="number" min="1" placeholder="Enter amount" value={requestAmount} onChange={e=>setRequestAmount(e.target.value)}/>
+          <div className="pp-request-note"><b>Coming next</b><span>{requestType==="Deposit"?"Payment method and deposit confirmation will appear here.":"Payout method and withdrawal confirmation will appear here."}</span></div>
+          <button className="pp-primary pp-request-continue" onClick={()=>setMessage("Payment gateway and wallet request processing are not connected yet. No money has been moved.")}>Continue <span>→</span></button>
+          <small className="pp-request-disclaimer">Preview only · No payment or withdrawal will be processed</small>
+        </section>
+      </div>}
     </main>
     <style jsx global>{`
       :root{color-scheme:dark}
       *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#080d18;color:#edf3ff;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+      .pp-modal-backdrop{position:fixed;inset:0;z-index:500;display:grid;place-items:center;padding:18px;background:#020611c9;backdrop-filter:blur(9px)}
+      .pp-request-modal{position:relative;width:min(460px,100%);padding:28px;border:1px solid #354969;border-radius:20px;background:linear-gradient(145deg,#14223b,#0c1425 75%);box-shadow:0 24px 80px #000b,inset 0 1px #ffffff12}
+      .pp-modal-close{position:absolute;right:17px;top:15px;width:34px;height:34px;border:1px solid #40516e;border-radius:10px;background:#1b2941;color:#e7efff;font-size:22px;cursor:pointer}
+      .pp-request-modal h2{margin:12px 0 7px;font-size:27px;color:#fff;letter-spacing:-.8px}.pp-request-modal h2 span{color:#ff6a2b}.pp-request-modal>.pp-muted{font-size:12px;line-height:1.6;color:#9cabc5}
+      .pp-request-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:22px 0}
+      .pp-request-tabs button{padding:12px;border:1px solid #34445f;border-radius:10px;background:#111d31;color:#c7d4ec;font-size:12px;font-weight:800;cursor:pointer}
+      .pp-request-tabs button.active{border-color:#ff7840;background:#ff6a221c;color:#fff;box-shadow:inset 0 0 0 1px #ff784033}
+      .pp-request-label{display:block;margin:0 0 8px;color:#91a4c5;font-size:9px;font-weight:900;letter-spacing:1.4px}
+      .pp-request-amount{width:100%;padding:14px;border:1px solid #354967;border-radius:11px;background:#080f1d;color:#fff;font-size:19px;outline:none}
+      .pp-request-amount:focus{border-color:#ff824d}
+      .pp-request-note{display:grid;gap:5px;margin:14px 0;padding:13px;border:1px solid #34435d;border-radius:11px;background:#ffffff06}.pp-request-note b{color:#ff9b6d;font-size:10px}.pp-request-note span{color:#aab8d0;font-size:10px;line-height:1.5}
+      .pp-request-continue{width:100%;display:flex;justify-content:center;gap:10px;align-items:center;margin-top:5px;cursor:pointer}
+      .pp-request-disclaimer{display:block;margin-top:12px;color:#7f90ad;text-align:center;font-size:9px}
       .pp-app{height:100dvh;display:flex;gap:14px;padding:14px;background:radial-gradient(ellipse at 78% 0%,#172849 0%,#0b1221 42%,#080d18 78%);overflow:hidden}
       .pp-sidebar{width:258px;flex:0 0 258px;background:linear-gradient(180deg,#111d34,#0d1527);color:#fff;border:1px solid #263650;border-radius:17px;display:flex;flex-direction:column;overflow:hidden;transition:width .2s,flex-basis .2s}
       .pp-side-scroll{flex:1;overflow-y:auto;padding:18px 12px;overscroll-behavior:contain}.pp-brand{display:flex;align-items:center;gap:10px;padding:0 7px 20px;border-bottom:1px solid #ffffff20;white-space:nowrap}
