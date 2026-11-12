@@ -62,7 +62,19 @@ export default function ProfilePage() {
   const [editingMember,setEditingMember]=useState(-1),[memberForm,setMemberForm]=useState({name:"",uid:"",owner:"Own",friend:""});
   const [txFilter,setTxFilter]=useState("All Types");
 
-  useEffect(()=>{if(window.innerWidth<760)setSidebarOpen(false);loadProfile();},[]);
+  useEffect(()=>{
+    const params = new URLSearchParams(window.location.search);
+    const section = params.get("section");
+    const walletAction = params.get("walletAction");
+    if (section === "transactions") setActive("transactions");
+    else if (section === "wallet") setActive("wallet");
+    if (walletAction === "request") {
+      setActive("wallet");
+      setMessage("Deposit / withdrawal request destination selected. Request controls will be added in the next wallet step.");
+    }
+    if(window.innerWidth<760)setSidebarOpen(false);
+    loadProfile();
+  },[]);
   async function loadProfile(){
     setLoading(true);setError("");
     try{
