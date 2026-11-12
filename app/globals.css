@@ -717,29 +717,71 @@ button {
 }
 
 
-/* Play2Prove: final navigation layout overrides (loaded after styles.css) */
-.p2pNavbar{position:sticky!important;top:0!important;z-index:900!important;min-height:72px!important;height:72px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;padding:0 clamp(18px,4vw,64px)!important;background:rgba(3,6,15,.97)!important;border-bottom:1px solid rgba(118,143,190,.2)!important;backdrop-filter:blur(18px)!important}
-.p2pNavbar .navActions{display:flex!important;align-items:center!important;gap:12px!important;margin-left:auto!important}
-.p2pNavbar .navWalletWrap{display:block!important;position:relative!important;flex:0 0 auto!important}
-.p2pNavbar .navWallet{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:9px!important;height:42px!important;min-width:116px!important;padding:0 10px!important;border:1px solid #00d995!important;border-radius:11px!important;background:linear-gradient(120deg,#00d99520,#08151f)!important;color:#fff!important;cursor:pointer!important;box-shadow:0 0 18px #00d99518!important}
-.p2pNavbar .navWallet strong{display:block!important;color:#fff!important;font-size:13px!important;white-space:nowrap!important}
-.p2pNavbar .navWalletPlus{display:grid!important;place-items:center!important;width:23px!important;height:23px!important;border-radius:7px!important;background:linear-gradient(140deg,#00e69a,#00a96e)!important;color:#04150f!important;font-size:19px!important;font-weight:900!important}
-.p2pNavbar .navWalletDropdown{position:absolute!important;right:0!important;top:calc(100% + 11px)!important;z-index:1200!important;width:286px!important;padding:12px!important;border:1px solid #425979!important;border-radius:14px!important;background:linear-gradient(145deg,#111d31,#090f1c)!important;box-shadow:0 20px 55px #000b!important}
-.p2pNavbar .navProfile{display:flex!important;align-items:center!important;flex:0 0 auto!important}
-.p2pDockSidebar{position:fixed!important;left:0!important;top:72px!important;bottom:0!important;z-index:850!important;width:286px!important;max-width:86vw!important;height:auto!important;display:flex!important;flex-direction:column!important;overflow:visible!important;margin:0!important;padding:0!important;border:1px solid rgba(88,117,163,.42)!important;border-left:0!important;border-radius:0 16px 0 0!important;background:linear-gradient(180deg,#101d33fa,#08101efa)!important;box-shadow:12px 0 42px #0007!important;transform:translateX(calc(-100% + 9px))!important;transition:transform .36s cubic-bezier(.22,.8,.22,1)!important}
+
+/* PLAY2PROVE HOME — GRAPHITE + ORANGE DESIGN SYSTEM */
+:root{--orange:#ff5a1f;--orange2:#ff7a24;--blue:#ff6a2a;--purple:#242a36;--cyan:#ff8a4a;--green:#ff8a4a}
+.p2pHome{background:#05070c!important}
+.neonEnvironment{background:radial-gradient(ellipse at 16% 42%,rgba(255,83,26,.09),transparent 34%),radial-gradient(ellipse at 78% 20%,rgba(255,112,42,.045),transparent 36%)!important}
+.neonBlob{animation:none!important;filter:blur(80px)!important;opacity:.07!important}.blobPurple,.blobBlue{background:#ff642b!important}
+.movingBeam{animation:none!important;opacity:.12!important;background:linear-gradient(90deg,transparent,#ff6128,transparent)!important}
+.neonParticles,.neonGrid{opacity:.12!important}.globalRail span{background:#ff5a1f!important;box-shadow:0 0 12px #ff5a1f30!important}
+.p2pNavbar{position:sticky!important;top:0!important;z-index:900!important;height:72px!important;min-height:72px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:20px!important;padding:0 clamp(18px,4vw,64px)!important;background:#05070c!important;border-bottom:1px solid #ffffff16!important;backdrop-filter:none!important}
+.p2pNavbar .navActions{display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:12px!important;margin-left:auto!important}
+.headerIconButton{height:42px!important;min-width:42px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;padding:0 12px!important;border:1px solid #ffffff24!important;border-radius:10px!important;background:#0d111a!important;color:#e9edf4!important;font-size:11px!important;font-weight:800!important;cursor:pointer!important;transition:background .16s,border-color .16s,transform .16s!important}
+.headerIconButton:hover,.headerIconButton.is-active{background:#171b24!important;border-color:#ff713b!important;transform:translateY(-1px)!important}
+.headerIconButton svg,.navWalletIcon{width:18px!important;height:18px!important;fill:none!important;stroke:currentColor!important;stroke-width:1.8!important;stroke-linecap:round!important;stroke-linejoin:round!important;flex:0 0 auto!important}
+.notificationWrap{position:relative!important}.notificationButton{position:relative!important;width:42px!important;padding:0!important}
+.notificationDot{position:absolute!important;top:8px!important;right:9px!important;width:7px!important;height:7px!important;border-radius:50%!important;background:#ff5a1f!important;border:1px solid #090c12!important}
+.notificationDropdown{position:absolute!important;top:calc(100% + 11px)!important;right:-12px!important;z-index:1250!important;width:270px!important;padding:15px!important;border:1px solid #353b47!important;border-radius:13px!important;background:#10151f!important;box-shadow:0 18px 45px #000b!important}
+.notificationDropdown>div{display:flex!important;align-items:center!important;justify-content:space-between!important}.notificationDropdown strong{font-size:13px!important;color:#fff!important}
+.notificationDropdown button{width:25px!important;height:25px!important;border:0!important;border-radius:6px!important;background:#ffffff10!important;color:#fff!important;font-size:18px!important;cursor:pointer!important}
+.notificationDropdown p{margin:16px 0 5px!important;color:#f1f3f6!important;font-size:12px!important;font-weight:800!important}.notificationDropdown small{color:#8993a3!important;font-size:10px!important;line-height:1.5!important}
+.p2pNavbar .navWalletWrap{position:relative!important;display:block!important;flex:0 0 auto!important}
+.p2pNavbar .navWallet{height:42px!important;min-width:126px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:9px!important;padding:0 9px!important;border:1px solid #ff6a32!important;border-radius:10px!important;background:#10151d!important;color:#fff!important;box-shadow:0 0 16px #ff5a1f12!important;cursor:pointer!important;transition:border-color .16s,background .16s!important}
+.p2pNavbar .navWallet:hover,.p2pNavbar .navWallet.is-open{border-color:#ff8a50!important;background:#171b23!important}.p2pNavbar .navWalletIcon{color:#ff8a50!important}
+.p2pNavbar .navWallet strong{font-size:13px!important;font-weight:900!important;white-space:nowrap!important;font-variant-numeric:tabular-nums!important}
+.p2pNavbar .navWalletPlus{width:23px!important;height:23px!important;display:grid!important;place-items:center!important;border-radius:6px!important;background:#ff5a1f!important;color:#fff!important;font-size:19px!important;font-weight:900!important;line-height:1!important}
+.p2pNavbar .navWalletDropdown{position:absolute!important;right:0!important;top:calc(100% + 10px)!important;z-index:1250!important;width:278px!important;padding:11px!important;border:1px solid #333b49!important;border-radius:13px!important;background:#10151f!important;box-shadow:0 18px 45px #000b!important;animation:walletMenuIn .16s ease-out!important}
+@keyframes walletMenuIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+.navWalletDropHead{display:grid!important;gap:5px!important;padding:7px 8px 12px!important;margin-bottom:5px!important;border-bottom:1px solid #ffffff16!important}
+.navWalletDropHead small{font-size:8px!important;letter-spacing:1.5px!important;color:#8994a6!important;font-weight:900!important}.navWalletDropHead strong{font-size:21px!important;color:#fff!important;font-variant-numeric:tabular-nums!important}
+.navWalletDropdown>button{width:100%!important;display:flex!important;align-items:center!important;gap:10px!important;padding:10px 8px!important;border:0!important;border-radius:8px!important;background:transparent!important;color:#f2f4f8!important;text-align:left!important;cursor:pointer!important}
+.navWalletDropdown>button:hover:not(:disabled){background:#ffffff0b!important}.navWalletDropdown>button:disabled{opacity:.55!important;cursor:wait!important}.navWalletDropdown>button>span:last-child{display:grid!important;gap:3px!important}
+.navWalletDropdown b{font-size:11px!important;font-weight:850!important}.navWalletDropdown button small{font-size:9px!important;color:#8c97a8!important}
+.walletActionIcon{width:29px!important;height:29px!important;display:grid!important;place-items:center!important;border:1px solid #ff6a3235!important;border-radius:8px!important;background:#ff5a1f12!important;color:#ff8a50!important;flex:0 0 auto!important}
+.walletActionIcon svg{width:16px!important;height:16px!important;fill:none!important;stroke:currentColor!important;stroke-width:1.8!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+.p2pNavbar .navProfile{height:42px!important;display:flex!important;align-items:center!important;gap:9px!important;padding:0 10px!important;border:1px solid #ffffff28!important;border-radius:10px!important;background:#10151d!important;color:#fff!important;flex:0 0 auto!important}
+.p2pNavbar .navProfileAvatar{width:31px!important;height:31px!important;display:grid!important;place-items:center!important;border-radius:8px!important;background:#ff5a1f!important;color:#fff!important;font-weight:900!important}
+.p2pDockSidebar{position:fixed!important;left:0!important;top:72px!important;bottom:0!important;z-index:850!important;width:286px!important;max-width:86vw!important;height:auto!important;display:flex!important;flex-direction:column!important;overflow:visible!important;margin:0!important;padding:0!important;border:1px solid #303846!important;border-left:0!important;border-radius:0 14px 0 0!important;background:#0c121d!important;box-shadow:12px 0 36px #0009!important;transform:translateX(calc(-100% + 8px))!important;transition:transform .28s cubic-bezier(.2,.75,.25,1)!important;will-change:transform!important}
 .p2pDockSidebar.is-open{transform:translateX(0)!important}
-.p2pDockSidebar>.quickPanelScroll{display:block!important;flex:1 1 auto!important;width:100%!important;min-height:0!important;overflow-x:hidden!important;overflow-y:auto!important;padding:20px 12px 14px!important}
-.p2pDockSidebar .quickPanelBrand{display:flex!important;align-items:center!important;justify-content:flex-start!important;width:100%!important;min-height:64px!important;padding:0 7px 18px!important;white-space:nowrap!important}
-.p2pDockSidebar .quickNav{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:5px!important;width:100%!important}
-.p2pDockSidebar .quickNav>button{display:flex!important;width:100%!important;min-height:42px!important;justify-content:flex-start!important}
-.p2pDockSidebar .quickPanelFoot{display:flex!important;flex:0 0 39px!important;align-items:center!important;justify-content:center!important;width:100%!important;margin:0!important}
-.p2pDockSidebar .p2pDockToggle{position:absolute!important;top:50%!important;right:-43px!important;left:auto!important;z-index:2!important;transform:translateY(-50%)!important;width:43px!important;height:66px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;border:1px solid #ff7030a0!important;border-left:0!important;border-radius:0 13px 13px 0!important;background:linear-gradient(150deg,#ff6a19,#f04408)!important;color:white!important;cursor:pointer!important}
+.p2pDockSidebar>.quickPanelScroll{display:block!important;flex:1 1 auto!important;width:100%!important;min-height:0!important;overflow-x:hidden!important;overflow-y:auto!important;padding:17px 12px 12px!important;background:#0c121d!important;overscroll-behavior:contain!important}
+.p2pDockSidebar .quickPanelBrand{display:flex!important;align-items:center!important;justify-content:flex-start!important;width:100%!important;min-height:64px!important;padding:0 7px 16px!important;white-space:nowrap!important;border-bottom:1px solid #ffffff17!important}
+.p2pDockSidebar .quickBrandLogo{background:#ff5a1f!important;color:white!important}
+.p2pDockSidebar .quickNavLabel{margin:18px 9px 9px!important;color:#8994a6!important;font-size:9px!important;letter-spacing:1.5px!important;font-weight:900!important}
+.p2pDockSidebar .quickNav{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:4px!important;width:100%!important}
+.p2pDockSidebar .quickNav>button{display:flex!important;align-items:center!important;gap:12px!important;width:100%!important;min-height:42px!important;padding:0 11px!important;border:1px solid transparent!important;border-radius:8px!important;background:transparent!important;color:#d6dce6!important;text-align:left!important;font-size:12px!important;font-weight:650!important;cursor:pointer!important}
+.p2pDockSidebar .quickNav>button:hover{background:#ffffff09!important;border-color:#ffffff12!important;color:#fff!important}.p2pDockSidebar .quickNav>button span{width:20px!important;height:20px!important;display:grid!important;place-items:center!important;color:#ff8750!important;font-size:17px!important}
+.p2pDockSidebar .quickAccountLabel{padding-top:13px!important;border-top:1px solid #ffffff17!important}
+.p2pDockSidebar .quickPanelSocial{margin:20px 8px 10px!important;padding-top:15px!important;border-top:1px solid #ffffff17!important}.p2pDockSidebar .quickPanelSocial small{color:#8994a6!important;font-size:9px!important;letter-spacing:1.4px!important}
+.p2pDockSidebar .quickPanelFoot{display:flex!important;flex:0 0 39px!important;align-items:center!important;justify-content:center!important;width:100%!important;margin:0!important;border-top:1px solid #ffffff17!important;background:#090e17!important;color:#8994a6!important;font-size:8px!important;letter-spacing:1.2px!important}
+.p2pDockToggle{position:absolute!important;top:50%!important;right:-40px!important;left:auto!important;z-index:2!important;transform:translateY(-50%)!important;width:40px!important;height:62px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:4px!important;border:1px solid #ff6a32!important;border-left:0!important;border-radius:0 11px 11px 0!important;background:#ff5a1f!important;color:#fff!important;box-shadow:7px 5px 18px #0008!important;cursor:pointer!important}
+.p2pDockToggle>span{font-size:22px!important;line-height:22px!important;font-weight:800!important}.p2pDockToggle small{font-size:6px!important;letter-spacing:.7px!important;font-weight:950!important}
+.walletModalBackdrop{position:fixed!important;inset:0!important;z-index:1500!important;display:grid!important;place-items:center!important;padding:18px!important;background:#03060bcc!important}
+.walletRequestModal{position:relative!important;width:min(420px,100%)!important;padding:25px!important;border:1px solid #414957!important;border-radius:16px!important;background:#10151f!important;box-shadow:0 25px 80px #000c!important;color:#fff!important}
+.walletModalClose{position:absolute!important;top:13px!important;right:13px!important;width:32px!important;height:32px!important;display:grid!important;place-items:center!important;border:1px solid #ffffff20!important;border-radius:8px!important;background:#ffffff08!important;color:#fff!important;cursor:pointer!important}
+.walletModalClose svg{width:17px!important;height:17px!important;fill:none!important;stroke:currentColor!important;stroke-width:2!important;stroke-linecap:round!important}
+.walletModalEyebrow{color:#ff8a50!important;font-size:9px!important;letter-spacing:1.7px!important;font-weight:900!important}
+.walletRequestModal h2{margin:9px 0 6px!important;font-size:23px!important;font-weight:900!important}.walletRequestModal p{margin:0 0 18px!important;color:#9aa4b3!important;font-size:12px!important;line-height:1.5!important}
+.walletRequestModal label{display:block!important;margin:13px 0 6px!important;color:#dce1e9!important;font-size:10px!important;font-weight:800!important}
+.walletRequestModal input{width:100%!important;height:43px!important;padding:0 12px!important;border:1px solid #343d4c!important;border-radius:8px!important;background:#090e17!important;color:#fff!important;outline:none!important}.walletRequestModal input:focus{border-color:#ff713b!important}
+.walletModalNotice{margin:15px 0!important;padding:10px!important;border:1px solid #ff8a5030!important;border-radius:8px!important;background:#ff5a1f0d!important;color:#b8a99f!important;font-size:10px!important;line-height:1.5!important}
+.walletModalPrimary{width:100%!important;height:42px!important;border:0!important;border-radius:8px!important;background:#ff5a1f!important;color:#fff!important;font-size:12px!important;font-weight:900!important;cursor:pointer!important}
 @media(max-width:760px){
- .p2pNavbar{height:62px!important;min-height:62px!important;padding:0 10px!important}
- .p2pNavbar .navActions{gap:7px!important}
- .p2pNavbar .navWallet{min-width:90px!important;height:37px!important;padding:0 7px!important}
- .p2pNavbar .navWallet strong{font-size:11px!important}
- .p2pDockSidebar{top:62px!important;width:min(286px,86vw)!important}
- .p2pDockSidebar .p2pDockToggle{right:-40px!important;width:40px!important;height:60px!important}
+ .p2pNavbar{height:62px!important;min-height:62px!important;padding:0 10px!important;gap:8px!important}.p2pNavbar .navActions{gap:6px!important}
+ .headerIconButton{height:37px!important;min-width:36px!important;padding:0 8px!important}.downloadsButton span{display:none!important}
+ .p2pNavbar .navWallet{min-width:92px!important;height:37px!important;padding:0 7px!important;gap:5px!important}.p2pNavbar .navWallet strong{font-size:11px!important}
+ .p2pNavbar .navProfileText{display:none!important}.p2pNavbar .navProfile{padding:0 6px!important}
+ .p2pDockSidebar{top:62px!important;width:min(286px,86vw)!important}.p2pDockToggle{right:-37px!important;width:37px!important;height:58px!important}
+ .notificationDropdown{right:-35px!important;width:min(270px,calc(100vw - 20px))!important}.navWalletDropdown{right:-38px!important;width:min(278px,calc(100vw - 20px))!important}
 }
-@media(prefers-reduced-motion:reduce){.p2pDockSidebar{transition:none!important}}
+@media(prefers-reduced-motion:reduce){.p2pDockSidebar,.navWalletDropdown{transition:none!important;animation:none!important}}
