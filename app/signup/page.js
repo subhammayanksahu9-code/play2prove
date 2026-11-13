@@ -8,7 +8,12 @@ import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 
 function getEmailRedirectUrl() {
-  const configuredSite = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  // Local development must always return to the running localhost app.
+  // NEXT_PUBLIC_SITE_URL is reserved for hosted environments.
+  const configuredSite =
+    process.env.NODE_ENV === "development"
+      ? ""
+      : process.env.NEXT_PUBLIC_SITE_URL?.trim();
   const base = configuredSite || window.location.origin;
   return `${base.replace(/\/$/, "")}/auth/callback`;
 }
