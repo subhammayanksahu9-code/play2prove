@@ -299,6 +299,7 @@ const featuredTournaments = useMemo(() => {
             <div className="quickNavLabel">MAIN MENU</div>
             <nav className="quickNav">
               <button onClick={() => {setShortcutOpen(false);scrollTo("home");}}><span>⌂</span>Home</button>
+              <button onClick={() => {setShortcutOpen(false);go("/games");}}><span>🎮</span>Games</button>
               <button onClick={() => {setShortcutOpen(false);go("/all-tournaments");}}><span>♜</span>Tournaments</button>
               <button onClick={() => {setShortcutOpen(false);go("/matches");}}><span>⚔</span>My Matches</button>
               <button onClick={() => {setShortcutOpen(false);go("/leaderboard");}}><span>▥</span>Leaderboard</button>
