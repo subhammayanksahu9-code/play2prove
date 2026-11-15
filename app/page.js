@@ -308,6 +308,7 @@ const featuredTournaments = useMemo(() => {
             <nav className="quickNav quickAccountNav">
               <button onClick={() => {setShortcutOpen(false);go("/profile");}}><span>♙</span>My Profile</button>
               <button onClick={() => {setShortcutOpen(false);go("/help");}}><span>ⓘ</span>Help Center</button>
+              <button onClick={() => {setShortcutOpen(false);go("/staff");}}><span>♙</span>Staff Login</button>
             </nav>
             <div className="quickPanelSocial"><small>SOCIAL LINKS</small><div><a href="https://wa.me/?text=https%3A%2F%2Fplay2prove.vercel.app" target="_blank" rel="noreferrer">↗</a><a href="https://www.instagram.com/" target="_blank" rel="noreferrer">◎</a><a href="https://www.youtube.com/" target="_blank" rel="noreferrer">▷</a></div></div>
           </div>
