@@ -76,6 +76,7 @@ export default function StaffPage() {
           <button disabled={loading} type="submit" style={{width:"100%",padding:17,border:0,borderRadius:12,background:"linear-gradient(90deg,#ff4b16,#ff8700)",color:"white",fontWeight:800,fontSize:16,opacity:loading?.7:1}}>{loading?"SIGNING IN...":"LOGIN"}</button>
         </form>
         {message && <div role="alert" style={{marginTop:17,padding:14,borderRadius:10,background:"#39251d",border:"1px solid #75412d",color:"#ffd2bd",fontSize:14,lineHeight:1.5}}>{message}</div>}
+        <div style={{marginTop:18,textAlign:"center"}}><a href="/staff/demo" style={{color:"#ff9a66",fontSize:14,fontWeight:700,textDecoration:"none"}}>Open Demo Dashboard →</a></div>
         <div style={{borderTop:"1px solid #283449",marginTop:28,paddingTop:22}}>
           <p style={{fontSize:12,color:"#8794a8",letterSpacing:1.5,fontWeight:700,margin:"0 0 12px"}}>SECURE TEAM ACCESS</p>
           <p style={{fontSize:12,color:"#718096",lineHeight:1.6,margin:0}}>Staff accounts are activated by an administrator. Passwords are securely handled by Supabase Authentication.</p>
