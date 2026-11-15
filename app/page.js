@@ -290,7 +290,7 @@ const featuredTournaments = useMemo(() => {
           TOP NEON RAIL
       ===================================================== */}
 
-      {authUser && (
+      {(
         <aside className={`p2pDockSidebar ${shortcutOpen ? "is-open" : ""}`} aria-label="Player Centre">
           <div className="quickPanelScroll">
             <div className="quickPanelBrand"><span className="quickBrandLogo">P2P</span><span><b>Play2Prove</b><small>PLAYER CENTRE</small></span></div>
