@@ -6576,3 +6576,54 @@ span.statusPast {
     padding-left: 4px !important;
   }
 }
+
+
+/* DEFINITIVE DESKTOP FILTER COLUMN ALIGNMENT */
+@media (min-width: 701px) {
+  .tournamentPage .filterPanel > .filterGroup,
+  .tournamentPage .filterPanel > .filterGroup:first-child,
+  .tournamentPage .filterPanel > .filterGroup:not(:first-child) {
+    display: grid !important;
+    grid-template-columns: 200px minmax(0, 1fr) !important;
+    grid-template-rows: minmax(38px, auto) !important;
+    align-items: center !important;
+    column-gap: 0 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 7px 0 !important;
+    border-left: 0 !important;
+    border-top: 1px solid rgba(255,255,255,.075) !important;
+    box-sizing: border-box !important;
+  }
+
+  .tournamentPage .filterPanel > .filterGroup:first-child {
+    border-top: 0 !important;
+  }
+
+  .tournamentPage .filterPanel > .filterGroup > label {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    justify-self: start !important;
+    align-self: center !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 0 0 4px !important;
+    text-align: left !important;
+    box-sizing: border-box !important;
+  }
+
+  .tournamentPage .filterPanel > .filterGroup > .compactFilters,
+  .tournamentPage .filterPanel > .filterGroup > .slotGrid {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    justify-self: start !important;
+    align-self: center !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+  }
+}
