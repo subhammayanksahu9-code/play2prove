@@ -81,7 +81,7 @@ const CACHE_MAX_AGE =
 
 const TIME_SLOTS = {
   All: "All Times",
-  Morning: "06:00 AM – 12:00 PM",
+  Morning: "08:00 AM – 12:00 PM",
   Afternoon: "12:00 PM – 04:00 PM",
   Evening: "04:00 PM – 07:00 PM",
   Night: "07:00 PM – 08:00 AM",
@@ -2055,36 +2055,47 @@ useEffect(() => {
               GAME HEADER
           =============================================== */}
 
-          <div
-            className="tournamentHeader"
-          >
+          <div className="tournamentHeader">
 
-            <div>
-
-              <span>
-                {
-                  selectedGameData?.name ||
-                  "TOURNAMENT"
-                }
+            <div className="tournamentHeroCopy">
+              <span className="tournamentHeroEyebrow">
+                {selectedGameData?.name || "PLAY2PROVE ARENA"}
               </span>
-
               <h1>
-  {
-    selectedGameData
-      ? selectedGameData.name
-      : "ALL TOURNAMENTS"
-  }
-</h1>
-
-<p>
-  {
-    selectedGameData
-      ? "Choose your match and enter the battle."
-      : "Explore every tournament across the Play2Prove arena."
-  }
-</p>
-
+                {selectedGameData ? selectedGameData.name : "ALL TOURNAMENTS"}
+              </h1>
+              <p>
+                {selectedGameData
+                  ? "Choose your match and enter the battle."
+                  : "Explore every tournament across the Play2Prove arena."}
+              </p>
             </div>
+
+            <aside
+              className="arenaRulesBoard"
+              style={{
+                "--arena-game-image": selectedGameData?.image
+                  ? `url("${selectedGameData.image}")`
+                  : "none"
+              }}
+              aria-label="Tournament match guide"
+            >
+              <div className="arenaBoardTopline">
+                <span>✦ ARENA INTEL</span>
+                <span className="arenaBoardLiveDot">● READY</span>
+              </div>
+              <div className="arenaBoardTitle">MATCH<br/><em>PROTOCOL</em></div>
+              <div className="arenaBoardRule">
+                <b>01</b><span><strong>CHECK THE BRIEF</strong><small>Confirm date, time, mode & map</small></span>
+              </div>
+              <div className="arenaBoardRule">
+                <b>02</b><span><strong>BE ON TIME</strong><small>Keep your match details ready</small></span>
+              </div>
+              <div className="arenaBoardRule">
+                <b>03</b><span><strong>PLAY FAIR</strong><small>Follow the tournament instructions</small></span>
+              </div>
+              <div className="arenaBoardFooter"><span>PLAY SMART</span><span>WIN WITH HONOUR ↗</span></div>
+            </aside>
 
           </div>
 
@@ -2115,6 +2126,7 @@ useEffect(() => {
                   "All",
                   "Upcoming",
                   "Live",
+                  "Past",
                 ].map(
                   (item) => (
 
@@ -3283,7 +3295,7 @@ function getSlotFromTime(
 
 
   if (
-    total >= 360 &&
+    total >= 480 &&
     total < 720
   ) {
 
