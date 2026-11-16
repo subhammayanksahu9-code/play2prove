@@ -6767,3 +6767,45 @@ span.statusPast {
     font-size: 11px !important;
   }
 }
+
+
+/* TOURNAMENT LIFECYCLE TIMER — preserve the existing 3-column alignment */
+.tournamentPage .lifecycleCountdown {
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+}
+.tournamentPage .lifecycleCountdown .joinMatchText,
+.tournamentPage .lifecycleCountdown .joinBeforeText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tournamentPage .lifecycle-verification .joinMatchText,
+.tournamentPage .lifecycle-verification .joinBeforeText,
+.tournamentPage .lifecycle-recalculation .joinMatchText,
+.tournamentPage .lifecycle-recalculation .joinBeforeText {
+  color: #ff9a65;
+}
+.tournamentPage .lifecycle-match .joinMatchText,
+.tournamentPage .lifecycle-match .joinBeforeText {
+  color: #79dca7;
+}
+.tournamentPage .lifecycle-results .joinMatchText,
+.tournamentPage .lifecycle-results .joinBeforeText {
+  color: #f4c56a;
+}
+@media (max-width: 700px) {
+  .tournamentPage .lifecycleCountdown {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 5px;
+  }
+  .tournamentPage .lifecycleCountdown .joinMatchText {
+    white-space: normal;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+  }
+  .tournamentPage .lifecycleCountdown .joinBeforeText {
+    white-space: normal;
+    line-height: 1.15;
+    text-align: right;
+    overflow-wrap: anywhere;
+  }
+}
