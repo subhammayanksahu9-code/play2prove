@@ -6564,3 +6564,15 @@ span.statusPast {
     font-size: 9px !important;
   }
 }
+
+
+/* FINAL DESKTOP ALIGNMENT FIX — REMOVE EXTRA INDENT ON ROWS 2–5 */
+@media (min-width: 701px) {
+  .tournamentPage .filterPanel > .filterGroup:not(:first-child) {
+    padding-left: 4px !important;
+  }
+
+  .tournamentPage .filterPanel > .filterGroup:first-child {
+    padding-left: 4px !important;
+  }
+}
