@@ -81,10 +81,10 @@ const CACHE_MAX_AGE =
 
 const TIME_SLOTS = {
   All: "All Times",
-  Morning: "06:00 AM – 12:00 PM",
+  Morning: "08:00 AM – 12:00 PM",
   Afternoon: "12:00 PM – 04:00 PM",
   Evening: "04:00 PM – 07:00 PM",
-  Night: "07:00 PM – 06:00 AM",
+  Night: "07:00 PM – 08:00 AM",
 };
 
 /* =========================================================
@@ -429,109 +429,31 @@ function getTournamentAutomaticStatus(
 
   }
 
-  const STARTING_SOON =
-    10 * 60 * 1000;
-
-  const LIVE =
-    10 * 60 * 1000;
-
-  const MATCH_ONGOING =
-    30 * 60 * 1000;
-
-  const MATCH_CLOSING =
-    5 * 60 * 1000;
-
-  if (
-    now <
-    start -
-      STARTING_SOON
-  ) {
-
-    return "Upcoming";
-
-  }
-
-  if (
-    now <
-    start
-  ) {
-
-    return "Starting Soon";
-
-  }
-
-  if (
-    now <
-    start +
-      LIVE
-  ) {
-
-    return "Live";
-
-  }
-
   /*
-    ADDITIONAL PAST RULE:
-    The 10-minute LIVE window is also the
-    tournament's join window. Immediately after
-    that window closes, move the tournament to Past.
+    PLAY2PROVE FILTER WINDOWS (IST):
+    Upcoming: until exactly 30 minutes before start.
+    Live filter: after the 30-minute mark before start
+                 through 19:59 after scheduled start.
+    Past: from exactly 20 minutes after scheduled start.
 
-    Existing Match Ongoing / Match Closing /
-    Calculation Ongoing logic remains below so
-    the existing flow/code is preserved.
+    Example 3:00 PM match:
+    2:30 PM = Upcoming
+    2:31 PM = Live
+    3:19 PM = Live
+    3:20 PM = Past
   */
-  if (
-    now >=
-    start +
-      LIVE
-  ) {
+  const LIVE_WINDOW_BEFORE_START = 30 * 60 * 1000;
+  const PAST_WINDOW_AFTER_START = 20 * 60 * 1000;
 
-    return "Past";
-
+  if (now <= start - LIVE_WINDOW_BEFORE_START) {
+    return "Upcoming";
   }
 
-  if (
-    now <
-    start +
-      LIVE +
-      MATCH_ONGOING
-  ) {
-
-    return "Match Ongoing";
-
+  if (now < start + PAST_WINDOW_AFTER_START) {
+    return "Live";
   }
 
-  if (
-    now <
-    start +
-      LIVE +
-      MATCH_ONGOING +
-      MATCH_CLOSING
-  ) {
-
-    return "Match Closing";
-
-  }
-
-  const calculation =
-    clean(
-      tournament?.calculationStatus
-    ).toLowerCase();
-
-  if (
-    calculation ===
-      "completed" ||
-    calculation ===
-      "complete" ||
-    calculation ===
-      "done"
-  ) {
-
-    return "Past";
-
-  }
-
-  return "Calculation Ongoing";
+  return "Past";
 
 }
 
@@ -1606,29 +1528,14 @@ useEffect(() => {
     getMasterNow()
   );
 
-        if (
-          status === "All"
-        ) {
-
-          if (
-            itemStatus === "Past"
-          ) {
-            return false;
-          }
-
-        }
+        /* All includes Upcoming, Live and Past. */
 
         if (
           status === "Upcoming"
         ) {
 
           if (
-            ![
-              "Upcoming",
-              "Starting Soon",
-            ].includes(
-              itemStatus
-            )
+            itemStatus !== "Upcoming"
           ) {
             return false;
           }
@@ -1640,13 +1547,7 @@ useEffect(() => {
         ) {
 
           if (
-            ![
-              "Live",
-              "Match Ongoing",
-              "Match Closing",
-            ].includes(
-              itemStatus
-            )
+            itemStatus !== "Live"
           ) {
             return false;
           }
@@ -2233,6 +2134,14 @@ useEffect(() => {
 
             </div>
 
+            <div className="matchStatusRule" aria-label="Match status timing rule">
+              <span className="matchStatusRuleKicker">MATCH STATUS RULE · IST</span>
+              <strong>Automatic match timeline</strong>
+              <div><b>UPCOMING</b><span>Until 30 minutes before start</span></div>
+              <div><b>LIVE</b><span>From 29 minutes before start until 19:59 after start</span></div>
+              <div><b>PAST</b><span>From 20 minutes after scheduled start</span></div>
+              <small>Example · 3:00 PM match: 2:30 PM Upcoming → 2:31 PM Live → 3:20 PM Past</small>
+            </div>
 
             {/* DATE */}
 
