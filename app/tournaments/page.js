@@ -2660,33 +2660,74 @@ const status =
 
 
   /* =======================================================
-     LIVE 10-MINUTE JOIN WINDOW
+     TOURNAMENT LIFECYCLE — MATCH CARD TIMER
+     Normal card stays clean until scheduled match time.
+     All phase timers count DOWN using the master clock.
   ======================================================= */
 
-  let joinSecondsLeft =
-    0;
+  const lifecyclePhases = [
+    {
+      key: "join",
+      duration: 15 * 60 * 1000,
+      left: "JOIN MATCH",
+      right: "BEFORE TIMER ENDS",
+      button: "JOIN MATCH →",
+      buttonClass: "joinButton",
+    },
+    {
+      key: "verification",
+      duration: 15 * 60 * 1000,
+      left: "VERIFYING PLAYER IDENTITY",
+      right: "JOINING CLOSED",
+      button: "VIEW STATUS →",
+      buttonClass: "statusAction",
+    },
+    {
+      key: "match",
+      duration: 45 * 60 * 1000,
+      left: "MATCH STARTED",
+      right: "VIEW LIVE",
+      button: "VIEW LIVE →",
+      buttonClass: "liveButton",
+    },
+    {
+      key: "results",
+      duration: 30 * 60 * 1000,
+      left: "RESULT REVEALED",
+      right: "TOURNAMENT CLOSED",
+      button: "VIEW RESULTS →",
+      buttonClass: "resultButton",
+    },
+    {
+      key: "recalculation",
+      duration: 45 * 60 * 1000,
+      left: "RECALCULATION",
+      right: "PROOF VERIFICATION",
+      button: "VIEW STATUS →",
+      buttonClass: "statusAction",
+    },
+  ];
 
-  if (
-    automaticStatus ===
-      "Live" &&
-    Number.isFinite(
-      tournamentStart
-    )
-  ) {
+  let lifecyclePhase = null;
+  let lifecycleSecondsLeft = 0;
 
-    joinSecondsLeft =
-      Math.max(
-        0,
-        Math.ceil(
-          (
-            tournamentStart +
-            10 * 60 * 1000 -
-            masterNow
-          ) / 1000
-        )
-      );
+  if (Number.isFinite(tournamentStart) && masterNow >= tournamentStart) {
+    let elapsed = masterNow - tournamentStart;
 
+    for (const phase of lifecyclePhases) {
+      if (elapsed < phase.duration) {
+        lifecyclePhase = phase;
+        lifecycleSecondsLeft = Math.max(
+          0,
+          Math.ceil((phase.duration - elapsed) / 1000)
+        );
+        break;
+      }
+      elapsed -= phase.duration;
+    }
   }
+
+  const lifecycleTimerVisible = Boolean(lifecyclePhase);
 
 
   /* =======================================================
@@ -2893,28 +2934,25 @@ const status =
 
 
       {/* =================================================
-          LIVE JOIN STRIP
-
-          ONLY DURING 10-MINUTE LIVE WINDOW
+          TOURNAMENT LIFECYCLE TIMER
+          Hidden during Normal Card / before match start.
       ================================================= */}
 
-      {automaticStatus === "Live" && (
-  <div className="liveCountdown">
+      {lifecycleTimerVisible && (
+        <div className={`liveCountdown lifecycleCountdown lifecycle-${lifecyclePhase.key}`}>
+          <span className="joinMatchText">
+            {lifecyclePhase.left}
+          </span>
 
-    <span className="joinMatchText">
-      JOIN MATCH
-    </span>
+          <strong className="joinTimer">
+            {formatJoinTimer(lifecycleSecondsLeft)}
+          </strong>
 
-    <strong className="joinTimer">
-      {formatJoinTimer(joinSecondsLeft)}
-    </strong>
-
-    <span className="joinBeforeText">
-      BEFORE TIMER ENDS
-    </span>
-
-  </div>
-)}
+          <span className="joinBeforeText">
+            {lifecyclePhase.right}
+          </span>
+        </div>
+      )}
 
 
       {/* =================================================
@@ -3122,47 +3160,29 @@ const status =
 
 
 {
-  automaticStatus === "Past" &&
-  tournament.calculationStatus
-    ?.toLowerCase() === "completed" ? (
-
-    <button
-      className="resultButton"
-      onClick={() => {
-        window.location.href =
-          `/tournaments/${encodeURIComponent(
-            tournament.id
-          )}`;
-      }}
-    >
-      VIEW →
-    </button>
-
-  ) : (
-
-    <button
-      className={
-        automaticStatus === "Live"
-          ? "liveButton"
+  <button
+    className={
+      lifecyclePhase
+        ? lifecyclePhase.buttonClass
+        : automaticStatus === "Past"
+          ? "resultButton"
           : "joinButton"
-      }
-      onClick={() => {
-        window.location.href =
-          `/tournaments/${encodeURIComponent(
-            tournament.id
-          )}`;
-      }}
-    >
-      {
-        automaticStatus === "Upcoming" ||
-        automaticStatus === "Starting Soon" ||
-        automaticStatus === "Live"
-          ? "VIEW & JOIN →"
+    }
+    onClick={() => {
+      window.location.href =
+        `/tournaments/${encodeURIComponent(
+          tournament.id
+        )}`;
+    }}
+  >
+    {
+      lifecyclePhase
+        ? lifecyclePhase.button
+        : automaticStatus === "Past"
+          ? "VIEW RESULTS →"
           : "VIEW →"
-      }
-    </button>
-
-  )
+    }
+  </button>
 }
     </article>
   );
