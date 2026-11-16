@@ -1529,45 +1529,17 @@ useEffect(() => {
     getMasterNow()
   );
 
-        /* All shows only Upcoming + Live. Past stays out of the public listing. */
-        if (status === "All" && itemStatus === "Past") {
-          return false;
-        }
-
-        if (
-          status === "Upcoming"
-        ) {
-
-          if (
-            itemStatus !== "Upcoming"
-          ) {
+        /* Explicit status allow-list: All must NEVER include Past. */
+        if (status === "All") {
+          if (itemStatus !== "Upcoming" && itemStatus !== "Live") {
             return false;
           }
-
-        }
-
-        if (
-          status === "Live"
-        ) {
-
-          if (
-            itemStatus !== "Live"
-          ) {
-            return false;
-          }
-
-        }
-
-        if (
-          status === "Past"
-        ) {
-
-          if (
-            itemStatus !== "Past"
-          ) {
-            return false;
-          }
-
+        } else if (status === "Upcoming") {
+          if (itemStatus !== "Upcoming") return false;
+        } else if (status === "Live") {
+          if (itemStatus !== "Live") return false;
+        } else if (status === "Past") {
+          if (itemStatus !== "Past") return false;
         }
 
         if (
