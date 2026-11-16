@@ -213,59 +213,60 @@ function parseTournamentStartTimestamp(
     return null;
   }
 
-  const dateMatch =
-  dateText.match(
-    /^(\d{1,2})(?:\s+|-)([A-Za-z]{3,9})(?:\s+|-)(\d{2}|\d{4})$/
-  )
-  ||
-  dateText.match(
-    /^(\d{1,2})\s+([A-Za-z]{3,9})(?:\s+(\d{4}))?$/
-  );
+  /* Supabase DATE columns arrive as YYYY-MM-DD.
+     Also support the display formats used by older sheet data. */
+  const isoDateMatch =
+    dateText.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
 
-  if (!dateMatch) {
+  const dateMatch =
+    dateText.match(
+      /^(\d{1,2})(?:\s+|-)([A-Za-z]{3,9})(?:\s+|-)(\d{2}|\d{4})$/
+    )
+    ||
+    dateText.match(
+      /^(\d{1,2})\s+([A-Za-z]{3,9})(?:\s+(\d{4}))?$/
+    );
+
+  let day;
+  let month;
+  let year;
+
+  if (isoDateMatch) {
+    year = Number(isoDateMatch[1]);
+    month = Number(isoDateMatch[2]) - 1;
+    day = Number(isoDateMatch[3]);
+  } else if (dateMatch) {
+    day = Number(dateMatch[1]);
+
+    const monthText =
+      dateMatch[2].slice(0, 3).toLowerCase();
+
+    const months = {
+      jan: 0, feb: 1, mar: 2, apr: 3,
+      may: 4, jun: 5, jul: 6, aug: 7,
+      sep: 8, oct: 9, nov: 10, dec: 11,
+    };
+
+    month = months[monthText];
+    year =
+      Number(dateMatch[3]) ||
+      Number(yearValue) ||
+      new Date().getFullYear();
+
+    if (year < 100) year += 2000;
+  } else {
     return null;
   }
 
-  const day =
-    Number(dateMatch[1]);
-
-  const monthText =
-    dateMatch[2]
-      .slice(0, 3)
-      .toLowerCase();
-
-  const months = {
-    jan: 0,
-    feb: 1,
-    mar: 2,
-    apr: 3,
-    may: 4,
-    jun: 5,
-    jul: 6,
-    aug: 7,
-    sep: 8,
-    oct: 9,
-    nov: 10,
-    dec: 11,
-  };
-
-  const month =
-    months[monthText];
-
   if (
-    !Number.isFinite(month)
+    !Number.isInteger(day) ||
+    !Number.isInteger(month) ||
+    !Number.isInteger(year) ||
+    month < 0 || month > 11 ||
+    day < 1 || day > 31
   ) {
     return null;
   }
-
-  let year =
-  Number(dateMatch[3]) ||
-  Number(yearValue) ||
-  new Date().getFullYear();
-
-if (year < 100) {
-  year += 2000;
-}
 
   const normalizedTime =
     timeText.toUpperCase().trim();
