@@ -6165,3 +6165,24 @@ span.statusPast {
   .matchStatusRule {padding:13px;}
   .tournamentHeader h1 {font-size:30px !important;}
 }
+
+
+/* PLAY2PROVE TOURNAMENT PAGE — COMPACT STICKY FILTER RIBBON */
+.tournamentNavButtons{display:flex;align-items:center;gap:10px;margin:0 0 14px}
+.arenaNavButton{min-height:38px;display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:0 15px;border:1px solid rgba(255,255,255,.15);border-radius:9px;background:linear-gradient(145deg,#151b27,#0b1019);color:#dce2ec;font-size:10px;font-weight:900;letter-spacing:.7px;cursor:pointer;transition:transform .18s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease}
+.arenaNavButton .navArrow{font-size:15px;line-height:1;color:inherit}
+.arenaNavButton:hover{transform:translateY(-1px);border-color:#69758a;background:#1a2230;color:#fff}
+.arenaNavButton:nth-child(2){border-color:rgba(255,91,31,.62);background:linear-gradient(115deg,#ff5a1f,#d83d12);color:#fff;box-shadow:0 5px 18px rgba(255,76,20,.18),inset 0 1px 0 rgba(255,255,255,.2)}
+.arenaNavButton:nth-child(2):hover{border-color:#ff9a70;background:linear-gradient(115deg,#ff713c,#ed4b18);box-shadow:0 7px 23px rgba(255,76,20,.28)}
+.filterPanel{position:sticky!important;top:80px!important;z-index:80!important;display:flex!important;align-items:center!important;flex-wrap:nowrap!important;gap:18px!important;width:100%!important;min-height:70px;margin:14px 0 0!important;padding:10px 14px!important;overflow-x:auto!important;overflow-y:hidden!important;overscroll-behavior-x:contain;scrollbar-width:none;border:1px solid rgba(255,255,255,.13)!important;border-radius:12px!important;background:rgba(7,11,18,.94)!important;box-shadow:0 12px 32px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.035)!important;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.filterPanel::-webkit-scrollbar{display:none}
+.filterPanel::before{left:14px!important;right:14px!important}
+.filterPanel .filterGroup{display:flex!important;flex:0 0 auto!important;align-items:center!important;gap:9px!important;margin:0!important;padding:0!important;min-width:max-content}
+.filterPanel .filterGroup label{flex:0 0 auto;margin:0!important;color:#ff986d!important;font-size:8px!important;letter-spacing:1.1px!important}
+.filterPanel .compactFilters{display:flex!important;flex-wrap:nowrap!important;align-items:center;gap:5px!important;overflow:visible}
+.filterPanel .compactFilters button{min-height:32px!important;padding:0 11px!important;border-radius:7px!important;font-size:9px!important}
+.filterPanel .slotGrid{display:flex!important;flex:0 0 auto!important;width:auto!important;grid-template-columns:none!important;gap:5px!important}
+.filterPanel .slotGrid button{min-width:104px;min-height:34px!important;padding:5px 9px!important;border-radius:7px!important}
+.filterPanel .slotGrid button strong{font-size:9px!important}
+.filterPanel .slotGrid button small{margin-top:2px!important;font-size:7px!important}
+@media(max-width:700px){.tournamentNavButtons{gap:7px;margin-bottom:11px}.arenaNavButton{min-height:35px;padding:0 11px;font-size:9px}.filterPanel{top:66px!important;min-height:58px;gap:13px!important;padding:8px 10px!important;border-radius:10px!important}.filterPanel .filterGroup{gap:7px!important}.filterPanel .filterGroup label{font-size:7px!important}.filterPanel .compactFilters button{min-height:30px!important;padding:0 9px!important;font-size:8px!important}.filterPanel .slotGrid button{min-width:91px;min-height:31px!important}}
