@@ -6627,3 +6627,143 @@ span.statusPast {
     box-sizing: border-box !important;
   }
 }
+
+
+/* TOURNAMENT CARDS — 3-UP DESKTOP GRID + CLEARER COMPACT CONTENT */
+@media (min-width: 1200px) {
+  .tournamentPage .tournamentGrid {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    align-items: stretch !important;
+    gap: 18px !important;
+  }
+}
+@media (min-width: 701px) and (max-width: 1199px) {
+  .tournamentPage .tournamentGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 15px !important;
+  }
+}
+@media (max-width: 700px) {
+  .tournamentPage .tournamentGrid {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 13px !important;
+  }
+}
+
+.tournamentPage .matchCard {
+  min-width: 0 !important;
+  border-radius: 13px !important;
+}
+
+.tournamentPage .matchImageWrap {
+  width: 100% !important;
+  aspect-ratio: 16 / 7 !important;
+  max-height: 148px !important;
+  min-height: 0 !important;
+}
+
+.tournamentPage .matchImageWrap img {
+  object-fit: cover !important;
+  object-position: center 38% !important;
+}
+
+.tournamentPage .matchCard .cardTop {
+  padding: 12px 14px 0 !important;
+  gap: 9px !important;
+}
+
+.tournamentPage .matchGame {
+  font-size: 8px !important;
+  letter-spacing: 1px !important;
+}
+
+.tournamentPage .matchCard .cardTop h3 {
+  margin-top: 4px !important;
+  font-size: clamp(13px, 1.05vw, 16px) !important;
+  line-height: 1.25 !important;
+}
+
+.tournamentPage .matchStatus {
+  padding: 6px 8px !important;
+  font-size: 7px !important;
+}
+
+.tournamentPage .matchDetails {
+  margin-top: 11px !important;
+  padding: 0 14px !important;
+  gap: 6px !important;
+}
+
+.tournamentPage .matchDetails > div {
+  min-height: 54px !important;
+  padding: 8px 7px !important;
+  border-radius: 7px !important;
+}
+
+.tournamentPage .matchDetails small,
+.tournamentPage .rewardDetails small {
+  font-size: 7px !important;
+  letter-spacing: .55px !important;
+}
+
+.tournamentPage .matchDetails strong {
+  margin-top: 5px !important;
+  font-size: 10px !important;
+  line-height: 1.25 !important;
+}
+
+.tournamentPage .rewardDetails {
+  margin-top: 7px !important;
+  padding: 0 14px !important;
+  gap: 6px !important;
+}
+
+.tournamentPage .rewardDetails > div {
+  min-height: 52px !important;
+  padding: 8px 7px !important;
+}
+
+.tournamentPage .rewardDetails strong {
+  margin-top: 5px !important;
+  font-size: 12px !important;
+}
+
+.tournamentPage .players {
+  padding: 0 14px !important;
+  margin-top: 10px !important;
+}
+
+.tournamentPage .matchBeginsCountdown strong {
+  font-size: 10px !important;
+}
+
+.tournamentPage .matchCard .joinButton,
+.tournamentPage .matchCard .liveButton,
+.tournamentPage .matchCard .resultButton,
+.tournamentPage .matchCard .statusAction {
+  width: calc(100% - 28px) !important;
+  min-height: 40px !important;
+  margin: 11px 14px 14px !important;
+  font-size: 9px !important;
+}
+
+@media (max-width: 700px) {
+  .tournamentPage .matchImageWrap {
+    aspect-ratio: 16 / 8 !important;
+    max-height: 190px !important;
+  }
+  .tournamentPage .matchCard .cardTop h3 {
+    font-size: 16px !important;
+  }
+  .tournamentPage .matchDetails {
+    padding: 0 14px !important;
+  }
+  .tournamentPage .matchDetails small,
+  .tournamentPage .rewardDetails small {
+    font-size: 8px !important;
+  }
+  .tournamentPage .matchDetails strong {
+    font-size: 11px !important;
+  }
+}
