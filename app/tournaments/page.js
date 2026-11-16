@@ -2398,6 +2398,15 @@ useEffect(() => {
 
           </section>
 
+          <button
+            type="button"
+            className="floatingClearFilters"
+            onClick={resetFilters}
+            aria-label="Clear all tournament filters"
+          >
+            <span aria-hidden="true">↺</span>
+            CLEAR FILTERS
+          </button>
 
           {/* ===============================================
               RESULTS HEADER
