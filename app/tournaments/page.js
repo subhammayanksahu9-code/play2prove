@@ -267,49 +267,45 @@ if (year < 100) {
   year += 2000;
 }
 
-  const timeMatch =
-    timeText
-      .toUpperCase()
-      .match(
+  const normalizedTime =
+    timeText.toUpperCase().trim();
+
+  /* Accept both sheet 24-hour values (20:15:00)
+     and display values (08:15 PM). */
+  const twentyFourHourMatch =
+    normalizedTime.match(
+      /^([01]?\d|2[0-3]):([0-5]\d)(?::[0-5]\d)?$/
+    );
+
+  let hour;
+  let minute;
+
+  if (twentyFourHourMatch) {
+    hour = Number(twentyFourHourMatch[1]);
+    minute = Number(twentyFourHourMatch[2]);
+  } else {
+    const twelveHourMatch =
+      normalizedTime.match(
         /^(\d{1,2})(?::(\d{1,2}))?\s*(AM|PM)$/
       );
 
-  if (!timeMatch) {
-    return null;
-  }
+    if (!twelveHourMatch) {
+      return null;
+    }
 
-  let hour =
-    Number(timeMatch[1]);
+    hour = Number(twelveHourMatch[1]);
+    minute = Number(twelveHourMatch[2] || 0);
+    const period = twelveHourMatch[3];
 
-  const minute =
-    Number(
-      timeMatch[2] || 0
-    );
+    if (hour < 1 || hour > 12 || minute < 0 || minute > 59) {
+      return null;
+    }
 
-  const period =
-    timeMatch[3];
-
-  if (
-    hour < 1 ||
-    hour > 12 ||
-    minute < 0 ||
-    minute > 59
-  ) {
-    return null;
-  }
-
-  if (
-    period === "AM" &&
-    hour === 12
-  ) {
-    hour = 0;
-  }
-
-  if (
-    period === "PM" &&
-    hour !== 12
-  ) {
-    hour += 12;
+    if (period === "AM" && hour === 12) {
+      hour = 0;
+    } else if (period === "PM" && hour !== 12) {
+      hour += 12;
+    }
   }
 
   /*
@@ -341,10 +337,15 @@ function getTournamentStartTimestamp(
   tournament
 ) {
 
+  const rawBackendTimestamp =
+    tournament?.startTimestamp;
+
   const backendTimestamp =
-    Number(
-      tournament?.startTimestamp
-    );
+    rawBackendTimestamp !== null &&
+    rawBackendTimestamp !== undefined &&
+    String(rawBackendTimestamp).trim() !== ""
+      ? Number(rawBackendTimestamp)
+      : NaN;
 
   const parsedTimestamp =
     parseTournamentStartTimestamp(
