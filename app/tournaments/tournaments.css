@@ -6809,3 +6809,32 @@ span.statusPast {
     overflow-wrap: anywhere;
   }
 }
+
+/* Lifecycle strip: the 3-column layout requires CSS Grid (not flex). */
+.tournamentPage .lifecycleCountdown {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  justify-content: stretch;
+}
+.tournamentPage .lifecycleCountdown .joinMatchText {
+  justify-self: start;
+  text-align: left;
+  min-width: 0;
+}
+.tournamentPage .lifecycleCountdown .joinTimer {
+  justify-self: center;
+  text-align: center;
+}
+.tournamentPage .lifecycleCountdown .joinBeforeText {
+  justify-self: end;
+  text-align: right;
+  min-width: 0;
+}
+@media (max-width: 700px) {
+  .tournamentPage .lifecycleCountdown {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 5px;
+  }
+}
