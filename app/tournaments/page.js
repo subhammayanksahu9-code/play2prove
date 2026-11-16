@@ -81,7 +81,7 @@ const CACHE_MAX_AGE =
 
 const TIME_SLOTS = {
   All: "All Times",
-  Morning: "08:00 AM – 12:00 PM",
+  Morning: "06:00 AM – 12:00 PM",
   Afternoon: "12:00 PM – 04:00 PM",
   Evening: "04:00 PM – 07:00 PM",
   Night: "07:00 PM – 08:00 AM",
@@ -1528,7 +1528,10 @@ useEffect(() => {
     getMasterNow()
   );
 
-        /* All includes Upcoming, Live and Past. */
+        /* All shows only Upcoming + Live. Past stays out of the public listing. */
+        if (status === "All" && itemStatus === "Past") {
+          return false;
+        }
 
         if (
           status === "Upcoming"
@@ -1622,7 +1625,14 @@ useEffect(() => {
         return true;
 
       }
-    );
+    ).sort((a, b) => {
+      const aStart = getTournamentStartTimestamp(a);
+      const bStart = getTournamentStartTimestamp(b);
+      if (aStart == null && bStart == null) return 0;
+      if (aStart == null) return 1;
+      if (bStart == null) return -1;
+      return aStart - bStart;
+    });
 
   }, [
     gameTournaments,
@@ -2105,7 +2115,6 @@ useEffect(() => {
                   "All",
                   "Upcoming",
                   "Live",
-                  "Past",
                 ].map(
                   (item) => (
 
@@ -2132,15 +2141,6 @@ useEffect(() => {
 
               </div>
 
-            </div>
-
-            <div className="matchStatusRule" aria-label="Match status timing rule">
-              <span className="matchStatusRuleKicker">MATCH STATUS RULE · IST</span>
-              <strong>Automatic match timeline</strong>
-              <div><b>UPCOMING</b><span>Until 30 minutes before start</span></div>
-              <div><b>LIVE</b><span>From 29 minutes before start until 19:59 after start</span></div>
-              <div><b>PAST</b><span>From 20 minutes after scheduled start</span></div>
-              <small>Example · 3:00 PM match: 2:30 PM Upcoming → 2:31 PM Live → 3:20 PM Past</small>
             </div>
 
             {/* DATE */}
