@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { getTournamentLifecycle } from "../../../../lib/tournament-lifecycle";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -106,8 +107,9 @@ async function payload(request, db, tournament) {
       if (ownTeam) registration.teamName = text(ownTeam.team_name);
       const eligible = !["cancelled", "rejected", "disqualified"].includes(text(registration.registrationStatus).toLowerCase()) && registration.paymentStatus !== "failed";
       if (eligible) {
+        const lifecycle = getTournamentLifecycle({ matchDate: tournament.match_date, startTime: tournament.start_time });
         const now = Date.now();
-        const released = d.rooms.find((r) => { const at = r.room_release_time ? new Date(r.room_release_time).getTime() : null; return text(r.status).toLowerCase() === "released" || (at && now >= at); });
+        const released = lifecycle.roomAccessAllowed ? d.rooms.find((r) => { const at = r.room_release_time ? new Date(r.room_release_time).getTime() : null; return text(r.status).toLowerCase() === "released" || (at && now >= at); }) : null;
         if (released?.game_room_id && released?.room_password) room = { id: text(released.game_room_id), password: text(released.room_password), matchId: text(released.match_id), releasedAt: released.room_release_time || null };
       }
     }
@@ -130,7 +132,7 @@ async function payload(request, db, tournament) {
     thirdPrize: number(d.prizes.find((p) => Number(p.position) === 3)?.prize_amount),
     rules: d.rules.map((r) => ({ title: text(r.rule_title, text(r.section, "RULE")), summary: text(r.rule_description, "Tournament rule"), items: text(r.rule_description, "").split(/\r?\n/).map((x) => x.replace(/^[-•]\s*/, "").trim()).filter(Boolean) })),
     bannerUrl: text(d.game?.image_url),
-    status: text(tournament.status),
+    status: getTournamentLifecycle({ matchDate: tournament.match_date, startTime: tournament.start_time }).phase,
     standards: text(tournament.game_standards),
     standardStatement: text(tournament.gg_standard_statement),
     game: d.game ? { id: text(d.game.id), name: text(d.game.game_name, tournament.game_short_name || "Game"), shortName: text(d.game.game_short_name), imageUrl: text(d.game.image_url) } : { id: "", name: text(tournament.game_short_name, "Game"), shortName: text(tournament.game_short_name), imageUrl: "" },
@@ -169,6 +171,11 @@ export async function POST(request, { params }) {
     const db = serverClient();
     const tournament = await resolveTournament(db, reference);
     if (!tournament) return jsonError("Tournament not found.", 404, "TOURNAMENT_NOT_FOUND");
+    const lifecycle = getTournamentLifecycle({ matchDate: tournament.match_date, startTime: tournament.start_time });
+    if (!lifecycle.start) return jsonError("Tournament match date/time is not configured.", 409, "MATCH_TIME_NOT_CONFIGURED");
+    if (!lifecycle.registrationOpen || !lifecycle.paymentOpen) {
+      return jsonError("Joining and portal payment are closed for this match phase.", 409, "REGISTRATION_CLOSED");
+    }
     const game = await db.from("games").select("id,game_short_name,game_name").eq("game_short_name", tournament.game_short_name).maybeSingle();
     if (game.error) throw game.error;
     if (!game.data) return jsonError("This tournament is linked to an unavailable game.", 409, "GAME_NOT_FOUND");
