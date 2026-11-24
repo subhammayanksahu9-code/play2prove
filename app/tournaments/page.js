@@ -2650,7 +2650,7 @@ const status =
     {
       key: "verification",
       duration: 15 * 60 * 1000,
-      left: "VERIFYING PLAYER IDENTITY",
+      left: "VERIFYING ID",
       right: "JOINING CLOSED",
       button: "VIEW STATUS →",
       buttonClass: "statusAction",
