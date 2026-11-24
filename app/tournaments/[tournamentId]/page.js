@@ -326,7 +326,7 @@ export default function TournamentDetailPage() {
   const roomUnlocked = Boolean(lifecycle.roomAccessAllowed && room?.id && room?.password);
   const resultsAvailable = results.some((item) => safeText(item?.result_status, "").toLowerCase() !== "pending");
   const notice = status === "CALCULATION ONGOING" ? "Results are being verified. New registrations are disabled." : status === "LIVE" ? "Only registered participants should use the released match information." : status === "MATCH ONGOING" ? "The match is in progress. Registration is closed after the 10-minute join window." : status === "MATCH CLOSING" ? "The match is closing. Registration is disabled while results are finalized." : "Entry fee and eligibility are validated on the server before registration is confirmed.";
-  const countdownLabel = status === "MATCH STARTED" ? "MATCH STARTED · VIEW LIVE" : status === "RESULT REVEALED" ? "RESULT REVEALED · TOURNAMENT CLOSED" : status === "PROOF / RECALCULATION" ? "ASKED FOR PROOF · RECALCULATION" : status === "VERIFYING PLAYER IDENTITY" ? "VERIFYING PLAYER IDENTITY" : status === "JOIN MATCH" ? "JOIN MATCH · BEFORE TIMER ENDS" : "MATCH STARTING IN";
+  const countdownLabel = status === "MATCH STARTED" ? "MATCH STARTED · VIEW LIVE" : status === "RESULT REVEALED" ? "RESULT REVEALED · TOURNAMENT CLOSED" : status === "PROOF / RECALCULATION" ? "ASKED FOR PROOF · RECALCULATION" : status === "VERIFYING PLAYER IDENTITY" ? "VERIFYING IDENTITIES" : status === "JOIN MATCH" ? "JOIN MATCH · BEFORE TIMER ENDS" : "MATCH STARTING IN";
 
   return (
     <main className="tdPage">
