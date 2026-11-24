@@ -416,7 +416,7 @@ function getTournamentAutomaticStatus(tournament, now) {
   const lifecycle = getTournamentLifecycle(tournament, now);
   if (lifecycle.key === "NORMAL_CARD") return "Upcoming";
   if (lifecycle.key === "JOIN_MATCH") return "Join Match";
-  if (lifecycle.key === "VERIFICATION") return "Verifying Player Identity";
+  if (lifecycle.key === "VERIFICATION") return "Verifying Identities";
   if (lifecycle.key === "MATCH_STARTED") return "Live";
   if (lifecycle.key === "RESULT_REVEALED" || lifecycle.key === "PROOF_RECALCULATION" || lifecycle.key === "COMPLETED") return "Past";
   return normalizeStatus(tournament?.status);
@@ -2650,7 +2650,7 @@ const status =
     {
       key: "verification",
       duration: 15 * 60 * 1000,
-      left: "VERIFYING ID",
+      left: "VERIFYING IDENTITIES",
       right: "JOINING CLOSED",
       button: "VIEW STATUS →",
       buttonClass: "statusAction",
