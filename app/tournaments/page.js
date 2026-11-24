@@ -414,7 +414,9 @@ function getTournamentStartTimestamp(
 
 function getTournamentAutomaticStatus(tournament, now) {
   const lifecycle = getTournamentLifecycle(tournament, now);
-  if (lifecycle.key === "NORMAL_CARD" || lifecycle.key === "JOIN_MATCH" || lifecycle.key === "VERIFICATION") return "Upcoming";
+  if (lifecycle.key === "NORMAL_CARD") return "Upcoming";
+  if (lifecycle.key === "JOIN_MATCH") return "Join Match";
+  if (lifecycle.key === "VERIFICATION") return "Verifying Player Identity";
   if (lifecycle.key === "MATCH_STARTED") return "Live";
   if (lifecycle.key === "RESULT_REVEALED" || lifecycle.key === "PROOF_RECALCULATION" || lifecycle.key === "COMPLETED") return "Past";
   return normalizeStatus(tournament?.status);
@@ -2672,8 +2674,11 @@ const status =
   let lifecyclePhase = null;
   let lifecycleSecondsLeft = 0;
 
-  if (Number.isFinite(tournamentStart) && masterNow >= tournamentStart) {
-    let elapsed = masterNow - tournamentStart;
+  if (Number.isFinite(tournamentStart) && masterNow >= tournamentStart - 30 * 60 * 1000 && masterNow < tournamentStart + 120 * 60 * 1000) {
+    // Timeline starts 30 minutes before match time:
+    // -30 to -15 Join Match; -15 to 0 Verification;
+    // 0 to +45 Match; +45 to +75 Results; +75 to +120 Recalculation.
+    let elapsed = masterNow - (tournamentStart - 30 * 60 * 1000);
 
     for (const phase of lifecyclePhases) {
       if (elapsed < phase.duration) {
