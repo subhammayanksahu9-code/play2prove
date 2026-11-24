@@ -1497,13 +1497,13 @@ useEffect(() => {
         const activePhases = [
           "Upcoming",
           "Join Match",
-          "Verifying Player Identity",
+          "Verifying Identities",
           "Live",
         ];
         const upcomingPhases = [
           "Upcoming",
           "Join Match",
-          "Verifying Player Identity",
+          "Verifying Identities",
         ];
 
         if (status === "All") {
