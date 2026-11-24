@@ -415,3 +415,228 @@ button:focus-visible, input:focus-visible { outline: 2px solid rgba(72,229,255,.
   .tdSkeletonHero, .tdSkeletonBlock { animation: none; }
   .tdJoinCta, .tdPrimaryButton, .tdProgress span, .tdTab, .tdRule, .tdPlayerRow { transition: none; }
 }
+
+
+/* PLAY2PROVE TOURNAMENT DETAIL — NEON ARENA VISUAL PASS
+   Visual-only overrides. Existing data, actions, registration and lifecycle remain unchanged. */
+.tdPage {
+  --td-cyan: #d45cff;
+  --td-cyan-soft: rgba(190,72,255,.14);
+  --td-indigo: #713dff;
+  --td-violet: #e04dff;
+  --td-green: #52f5b2;
+  --td-amber: #ffd34f;
+  --td-border: rgba(157,111,255,.18);
+  --td-border-strong: rgba(185,130,255,.32);
+  background:
+    radial-gradient(ellipse at 12% 14%, rgba(132,55,255,.18), transparent 34%),
+    radial-gradient(ellipse at 88% 38%, rgba(218,50,255,.12), transparent 30%),
+    radial-gradient(ellipse at 50% 100%, rgba(39,71,190,.12), transparent 42%),
+    linear-gradient(180deg,#070713 0%,#080914 48%,#05060d 100%);
+}
+.tdPage::before {
+  opacity: .24;
+  background-image:
+    linear-gradient(rgba(176,123,255,.045) 1px, transparent 1px),
+    linear-gradient(90deg,rgba(176,123,255,.045) 1px,transparent 1px);
+  background-size: 34px 34px;
+  mask-image: linear-gradient(to bottom,black,transparent 92%);
+}
+.tdAmbientOne { background:#743bff; opacity:.2; }
+.tdAmbientTwo { background:#e33cff; opacity:.16; }
+.tdTopBar { margin-bottom:20px; }
+.tdBackButton,.tdSecondaryButton {
+  border-color:rgba(170,119,255,.28);
+  background:linear-gradient(135deg,rgba(23,19,43,.95),rgba(10,12,24,.95));
+  box-shadow:inset 0 1px rgba(255,255,255,.04),0 8px 24px rgba(0,0,0,.2);
+}
+.tdBackButton:hover,.tdSecondaryButton:hover {
+  border-color:#b75cff;
+  background:rgba(80,43,139,.22);
+}
+.tdHero {
+  min-height:460px;
+  border:1px solid rgba(172,107,255,.38);
+  border-radius:22px;
+  background:linear-gradient(135deg,#17102d,#080a16 76%);
+  box-shadow:0 22px 70px rgba(0,0,0,.48),0 0 34px rgba(134,67,255,.13),inset 0 1px rgba(255,255,255,.06);
+}
+.tdHeroImage {
+  opacity:.58;
+  filter:saturate(1.28) contrast(1.12) brightness(.92);
+  transform:scale(1.045);
+}
+.tdHeroShade {
+  background:
+    linear-gradient(90deg,rgba(6,6,17,.97) 0%,rgba(8,7,22,.84) 34%,rgba(8,7,22,.34) 76%,rgba(8,7,22,.22) 100%),
+    linear-gradient(0deg,rgba(6,6,17,.96) 0%,rgba(6,6,17,.08) 62%);
+}
+.tdHero::after {
+  border:1px solid rgba(209,132,255,.15);
+  box-shadow:inset 0 0 55px rgba(139,65,255,.08);
+}
+.tdHeroContent { min-height:460px; padding:34px; }
+.tdGameBadge,.tdStatus,.tdMiniStatus,.tdRailStatus {
+  backdrop-filter:blur(12px);
+  border-color:rgba(195,145,255,.25);
+  background:rgba(15,12,31,.72);
+}
+.tdGameDot { background:#dc62ff; box-shadow:0 0 13px #dc62ff; }
+.tdStatus.registration-open,.tdStatus.upcoming {
+  color:#67eaff;
+  background:rgba(51,190,255,.13);
+  border-color:rgba(72,210,255,.3);
+}
+.tdEyebrow { color:#d56aff; }
+.tdHero h1 {
+  max-width:780px;
+  font-size:clamp(44px,5.6vw,82px);
+  letter-spacing:-.055em;
+  text-shadow:0 5px 28px rgba(0,0,0,.6),0 0 28px rgba(170,70,255,.14);
+}
+.tdMeta { color:#c1bbd4; }
+.tdMeta b { color:#9a68e6; }
+.tdSlotBlock strong { text-shadow:0 0 22px rgba(190,89,255,.24); }
+.tdProgress { background:rgba(255,255,255,.1); }
+.tdProgress span {
+  background:linear-gradient(90deg,#24d8ff 0%,#7c4dff 52%,#ed4bff 100%);
+  box-shadow:0 0 18px rgba(180,78,255,.48);
+}
+.tdHeroSignal { color:#d0c6e5; }
+.tdSignalDot { background:#a6ff64; box-shadow:0 0 14px #a6ff64; }
+.tdTabs {
+  gap:7px;
+  margin:18px 0 20px;
+  border-bottom:1px solid rgba(161,113,255,.2);
+}
+.tdTab {
+  padding:13px 17px;
+  border:1px solid transparent;
+  border-radius:10px 10px 0 0;
+  color:#8d86a5;
+}
+.tdTab:hover { color:#f1dfff; background:rgba(135,76,255,.08); }
+.tdTab.active {
+  color:#fff;
+  border:1px solid rgba(190,101,255,.38);
+  border-bottom-color:#d65bff;
+  background:linear-gradient(180deg,rgba(156,69,255,.24),rgba(103,54,194,.06));
+  box-shadow:0 0 22px rgba(150,72,255,.13),inset 0 -2px #d65bff;
+}
+.tdPanel {
+  border-color:rgba(154,112,255,.24);
+  border-radius:16px;
+  background:linear-gradient(145deg,rgba(20,19,42,.96),rgba(9,11,23,.98));
+  box-shadow:0 16px 42px rgba(0,0,0,.26),inset 0 1px rgba(255,255,255,.035);
+}
+.tdPanelHead h2,.tdQuickPanel h2 { color:#fbf8ff; }
+.tdInfoItem {
+  border:1px solid rgba(158,115,255,.16);
+  border-radius:10px;
+  background:linear-gradient(145deg,rgba(34,31,63,.72),rgba(14,16,32,.72));
+}
+.tdInfoItem span,.tdQuickRows span,.tdRailStats span,.tdRailSlots span { color:#9187ac; }
+.tdInfoItem strong { color:#f3edff; }
+.tdQuickRows > div { border-color:rgba(163,121,255,.16); }
+.tdQuickRows strong { color:#fff; }
+.tdNoticePanel {
+  border-color:rgba(184,93,255,.28);
+  background:linear-gradient(110deg,rgba(124,53,210,.13),rgba(43,44,108,.13));
+}
+.tdNoticeIcon {
+  border-color:rgba(208,102,255,.38);
+  color:#dc78ff;
+  background:rgba(155,71,255,.12);
+}
+.tdNoticePanel p { color:#b3a9c9; }
+.tdActionPanel {
+  border-color:rgba(175,105,255,.38);
+  border-radius:18px;
+  background:linear-gradient(155deg,rgba(22,19,44,.99),rgba(8,10,22,.99));
+  box-shadow:0 22px 65px rgba(0,0,0,.42),0 0 30px rgba(142,66,255,.11),inset 0 1px rgba(255,255,255,.05);
+}
+.tdActionTop { border-color:rgba(170,117,255,.17); }
+.tdJoinCta,.tdPrimaryButton {
+  border:1px solid rgba(225,157,255,.48);
+  color:#fff;
+  background:linear-gradient(105deg,#11c9ee 0%,#6352ff 48%,#b72cff 100%);
+  box-shadow:0 12px 34px rgba(123,66,255,.24),inset 0 1px rgba(255,255,255,.25);
+}
+.tdJoinCta:hover:not(:disabled),.tdPrimaryButton:hover:not(:disabled) {
+  box-shadow:0 15px 42px rgba(165,73,255,.34),0 0 24px rgba(98,201,255,.16);
+}
+.tdRailStats { border-color:rgba(163,121,255,.2); }
+.tdRailStats > div { border-color:rgba(163,121,255,.16); }
+.tdRailStats strong { color:#fff; }
+.tdRailSlots { border-color:rgba(163,121,255,.14); }
+.tdCountdown {
+  border-color:rgba(163,121,255,.17);
+  background:linear-gradient(100deg,rgba(112,55,185,.12),rgba(43,47,112,.1));
+}
+.tdCountdown span { color:#a99ac8; }
+.tdCountdown strong { color:#f3eaff; text-shadow:0 0 18px rgba(191,96,255,.24); }
+.tdRailRoom { border-color:rgba(163,121,255,.15); }
+.tdRailRoom > strong { color:#f1eaff; }
+.tdRailRoom small { color:#9b91ae; }
+.tdRailNotice {
+  border-color:rgba(255,195,74,.26);
+  background:linear-gradient(110deg,rgba(151,104,28,.12),rgba(87,54,18,.08));
+}
+.tdRailNotice span { color:#ffd35f; }
+.tdRailNotice p { color:#a99b80; }
+.tdPlayerRow:hover { background:rgba(157,91,255,.07); }
+.tdRule.open { border-color:rgba(195,105,255,.38); background:rgba(150,73,255,.07); }
+.tdRuleHeader > i { color:#d56aff; }
+.tdRuleBody p { border-left-color:rgba(192,105,255,.38); }
+.tdPrizeHero > div { background:linear-gradient(145deg,rgba(123,65,255,.16),rgba(34,42,105,.12)); }
+.tdPrizeGrid > div { border-color:rgba(163,121,255,.2); background:linear-gradient(145deg,rgba(32,28,57,.75),rgba(12,14,27,.9)); }
+.tdPrizeGrid > div:first-child { border-color:rgba(255,205,82,.34); }
+.tdRoom.locked > strong { color:#ffd36a; }
+.tdRoom.released > strong { color:#65f0b5; }
+.tdModal {
+  border-color:rgba(177,111,255,.38);
+  background:linear-gradient(145deg,#17132c,#090c19);
+  box-shadow:0 30px 100px rgba(0,0,0,.7),0 0 40px rgba(141,69,255,.16);
+}
+.tdModalHead { border-color:rgba(163,121,255,.18); }
+.tdModalHead h2 { color:#fff; }
+.tdSteps span.active { color:#d56aff; }
+.tdForm input,.tdSearchWrap input {
+  border-color:rgba(163,121,255,.22);
+  background:rgba(4,6,17,.62);
+}
+.tdForm input:focus,.tdSearchWrap input:focus {
+  border-color:rgba(205,105,255,.6);
+  box-shadow:0 0 0 3px rgba(173,81,255,.1);
+}
+.tdReviewHero {
+  border-color:rgba(184,105,255,.3);
+  background:linear-gradient(120deg,rgba(128,61,255,.16),rgba(39,72,153,.12));
+}
+.tdAgreement input { accent-color:#bd5cff; }
+.tdSuccessIcon,.tdRegisteredMark {
+  border-color:rgba(78,239,177,.35);
+  background:rgba(78,239,177,.1);
+  box-shadow:0 0 28px rgba(78,239,177,.12);
+}
+.tdBackButton:focus-visible,.tdSecondaryButton:focus-visible,.tdPrimaryButton:focus-visible,.tdJoinCta:focus-visible,.tdTab:focus-visible {
+  outline:2px solid #d56aff;
+  outline-offset:3px;
+}
+@media (max-width:760px) {
+  .tdPage { padding:12px 11px 70px; }
+  .tdHero,.tdHeroContent { min-height:480px; }
+  .tdHeroContent { padding:22px 18px; }
+  .tdHeroImage { opacity:.48; }
+  .tdHeroShade {
+    background:linear-gradient(90deg,rgba(6,6,17,.9),rgba(6,6,17,.48)),linear-gradient(0deg,rgba(6,6,17,.96),transparent 68%);
+  }
+  .tdHero h1 { font-size:clamp(36px,10vw,54px); }
+  .tdTab { padding:11px 12px; font-size:8px; }
+  .tdPanel { padding:17px; }
+}
+@media (prefers-reduced-motion:no-preference) {
+  .tdJoinCta:not(:disabled),.tdPrimaryButton:not(:disabled) { transition:transform .2s ease,box-shadow .2s ease,filter .2s ease; }
+  .tdActionPanel,.tdHero { transition:border-color .25s ease,box-shadow .25s ease; }
+  .tdHero:hover { border-color:rgba(204,122,255,.56); box-shadow:0 25px 78px rgba(0,0,0,.5),0 0 42px rgba(142,67,255,.17); }
+}
