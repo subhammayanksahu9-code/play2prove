@@ -1493,13 +1493,23 @@ useEffect(() => {
     getMasterNow()
   );
 
-        /* Explicit status allow-list: All must NEVER include Past. */
+        /* Master lifecycle: All includes every active phase, never Past. */
+        const activePhases = [
+          "Upcoming",
+          "Join Match",
+          "Verifying Player Identity",
+          "Live",
+        ];
+        const upcomingPhases = [
+          "Upcoming",
+          "Join Match",
+          "Verifying Player Identity",
+        ];
+
         if (status === "All") {
-          if (itemStatus !== "Upcoming" && itemStatus !== "Live") {
-            return false;
-          }
+          if (!activePhases.includes(itemStatus)) return false;
         } else if (status === "Upcoming") {
-          if (itemStatus !== "Upcoming") return false;
+          if (!upcomingPhases.includes(itemStatus)) return false;
         } else if (status === "Live") {
           if (itemStatus !== "Live") return false;
         } else if (status === "Past") {
