@@ -640,3 +640,197 @@ button:focus-visible, input:focus-visible { outline: 2px solid rgba(72,229,255,.
   .tdActionPanel,.tdHero { transition:border-color .25s ease,box-shadow .25s ease; }
   .tdHero:hover { border-color:rgba(204,122,255,.56); box-shadow:0 25px 78px rgba(0,0,0,.5),0 0 42px rgba(142,67,255,.17); }
 }
+
+
+/* CYBER ARENA PASS — stronger esports identity for tournament detail */
+.tdPage {
+  --td-cyan:#30eaff;
+  --td-indigo:#6655ff;
+  --td-violet:#c14cff;
+  background:
+    radial-gradient(ellipse at 78% 4%,rgba(139,48,255,.22),transparent 34%),
+    radial-gradient(ellipse at 8% 32%,rgba(0,208,255,.12),transparent 30%),
+    linear-gradient(180deg,#080817 0%,#070914 48%,#050711 100%);
+}
+.tdPage::before {
+  opacity:.22;
+  background-image:
+    linear-gradient(rgba(166,120,255,.055) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(166,120,255,.055) 1px,transparent 1px);
+  background-size:34px 34px;
+  mask-image:linear-gradient(to bottom,black,transparent 86%);
+}
+.tdAmbientOne { background:#00d9ff; opacity:.17; }
+.tdAmbientTwo { background:#9a35ff; opacity:.2; }
+.tdBackButton {
+  border-color:rgba(127,104,255,.42);
+  background:linear-gradient(120deg,rgba(25,21,54,.95),rgba(9,12,27,.95));
+  box-shadow:0 0 22px rgba(126,69,255,.12),inset 0 1px rgba(255,255,255,.08);
+}
+.tdBackButton:hover { border-color:#c75bff; box-shadow:0 0 24px rgba(183,72,255,.24); }
+.tdHero {
+  min-height:480px;
+  border:1px solid rgba(175,92,255,.48);
+  background:#09091a;
+  box-shadow:0 24px 80px rgba(0,0,0,.5),0 0 34px rgba(117,49,255,.15),inset 0 1px rgba(255,255,255,.08);
+}
+.tdHeroImage {
+  inset:-2%;
+  opacity:.72;
+  filter:saturate(1.42) contrast(1.12) brightness(.88);
+  transform:scale(1.035);
+}
+.tdHeroShade {
+  background:
+    linear-gradient(90deg,rgba(5,6,17,.96) 0%,rgba(6,7,20,.82) 32%,rgba(7,7,22,.34) 72%,rgba(7,7,22,.18) 100%),
+    linear-gradient(0deg,rgba(5,6,17,.98) 0%,rgba(5,6,17,.06) 65%);
+}
+.tdHero::after {
+  border:1px solid rgba(189,91,255,.22);
+  box-shadow:inset 0 0 75px rgba(111,47,255,.12);
+}
+.tdHeroContent { min-height:480px; }
+.tdGameBadge,.tdStatus {
+  border-color:rgba(179,128,255,.32);
+  background:rgba(9,9,28,.78);
+  box-shadow:0 6px 22px rgba(0,0,0,.22);
+  backdrop-filter:blur(12px);
+}
+.tdGameDot { background:#4beaff; box-shadow:0 0 14px #4beaff; }
+.tdStatus { text-transform:uppercase; }
+.tdStatus.upcoming,.tdStatus.registration-open {
+  color:#50edff;
+  background:rgba(0,196,255,.13);
+  border-color:rgba(62,223,255,.38);
+  box-shadow:0 0 20px rgba(0,199,255,.1);
+}
+.tdStatus.live { color:#72ffb8; background:rgba(25,255,151,.1); border-color:rgba(63,255,173,.4); }
+.tdHero h1 {
+  font-size:clamp(48px,6.4vw,88px);
+  letter-spacing:-.06em;
+  text-shadow:0 5px 35px rgba(0,0,0,.8),0 0 34px rgba(174,67,255,.24);
+}
+.tdEyebrow { color:#d76bff; text-shadow:0 0 15px rgba(207,91,255,.32); }
+.tdMeta { color:#d0c7e9; }
+.tdSlotBlock strong { color:#fff; text-shadow:0 0 24px rgba(191,91,255,.34); }
+.tdProgress { height:8px; border:1px solid rgba(163,109,255,.2); background:rgba(255,255,255,.09); }
+.tdProgress span {
+  background:linear-gradient(90deg,#22d9ff 0%,#7654ff 52%,#e34dff 100%);
+  box-shadow:0 0 20px rgba(167,76,255,.65);
+}
+.tdHeroSignal {
+  padding:10px 13px;
+  border:1px solid rgba(166,112,255,.28);
+  border-radius:9px;
+  background:rgba(12,10,31,.72);
+  box-shadow:inset 0 0 18px rgba(151,73,255,.08);
+}
+.tdTabs {
+  padding:5px;
+  gap:7px;
+  border:1px solid rgba(151,103,255,.2);
+  border-radius:13px;
+  background:linear-gradient(100deg,rgba(20,17,43,.9),rgba(8,11,25,.94));
+  box-shadow:0 12px 30px rgba(0,0,0,.22);
+}
+.tdTab {
+  border:1px solid transparent;
+  border-radius:9px;
+  padding:13px 17px;
+  color:#9b91b7;
+}
+.tdTab.active {
+  border:1px solid rgba(209,105,255,.56);
+  color:#fff;
+  background:linear-gradient(110deg,rgba(0,205,255,.2),rgba(107,69,255,.36),rgba(192,57,255,.24));
+  box-shadow:0 0 22px rgba(150,70,255,.2),inset 0 -2px #d64dff;
+}
+.tdPanel {
+  border-color:rgba(147,101,255,.3);
+  background:linear-gradient(145deg,rgba(20,18,43,.97),rgba(8,11,26,.98));
+  box-shadow:0 18px 45px rgba(0,0,0,.32),inset 0 1px rgba(255,255,255,.05);
+}
+.tdPanelHead h2,.tdQuickPanel h2 { text-shadow:0 0 18px rgba(168,86,255,.16); }
+.tdInfoItem {
+  border:1px solid rgba(146,115,255,.22);
+  border-radius:10px;
+  background:linear-gradient(145deg,rgba(35,31,70,.8),rgba(11,15,34,.88));
+  box-shadow:inset 0 1px rgba(255,255,255,.04);
+}
+.tdInfoItem strong { color:#f8f4ff; }
+.tdNoticePanel {
+  border-color:rgba(188,77,255,.38);
+  background:linear-gradient(110deg,rgba(108,46,202,.19),rgba(22,87,158,.12));
+}
+.tdActionPanel {
+  border:1px solid rgba(178,91,255,.5);
+  background:linear-gradient(155deg,rgba(24,18,51,.99),rgba(7,10,25,.99));
+  box-shadow:0 25px 75px rgba(0,0,0,.48),0 0 34px rgba(141,58,255,.16),inset 0 1px rgba(255,255,255,.07);
+}
+.tdActionTop { background:linear-gradient(90deg,rgba(107,50,197,.15),transparent); }
+.tdJoinCta,.tdPrimaryButton {
+  position:relative;
+  overflow:hidden;
+  border:1px solid rgba(224,153,255,.62);
+  color:#fff;
+  background:linear-gradient(105deg,#06c9ee 0%,#514eff 48%,#c02cff 100%);
+  box-shadow:0 12px 34px rgba(111,68,255,.32),inset 0 1px rgba(255,255,255,.3);
+  text-shadow:0 1px 5px rgba(0,0,0,.25);
+}
+.tdJoinCta::after,.tdPrimaryButton::after {
+  content:"";
+  position:absolute;
+  top:-80%;
+  left:-35%;
+  width:24%;
+  height:260%;
+  transform:rotate(25deg);
+  background:rgba(255,255,255,.2);
+  filter:blur(8px);
+  transition:left .45s ease;
+  pointer-events:none;
+}
+.tdJoinCta:hover:not(:disabled)::after,.tdPrimaryButton:hover:not(:disabled)::after { left:120%; }
+.tdJoinCta:hover:not(:disabled),.tdPrimaryButton:hover:not(:disabled) {
+  box-shadow:0 16px 42px rgba(154,66,255,.4),0 0 26px rgba(63,211,255,.2);
+}
+.tdRailStats,.tdRailStats > div { border-color:rgba(151,105,255,.25); }
+.tdCountdown {
+  border-color:rgba(159,105,255,.24);
+  background:linear-gradient(100deg,rgba(97,47,177,.18),rgba(26,46,117,.16));
+}
+.tdCountdown strong { color:#f7eaff; text-shadow:0 0 18px rgba(190,90,255,.38); }
+.tdRailRoom { background:linear-gradient(90deg,rgba(115,59,192,.08),transparent); }
+.tdRailNotice {
+  border-color:rgba(255,201,72,.3);
+  background:linear-gradient(110deg,rgba(151,104,28,.16),rgba(87,54,18,.1));
+}
+.tdRule,.tdPrizeGrid > div,.tdPlayerRow { border-color:rgba(155,111,255,.2); }
+.tdRule.open { border-color:rgba(203,100,255,.5); box-shadow:0 0 20px rgba(152,65,255,.1); }
+.tdPrizeHero { border-color:rgba(168,106,255,.32); }
+.tdPrizeGrid > div { background:linear-gradient(145deg,rgba(33,28,66,.86),rgba(9,13,29,.94)); }
+.tdRoomCredentials > div { border-color:rgba(159,107,255,.24); background:rgba(5,7,20,.65); }
+.tdModal { border-color:rgba(190,103,255,.48); }
+@media (max-width:760px) {
+  .tdHero,.tdHeroContent { min-height:450px; }
+  .tdHeroImage { opacity:.58; }
+  .tdHeroShade {
+    background:linear-gradient(90deg,rgba(5,6,17,.9),rgba(5,6,17,.45)),linear-gradient(0deg,rgba(5,6,17,.98),transparent 72%);
+  }
+  .tdHeroContent { padding:22px 18px; }
+  .tdHeroSignal { white-space:normal; }
+  .tdTabs { overflow-x:auto; }
+}
+@media (prefers-reduced-motion:no-preference) {
+  .tdHero::before {
+    content:"";
+    position:absolute;
+    inset:0;
+    z-index:1;
+    pointer-events:none;
+    opacity:.18;
+    background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(177,129,255,.08) 4px);
+    mix-blend-mode:screen;
+  }
+  .tdActionPanel:hover { border-color:rgba(211,111,255,.65); box-shadow:0 25px 75px rgba(0,0,0,.5),0 0 42px rgba(141,58,255,.22); }
+}
