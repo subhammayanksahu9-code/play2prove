@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
 import "./tournament-detail.css";
+import { getTournamentLifecycle } from "../../../lib/tournament-lifecycle";
 
 const API_ROOT = "/api/tournaments";
 
@@ -70,38 +71,12 @@ function parseIST(dateValue, timeValue) {
 function normalizeStatus(rawStatus, tournament, results = []) {
   const raw = safeText(rawStatus, "").toLowerCase().replace(/[_-]+/g, " ");
   if (raw === "cancelled" || raw === "canceled") return "CANCELLED";
-
-  const start = parseIST(tournament?.matchDate, tournament?.startTime);
-  if (start) {
-    const now = Date.now();
-    const tenMinutes = 10 * 60 * 1000;
-    const thirtyMinutes = 30 * 60 * 1000;
-    const fiveMinutes = 5 * 60 * 1000;
-
-    if (now < start - tenMinutes) return "UPCOMING";
-    if (now < start) return "STARTING SOON";
-    if (now < start + tenMinutes) return "LIVE";
-    if (now < start + tenMinutes + thirtyMinutes) return "MATCH ONGOING";
-    if (now < start + tenMinutes + thirtyMinutes + fiveMinutes) return "MATCH CLOSING";
-
-    const hasCompletedResult = results.length > 0 && results.some((item) => {
-      const value = safeText(item?.result_status, "").toLowerCase();
-      return ["completed", "complete", "verified", "approved", "paid"].includes(value);
-    });
-    if (raw === "completed" || raw === "past" || hasCompletedResult) return "COMPLETED";
-    return "CALCULATION ONGOING";
-  }
-
+  const lifecycle = getTournamentLifecycle(tournament);
+  if (lifecycle.start) return lifecycle.phase;
   if (raw === "full") return "FULL";
   if (raw === "closed" || raw === "registration closed") return "REGISTRATION CLOSED";
-  if (raw === "open" || raw === "registration open") return "REGISTRATION OPEN";
-  if (raw === "draft") return "UPCOMING";
-  if (raw === "live") return "LIVE";
-  if (raw === "match ongoing" || raw === "ongoing") return "MATCH ONGOING";
-  if (raw === "match closing" || raw === "match finishing") return "MATCH CLOSING";
-  if (raw === "calculation ongoing" || raw === "calculation pending") return "CALCULATION ONGOING";
-  if (raw === "completed" || raw === "past") return "COMPLETED";
-  return "UPCOMING";
+  if (raw === "open" || raw === "registration open" || raw === "draft") return "NORMAL CARD";
+  return "NORMAL CARD";
 }
 
 function normalizeRules(value) {
@@ -254,7 +229,8 @@ export default function TournamentDetailPage() {
   const progress = capacity ? Math.min(100, Math.max(0, (registeredCount / capacity) * 100)) : 0;
   const rules = useMemo(() => normalizeRules(tournament.rules), [tournament.rules]);
   const startTimestamp = parseIST(tournament.matchDate, tournament.startTime);
-  const registrationOpen = ["UPCOMING", "STARTING SOON", "LIVE", "REGISTRATION OPEN"].includes(status) && remainingSlots > 0;
+  const lifecycle = getTournamentLifecycle(tournament);
+  const registrationOpen = lifecycle.registrationOpen && remainingSlots > 0;
   const teamSize = tournament.matchType === "duo" ? 2 : tournament.matchType === "squad" ? 4 : 1;
 
   useEffect(() => {
@@ -340,10 +316,10 @@ export default function TournamentDetailPage() {
   }
 
   const statusClass = status.toLowerCase().replace(/\s+/g, "-");
-  const roomUnlocked = Boolean(room?.id && room?.password);
+  const roomUnlocked = Boolean(lifecycle.roomAccessAllowed && room?.id && room?.password);
   const resultsAvailable = results.some((item) => safeText(item?.result_status, "").toLowerCase() !== "pending");
   const notice = status === "CALCULATION ONGOING" ? "Results are being verified. New registrations are disabled." : status === "LIVE" ? "Only registered participants should use the released match information." : status === "MATCH ONGOING" ? "The match is in progress. Registration is closed after the 10-minute join window." : status === "MATCH CLOSING" ? "The match is closing. Registration is disabled while results are finalized." : "Entry fee and eligibility are validated on the server before registration is confirmed.";
-  const countdownLabel = status === "LIVE" ? "MATCH LIVE" : status === "MATCH ONGOING" ? "MATCH ONGOING" : status === "MATCH CLOSING" ? "MATCH CLOSING" : status === "CALCULATION ONGOING" ? "CALCULATION" : "MATCH STARTING IN";
+  const countdownLabel = status === "MATCH STARTED" ? "MATCH STARTED · VIEW LIVE" : status === "RESULT REVEALED" ? "RESULT REVEALED · TOURNAMENT CLOSED" : status === "PROOF / RECALCULATION" ? "ASKED FOR PROOF · RECALCULATION" : status === "VERIFYING PLAYER IDENTITY" ? "VERIFYING PLAYER IDENTITY" : status === "JOIN MATCH" ? "JOIN MATCH · BEFORE TIMER ENDS" : "MATCH STARTING IN";
 
   return (
     <main className="tdPage">
