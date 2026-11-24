@@ -68,10 +68,10 @@ function parseIST(dateValue, timeValue) {
   return Number.isNaN(value.getTime()) ? null : value.getTime();
 }
 
-function normalizeStatus(rawStatus, tournament, results = []) {
+function normalizeStatus(rawStatus, tournament, results = [], now = Date.now()) {
   const raw = safeText(rawStatus, "").toLowerCase().replace(/[_-]+/g, " ");
   if (raw === "cancelled" || raw === "canceled") return "CANCELLED";
-  const lifecycle = getTournamentLifecycle(tournament);
+  const lifecycle = getTournamentLifecycle(tournament, now);
   if (lifecycle.start) return lifecycle.phase;
   if (raw === "full") return "FULL";
   if (raw === "closed" || raw === "registration closed") return "REGISTRATION CLOSED";
@@ -150,22 +150,23 @@ function errorMessage(code) {
 }
 
 function Countdown({ target, label = "MATCH STARTING IN", activeStatus = "" }) {
-  const [remaining, setRemaining] = useState(() => Math.max(0, (target || 0) - Date.now()));
+  const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
-    const tick = () => setRemaining(Math.max(0, (target || 0) - Date.now()));
-    tick();
-    const id = window.setInterval(tick, 1000);
+    const id = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(id);
-  }, [target]);
+  }, []);
+  const offsets = { "NORMAL CARD": -30 * 60000, "JOIN MATCH": -15 * 60000, "VERIFYING PLAYER IDENTITY": 0, "MATCH STARTED": 45 * 60000, "RESULT REVEALED": 75 * 60000, "PROOF / RECALCULATION": 120 * 60000 };
+  const nextTarget = Number.isFinite(target) && offsets[activeStatus] !== undefined ? target + offsets[activeStatus] : target;
+  const remaining = Math.max(0, (nextTarget || 0) - now);
   const total = Math.floor(remaining / 1000);
   const days = Math.floor(total / 86400);
   const hours = Math.floor((total % 86400) / 3600);
   const minutes = Math.floor((total % 3600) / 60);
   const seconds = total % 60;
-  const displayLabel = activeStatus === "LIVE" ? "MATCH LIVE" : activeStatus === "MATCH ONGOING" ? "MATCH ONGOING" : activeStatus === "MATCH CLOSING" ? "MATCH CLOSING" : activeStatus === "CALCULATION ONGOING" ? "CALCULATION" : label;
-  if (!target) return <div className="tdCountdown muted"><span>{displayLabel}</span><strong>—</strong></div>;
-  if (!remaining) return <div className={`tdCountdown ${activeStatus === "LIVE" ? "live" : ""}`}><span>{displayLabel}</span><strong>{activeStatus === "LIVE" ? "LIVE" : "NOW"}</strong></div>;
-  return <div className="tdCountdown"><span>{displayLabel}</span><strong>{days > 0 ? `${days}d ` : ""}{String(hours).padStart(2, "0")}:{String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}</strong></div>;
+  const labels = { "NORMAL CARD": "JOIN MATCH OPENS IN", "JOIN MATCH": "VERIFICATION STARTS IN", "VERIFYING PLAYER IDENTITY": "MATCH STARTS IN", "MATCH STARTED": "MATCH ENDS IN", "RESULT REVEALED": "PROOF WINDOW OPENS IN", "PROOF / RECALCULATION": "LIFECYCLE ENDS IN", "COMPLETED": "TOURNAMENT CLOSED" };
+  const displayLabel = labels[activeStatus] || label;
+  if (!target || activeStatus === "COMPLETED") return <div className="tdCountdown muted"><span>{displayLabel}</span><strong>{activeStatus === "COMPLETED" ? "CLOSED" : "—"}</strong></div>;
+  return <div className="tdCountdown"><span>{displayLabel}</span><strong>{days > 0 ? days + "d " : ""}{String(hours).padStart(2, "0")}:{String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}</strong></div>;
 }
 
 export default function TournamentDetailPage() {
@@ -187,6 +188,7 @@ export default function TournamentDetailPage() {
   const [gameUid, setGameUid] = useState("");
   const [teamName, setTeamName] = useState("");
   const [members, setMembers] = useState([]);
+  const [clockNow, setClockNow] = useState(() => Date.now());
 
   const load = useCallback(async () => {
     if (!tournamentId) return;
@@ -213,6 +215,11 @@ export default function TournamentDetailPage() {
   useEffect(() => { load(); }, [load]);
 
   useEffect(() => {
+    const timer = window.setInterval(() => setClockNow(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
     const onAuth = supabase.auth.onAuthStateChange(() => { load(); });
     return () => onAuth.data.subscription.unsubscribe();
   }, [load]);
@@ -222,14 +229,14 @@ export default function TournamentDetailPage() {
   const participants = Array.isArray(data?.participants) ? data.participants : [];
   const registration = data?.registration || null;
   const room = data?.room || null;
-  const status = normalizeStatus(tournament.status, tournament, results);
+  const status = normalizeStatus(tournament.status, tournament, results, clockNow);
   const registeredCount = Math.max(0, safeNumber(data?.registeredCount, participants.length));
   const capacity = tournament.capacity;
   const remainingSlots = Math.max(0, safeNumber(data?.remainingSlots, capacity - registeredCount));
   const progress = capacity ? Math.min(100, Math.max(0, (registeredCount / capacity) * 100)) : 0;
   const rules = useMemo(() => normalizeRules(tournament.rules), [tournament.rules]);
   const startTimestamp = parseIST(tournament.matchDate, tournament.startTime);
-  const lifecycle = getTournamentLifecycle(tournament);
+  const lifecycle = getTournamentLifecycle(tournament, clockNow);
   const registrationOpen = lifecycle.registrationOpen && remainingSlots > 0;
   const teamSize = tournament.matchType === "duo" ? 2 : tournament.matchType === "squad" ? 4 : 1;
 
