@@ -425,6 +425,26 @@ function getTournamentAutomaticStatus(
     !Number.isFinite(start)
   ) {
 
+    /*
+      Missing start_time fallback:
+      Keep the existing time-based lifecycle untouched.
+      If a record has no usable time, do not leave an
+      already-expired calendar date in Upcoming forever.
+      Treat it as Past only after the full IST date ends.
+    */
+    const dateEnd = parseTournamentStartTimestamp(
+      tournament?.date,
+      "23:59:59",
+      tournament?.year
+    );
+
+    if (
+      Number.isFinite(dateEnd) &&
+      now > dateEnd
+    ) {
+      return "Past";
+    }
+
     return normalizeStatus(
       tournament?.status
     );
