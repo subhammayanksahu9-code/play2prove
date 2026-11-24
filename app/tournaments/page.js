@@ -7,6 +7,7 @@ import {
   useState
 } from "react";
 import "./tournaments.css";
+import { getTournamentLifecycle } from "../../lib/tournament-lifecycle";
 
 /* =========================================================
    PLAY2PROVE — TOURNAMENT PAGE
@@ -411,72 +412,12 @@ function getTournamentStartTimestamp(
    AUTOMATIC TOURNAMENT STATUS
 ========================================================= */
 
-function getTournamentAutomaticStatus(
-  tournament,
-  now
-) {
-
-  const start =
-    getTournamentStartTimestamp(
-      tournament
-    );
-
-  if (
-    !Number.isFinite(start)
-  ) {
-
-    /*
-      Missing start_time fallback:
-      Keep the existing time-based lifecycle untouched.
-      If a record has no usable time, do not leave an
-      already-expired calendar date in Upcoming forever.
-      Treat it as Past only after the full IST date ends.
-    */
-    const dateEnd = parseTournamentStartTimestamp(
-      tournament?.date,
-      "23:59:59",
-      tournament?.year
-    );
-
-    if (
-      Number.isFinite(dateEnd) &&
-      now > dateEnd
-    ) {
-      return "Past";
-    }
-
-    return normalizeStatus(
-      tournament?.status
-    );
-
-  }
-
-  /*
-    PLAY2PROVE FILTER WINDOWS (IST):
-    Upcoming: until exactly 30 minutes before start.
-    Live filter: after the 30-minute mark before start
-                 through 19:59 after scheduled start.
-    Past: from exactly 20 minutes after scheduled start.
-
-    Example 3:00 PM match:
-    2:30 PM = Upcoming
-    2:31 PM = Live
-    3:19 PM = Live
-    3:20 PM = Past
-  */
-  const LIVE_WINDOW_BEFORE_START = 30 * 60 * 1000;
-  const PAST_WINDOW_AFTER_START = 20 * 60 * 1000;
-
-  if (now <= start - LIVE_WINDOW_BEFORE_START) {
-    return "Upcoming";
-  }
-
-  if (now < start + PAST_WINDOW_AFTER_START) {
-    return "Live";
-  }
-
-  return "Past";
-
+function getTournamentAutomaticStatus(tournament, now) {
+  const lifecycle = getTournamentLifecycle(tournament, now);
+  if (lifecycle.key === "NORMAL_CARD" || lifecycle.key === "JOIN_MATCH" || lifecycle.key === "VERIFICATION") return "Upcoming";
+  if (lifecycle.key === "MATCH_STARTED") return "Live";
+  if (lifecycle.key === "RESULT_REVEALED" || lifecycle.key === "PROOF_RECALCULATION" || lifecycle.key === "COMPLETED") return "Past";
+  return normalizeStatus(tournament?.status);
 }
 
 function statusClass(status) {
